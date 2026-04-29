@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thanod — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#050508;--bg-2:#09090F;--bg-3:#0E0E18;--bg-4:#13131F;
+  --blue:#2563EB;--blue-light:#3B82F6;--blue-bright:#60A5FA;
+  --blue-dim:rgba(37,99,235,0.08);--blue-border:rgba(37,99,235,0.2);
+  --text:#F0F0F8;--text-2:#8A8AA8;--text-3:#4A4A68;
+  --green:#48BB78;--green-dim:rgba(72,187,120,0.1);
+  --red:#FC8181;--red-dim:rgba(252,129,129,0.1);
+  --blue:#63B3ED;--blue-dim:rgba(99,179,237,0.1);
+  --sidebar:240px;
+  --font-display:'Space Grotesk',sans-serif;
+  --font-mono:'Space Mono',monospace;--font-body:'Inter',sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:300;line-height:1.6;min-height:100vh;display:flex;}
+
+/* GRAIN */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+/* SIDEBAR */
+.sidebar{
+  width:var(--sidebar);min-width:var(--sidebar);
+  background:var(--bg-2);border-right:1px solid var(--blue-border);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;
+  z-index:100;
+}
+.sidebar-logo{
+  padding:28px 24px;border-bottom:1px solid var(--blue-border);
+  font-family:var(--font-display);font-size:1.4rem;font-weight:500;
+  letter-spacing:0.06em;
+}
+.sidebar-logo span{color:var(--blue);}
+.sidebar-nav{flex:1;padding:24px 0;overflow-y:auto;}
+.nav-section-title{
+  font-family:var(--font-mono);font-size:0.58rem;font-weight:600;
+  letter-spacing:0.22em;text-transform:uppercase;color:var(--text-3);
+  padding:0 20px;margin-bottom:8px;margin-top:20px;
+}
+.nav-section-title:first-child{margin-top:0;}
+.nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 20px;cursor:pointer;
+  font-family:var(--font-mono);font-size:0.75rem;font-weight:500;
+  letter-spacing:0.06em;color:var(--text-3);
+  transition:all 0.2s;border-left:2px solid transparent;
+  text-decoration:none;
+}
+.nav-item:hover{color:var(--text-2);background:var(--blue-dim);}
+.nav-item.active{color:var(--blue-light);border-left-color:var(--blue);background:var(--blue-dim);}
+.nav-item svg{flex-shrink:0;width:16px;height:16px;}
+.sidebar-user{padding:20px;border-top:1px solid var(--blue-border);}
+.user-info{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.user-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--blue-light));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-size:1rem;font-weight:500;color:var(--bg);
+  flex-shrink:0;
+}
+.user-name{font-family:var(--font-mono);font-size:0.75rem;font-weight:600;color:var(--text);}
+.user-role{font-size:0.68rem;color:var(--text-3);}
+.btn-logout{
+  width:100%;background:transparent;border:1px solid var(--blue-border);
+  color:var(--text-3);font-family:var(--font-mono);font-size:0.65rem;
+  font-weight:500;letter-spacing:0.1em;text-transform:uppercase;
+  padding:9px;cursor:pointer;transition:all 0.2s;border-radius:2px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn-logout:hover{border-color:var(--red);color:var(--red);}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+
+/* TOPBAR */
+.topbar{
+  padding:20px 36px;border-bottom:1px solid var(--blue-border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg);position:sticky;top:0;z-index:50;
+}
+.topbar-title{font-family:var(--font-display);font-size:1.5rem;font-weight:400;}
+.topbar-right{display:flex;align-items:center;gap:16px;}
+.topbar-time{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.1em;color:var(--text-3);}
+.live-badge{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--font-mono);font-size:0.62rem;font-weight:600;letter-spacing:0.1em;
+  color:var(--green);
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+/* CONTENT */
+.content{padding:36px;flex:1;}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{
+  background:var(--bg-2);border:1px solid var(--blue-border);
+  padding:24px 22px;position:relative;overflow:hidden;
+  transition:border-color 0.25s;
+}
+.stat-card:hover{border-color:rgba(201,153,58,0.4);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat-card.gold::before{background:var(--blue);}
+.stat-card.green::before{background:var(--green);}
+.stat-card.blue::before{background:var(--blue);}
+.stat-card.grey::before{background:var(--text-3);}
+.stat-label{font-family:var(--font-mono);font-size:0.62rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px;}
+.stat-value{font-family:var(--font-display);font-size:2rem;font-weight:300;color:var(--text);line-height:1;}
+.stat-value.gold{color:var(--blue-light);}
+.stat-value.green{color:var(--green);}
+.stat-value.blue{color:var(--blue);}
+.stat-sub{font-size:0.75rem;color:var(--text-3);margin-top:6px;}
+.stat-icon{position:absolute;bottom:16px;right:16px;color:var(--text-3);opacity:0.3;}
+
+/* GRID LAYOUT */
+.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+.dashboard-card{background:var(--bg-2);border:1px solid var(--blue-border);padding:28px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.card-title{font-family:var(--font-display);font-size:1.25rem;font-weight:400;}
+.card-badge{font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border-radius:20px;}
+.card-badge.active{background:var(--green-dim);color:var(--green);}
+.card-badge.pending{background:rgba(201,153,58,0.1);color:var(--blue-light);}
+.card-badge.inactive{background:var(--red-dim);color:var(--red);}
+
+/* ALLOCATION */
+.allocation-bar{margin-bottom:14px;}
+.allocation-label{display:flex;justify-content:space-between;margin-bottom:6px;}
+.allocation-name{font-family:var(--font-mono);font-size:0.7rem;font-weight:500;letter-spacing:0.06em;color:var(--text-2);}
+.allocation-pct{font-family:var(--font-mono);font-size:0.7rem;color:var(--text-3);}
+.bar-track{height:6px;background:var(--bg-3);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;transition:width 1s ease;}
+.bar-fill.validator{background:var(--blue);}
+.bar-fill.bot{background:var(--blue);}
+.bar-fill.idle{background:var(--text-3);}
+.allocation-total{margin-top:20px;padding-top:16px;border-top:1px solid var(--blue-border);display:flex;justify-content:space-between;align-items:center;}
+.allocation-total-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);}
+.allocation-total-value{font-family:var(--font-display);font-size:1.5rem;font-weight:400;color:var(--blue-light);}
+
+/* EDIT BUTTON */
+.btn-edit{
+  font-family:var(--font-mono);font-size:0.62rem;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;
+  background:var(--blue-dim);border:1px solid var(--blue-border);
+  color:var(--blue-light);padding:7px 14px;cursor:pointer;
+  transition:all 0.2s;border-radius:2px;
+}
+.btn-edit:hover{background:var(--blue);color:var(--bg);}
+
+/* VALIDATOR */
+.validator-info{display:flex;flex-direction:column;gap:14px;}
+.validator-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--blue-border);}
+.validator-row:last-child{border:none;}
+.validator-key{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);}
+.validator-val{font-size:0.88rem;color:var(--text);text-align:right;max-width:200px;overflow:hidden;text-overflow:ellipsis;}
+.validator-val.green{color:var(--green);}
+.validator-val.gold{color:var(--blue-light);}
+.validator-val.pending{color:var(--blue);}
+
+/* TRANSACTIONS */
+.transactions-card{background:var(--bg-2);border:1px solid var(--blue-border);padding:28px;}
+.tx-table{width:100%;border-collapse:collapse;}
+.tx-table th{
+  font-family:var(--font-mono);font-size:0.62rem;font-weight:600;
+  letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);
+  padding:10px 12px;text-align:left;border-bottom:1px solid var(--blue-border);
+}
+.tx-table td{padding:12px;font-size:0.84rem;color:var(--text-2);border-bottom:1px solid rgba(201,153,58,0.08);}
+.tx-table tr:hover td{background:var(--blue-dim);}
+.tx-table tr:last-child td{border:none;}
+.tx-type{font-family:var(--font-mono);font-size:0.62rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:3px 10px;border-radius:20px;display:inline-block;}
+.tx-type.deposit{background:var(--green-dim);color:var(--green);}
+.tx-type.withdrawal{background:var(--red-dim);color:var(--red);}
+.tx-type.reward{background:rgba(201,153,58,0.1);color:var(--blue-light);}
+.tx-type.trade{background:var(--blue-dim);color:var(--blue);}
+.tx-amount.positive{color:var(--green);}
+.tx-amount.negative{color:var(--red);}
+.tx-empty{text-align:center;padding:40px;color:var(--text-3);font-size:0.88rem;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:center;justify-content:center;padding:24px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg-2);border:1px solid var(--blue-border);padding:36px;width:100%;max-width:440px;position:relative;}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue-bright),var(--blue));}
+.modal-title{font-family:var(--font-display);font-size:1.5rem;font-weight:400;margin-bottom:24px;}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-3);cursor:pointer;font-size:1.2rem;line-height:1;}
+.form-group{margin-bottom:14px;}
+.form-label{font-family:var(--font-mono);font-size:0.62rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-2);display:block;margin-bottom:6px;}
+.form-input{width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.88rem;padding:10px 13px;outline:none;transition:border-color 0.2s;border-radius:2px;}
+.form-input:focus{border-color:var(--blue);}
+.form-select{width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.88rem;padding:10px 13px;outline:none;transition:border-color 0.2s;border-radius:2px;-webkit-appearance:none;appearance:none;}
+.form-select:focus{border-color:var(--blue);}
+.form-select option{background:var(--bg-2);}
+.btn-primary{width:100%;background:var(--blue);border:none;color:var(--bg);font-family:var(--font-mono);font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:14px;cursor:pointer;transition:all 0.25s;border-radius:2px;margin-top:6px;}
+.btn-primary:hover{background:var(--blue-light);}
+.modal-alert{padding:10px 14px;border-radius:2px;font-size:0.8rem;margin-bottom:14px;display:none;}
+.modal-alert.show{display:block;}
+.modal-alert.success{background:var(--green-dim);border:1px solid rgba(72,187,120,0.3);color:var(--green);}
+.modal-alert.error{background:var(--red-dim);border:1px solid rgba(252,129,129,0.3);color:var(--red);}
+
+/* SPINNER */
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* LOADING STATE */
+.loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.loading-logo{font-family:var(--font-display);font-size:2rem;font-weight:400;letter-spacing:0.06em;}
+.loading-logo span{color:var(--blue);}
+.loading-bar{width:120px;height:2px;background:var(--bg-3);border-radius:2px;overflow:hidden;}
+.loading-fill{height:100%;background:var(--blue);animation:loading 1.5s ease-in-out infinite;}
+@keyframes loading{0%{width:0;margin-left:0;}50%{width:100%;margin-left:0;}100%{width:0;margin-left:100%;}}
+
+/* MENU TOGGLE */
+.menu-toggle{display:none;background:none;border:none;color:var(--text-2);cursor:pointer;padding:4px;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .dashboard-grid{grid-template-columns:1fr;}
+}
+@media(max-width:768px){
+  :root{--sidebar:0px;}
+  .sidebar{transform:translateX(-100%);transition:transform 0.3s ease;width:260px;}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .menu-toggle{display:flex;}
+  .stats-row{grid-template-columns:1fr;}
+  .content{padding:20px;}
+  .topbar{padding:16px 20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-logo">Thanod</div>
+  <div class="loading-bar"><div class="loading-fill"></div></div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">Thanod</div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">Portfolio</div>
+    <a class="nav-item active" onclick="showSection('overview')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      Overview
+    </a>
+    <a class="nav-item" onclick="showSection('tiers')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      Investment Tiers
+    </a>
+    <a class="nav-item" onclick="showSection('real-estate')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+      Real Estate
+    </a>
+    <a class="nav-item" onclick="showSection('validator')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      Validator
+    </a>
+    <a class="nav-item" onclick="showSection('transactions')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Transactions
+    </a>
+    <div class="nav-section-title">Account</div>
+    <a class="nav-item" href="index.html">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+      Back to Site
+    </a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar">A</div>
+      <div>
+        <div class="user-name" id="userName">Loading...</div>
+        <div class="user-role">Portfolio Member</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="handleLogout()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      Sign Out
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <button class="menu-toggle" onclick="toggleSidebar()">
+        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="topbar-title" id="sectionTitle">Portfolio Overview</div>
+    </div>
+    <div class="topbar-right">
+      <div class="live-badge"><div class="live-dot"></div>Live</div>
+      <div class="topbar-time" id="topbarTime"></div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ── OVERVIEW ── -->
+    <div id="section-overview">
+      <div class="stats-row">
+        <div class="stat-card gold">
+          <div class="stat-label">Total Portfolio</div>
+          <div class="stat-value gold" id="statTotal">0.00</div>
+          <div class="stat-sub" id="statTotalEth">ETH</div>
+          <svg class="stat-icon" width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Validator Balance</div>
+          <div class="stat-value green" id="statValidator">0.00</div>
+          <div class="stat-sub">ETH Staked</div>
+          <svg class="stat-icon" width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Bot Balance</div>
+          <div class="stat-value blue" id="statBot">0.00</div>
+          <div class="stat-sub">ETH Active</div>
+          <svg class="stat-icon" width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <div class="stat-card grey">
+          <div class="stat-label">Idle Balance</div>
+          <div class="stat-value" id="statIdle">0.00</div>
+          <div class="stat-sub">ETH Available</div>
+          <svg class="stat-icon" width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="1.5"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3"/></svg>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- ALLOCATION -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <div class="card-title">Allocation</div>
+            <span style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);border:1px solid var(--blue-border);padding:4px 10px;">Read Only</span>
+          </div>
+          <div class="allocation-bar">
+            <div class="allocation-label">
+              <span class="allocation-name">Validator Pool</span>
+              <span class="allocation-pct" id="pctValidator">0%</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill validator" id="barValidator" style="width:0%"></div></div>
+          </div>
+          <div class="allocation-bar">
+            <div class="allocation-label">
+              <span class="allocation-name">Trading Bot</span>
+              <span class="allocation-pct" id="pctBot">0%</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill bot" id="barBot" style="width:0%"></div></div>
+          </div>
+          <div class="allocation-bar">
+            <div class="allocation-label">
+              <span class="allocation-name">Idle / Liquid</span>
+              <span class="allocation-pct" id="pctIdle">0%</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill idle" id="barIdle" style="width:0%"></div></div>
+          </div>
+          <div class="allocation-total">
+            <span class="allocation-total-label">Total Portfolio Value</span>
+            <span class="allocation-total-value" id="totalValueDisplay">0.00 ETH</span>
+          </div>
+        </div>
+
+        <!-- VALIDATOR SUMMARY -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <div class="card-title">Validator Status</div>
+            <span class="card-badge pending" id="validatorBadge">Pending</span>
+          </div>
+          <div class="validator-info">
+            <div class="validator-row">
+              <span class="validator-key">Address</span>
+              <span class="validator-val" id="validatorAddress">Not set</span>
+            </div>
+            <div class="validator-row">
+              <span class="validator-key">Status</span>
+              <span class="validator-val" id="validatorStatus">Pending</span>
+            </div>
+            <div class="validator-row">
+              <span class="validator-key">Estimated APR</span>
+              <span class="validator-val gold" id="validatorAPR">0.00%</span>
+            </div>
+            <div class="validator-row">
+              <span class="validator-key">Rewards Earned</span>
+              <span class="validator-val green" id="validatorRewards">0.00000 ETH</span>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+      <!-- RECENT TRANSACTIONS -->
+      <div class="transactions-card">
+        <div class="card-header">
+          <div class="card-title">Recent Transactions</div>
+          
+        </div>
+        <table class="tx-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="recentTxBody">
+            <tr><td colspan="4" class="tx-empty">No transactions yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── VALIDATOR SECTION ── -->
+    <div id="section-validator" style="display:none;">
+      <div class="dashboard-card" style="margin-bottom:20px;">
+        <div class="card-header">
+          <div class="card-title">Validator Tracking</div>
+          <span class="card-badge pending" id="validatorBadge2">Pending</span>
+        </div>
+        <div class="validator-info">
+          <div class="validator-row">
+            <span class="validator-key">Validator Address</span>
+            <span class="validator-val" id="validatorAddress2">Not configured</span>
+          </div>
+          <div class="validator-row">
+            <span class="validator-key">Status</span>
+            <span class="validator-val" id="validatorStatus2">Pending</span>
+          </div>
+          <div class="validator-row">
+            <span class="validator-key">Estimated APR</span>
+            <span class="validator-val gold" id="validatorAPR2">0.00%</span>
+          </div>
+          <div class="validator-row">
+            <span class="validator-key">Total Rewards Earned</span>
+            <span class="validator-val green" id="validatorRewards2">0.00000 ETH</span>
+          </div>
+          <div class="validator-row">
+            <span class="validator-key">Validator Balance</span>
+            <span class="validator-val gold" id="validatorBalance2">0.00 ETH</span>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- ── TRANSACTIONS SECTION ── -->
+    <div id="section-transactions" style="display:none;">
+      <div class="transactions-card">
+        <div class="card-header">
+          <div class="card-title">Transaction History</div>
+        </div>
+        <table class="tx-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Amount (ETH)</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="allTxBody">
+            <tr><td colspan="5" class="tx-empty">No transactions yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── TIERS SECTION ── -->
+    <div id="section-tiers" style="display:none;">
+      <div style="margin-bottom:24px;">
+        <div id="userTierBanner"></div>
+      </div>
+      <div style="margin-bottom:12px;font-family:var(--font-mono);font-size:0.65rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-3);">All Available Tiers</div>
+      <div id="tiersGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+        <div style="text-align:center;padding:48px;color:var(--text-3);font-size:0.88rem;grid-column:1/-1;">Loading tiers...</div>
+      </div>
+    </div>
+
+    <!-- ── REAL ESTATE SECTION ── -->
+    <div id="section-real-estate" style="display:none;">
+      <div style="margin-bottom:20px;">
+        <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:400;margin-bottom:6px;">Real Estate Portfolio</div>
+        <div style="font-size:0.85rem;color:var(--text-2);">Your allocations across Aurethium real estate investment properties.</div>
+      </div>
+      <div id="realEstateGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div style="text-align:center;padding:48px;color:var(--text-3);font-size:0.88rem;grid-column:1/-1;">Loading real estate data...</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODALS -->
+
+<!-- Allocation Modal -->
+<div class="modal-overlay" id="allocationModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('allocationModal')">✕</button>
+    <div class="modal-title">Update Allocation</div>
+    <div class="modal-alert" id="allocAlert"></div>
+    <div class="form-group">
+      <label class="form-label">Validator Balance (ETH)</label>
+      <input type="number" class="form-input" id="allocValidator" placeholder="0.00" step="0.001" min="0">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Bot Balance (ETH)</label>
+      <input type="number" class="form-input" id="allocBot" placeholder="0.00" step="0.001" min="0">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Idle Balance (ETH)</label>
+      <input type="number" class="form-input" id="allocIdle" placeholder="0.00" step="0.001" min="0">
+    </div>
+    <button class="btn-primary" onclick="saveAllocation()">Save Allocation</button>
+  </div>
+</div>
+
+<!-- Validator Modal -->
+<div class="modal-overlay" id="validatorModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('validatorModal')">✕</button>
+    <div class="modal-title">Update Validator</div>
+    <div class="modal-alert" id="validatorAlert"></div>
+    <div class="form-group">
+      <label class="form-label">Validator Address</label>
+      <input type="text" class="form-input" id="vAddress" placeholder="0x...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <select class="form-select" id="vStatus">
+        <option value="pending">Pending</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Estimated APR (%)</label>
+      <input type="number" class="form-input" id="vAPR" placeholder="5.20" step="0.01" min="0">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Rewards Earned (ETH)</label>
+      <input type="number" class="form-input" id="vRewards" placeholder="0.00000" step="0.00001" min="0">
+    </div>
+    <button class="btn-primary" onclick="saveValidator()">Save Validator</button>
+  </div>
+</div>
+
+<!-- Transaction Modal -->
+<div class="modal-overlay" id="txModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('txModal')">✕</button>
+    <div class="modal-title">Add Transaction</div>
+    <div class="modal-alert" id="txAlert"></div>
+    <div class="form-group">
+      <label class="form-label">Transaction Type</label>
+      <select class="form-select" id="txType">
+        <option value="deposit">Deposit</option>
+        <option value="withdrawal">Withdrawal</option>
+        <option value="reward">Validator Reward</option>
+        <option value="trade">Bot Trade</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Amount (ETH)</label>
+      <input type="number" class="form-input" id="txAmount" placeholder="0.00" step="0.0001" min="0">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <input type="text" class="form-input" id="txDesc" placeholder="e.g. Monthly staking reward">
+    </div>
+    <button class="btn-primary" onclick="saveTx()">Add Transaction</button>
+  </div>
+</div>
+
+<script>
+const API = 'https://aurethium-backend.onrender.com';
+let portfolioData = {};
+let transactionsData = [];
+let currentSection = 'overview';
+
+// ── AUTH CHECK ──
+const token = localStorage.getItem('aurethium_token');
+const userStr = localStorage.getItem('aurethium_user');
+if (!token) { window.location.href = 'login.html'; }
+
+// ── INIT ──
+async function init() {
+  // Set user info
+  if (userStr) {
+    const user = JSON.parse(userStr);
+    document.getElementById('userName').textContent = user.name || user.email || 'User';
+    document.getElementById('userAvatar').textContent = (user.name || 'A').charAt(0).toUpperCase();
+  }
+  // Load data
+  await Promise.all([loadPortfolio(), loadTransactions()]);
+  // Hide loading
+  document.getElementById('loadingOverlay').style.display = 'none';
+}
+
+// ── TIME ──
+function updateTime() {
+  const now = new Date();
+  document.getElementById('topbarTime').textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+// ── LOAD PORTFOLIO ──
+async function loadPortfolio() {
+  try {
+    const res = await fetch(`${API}/api/portfolio`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (res.status === 401 || res.status === 403) { handleLogout(); return; }
+    const data = await res.json();
+    portfolioData = data.portfolio || {};
+    renderPortfolio();
+  } catch (err) {
+    console.error('Portfolio load error:', err);
+  }
+}
+
+// ── RENDER PORTFOLIO ──
+function renderPortfolio() {
+  const p = portfolioData;
+  const total = parseFloat(p.total_balance) || 0;
+  const validator = parseFloat(p.validator_balance) || 0;
+  const bot = parseFloat(p.bot_balance) || 0;
+  const idle = parseFloat(p.idle_balance) || 0;
+
+  // Stats
+  document.getElementById('statTotal').textContent = total.toFixed(4);
+  document.getElementById('statValidator').textContent = validator.toFixed(4);
+  document.getElementById('statBot').textContent = bot.toFixed(4);
+  document.getElementById('statIdle').textContent = idle.toFixed(4);
+  document.getElementById('totalValueDisplay').textContent = `${total.toFixed(4)} ETH`;
+
+  // Allocation bars
+  const vPct = total > 0 ? Math.round((validator / total) * 100) : 0;
+  const bPct = total > 0 ? Math.round((bot / total) * 100) : 0;
+  const iPct = total > 0 ? Math.round((idle / total) * 100) : 0;
+  document.getElementById('barValidator').style.width = `${vPct}%`;
+  document.getElementById('barBot').style.width = `${bPct}%`;
+  document.getElementById('barIdle').style.width = `${iPct}%`;
+  document.getElementById('pctValidator').textContent = `${vPct}%`;
+  document.getElementById('pctBot').textContent = `${bPct}%`;
+  document.getElementById('pctIdle').textContent = `${iPct}%`;
+
+  // Validator info
+  const vAddress = p.validator_address || 'Not configured';
+  const vStatus = p.validator_status || 'pending';
+  const vAPR = parseFloat(p.estimated_apr) || 0;
+  const vRewards = parseFloat(p.rewards_earned) || 0;
+
+  ['', '2'].forEach(suffix => {
+    const addrEl = document.getElementById(`validatorAddress${suffix}`);
+    const statusEl = document.getElementById(`validatorStatus${suffix}`);
+    const aprEl = document.getElementById(`validatorAPR${suffix}`);
+    const rewardsEl = document.getElementById(`validatorRewards${suffix}`);
+    const badgeEl = document.getElementById(`validatorBadge${suffix}`);
+
+    if (addrEl) addrEl.textContent = vAddress.length > 20 ? `${vAddress.slice(0,10)}...${vAddress.slice(-8)}` : vAddress;
+    if (statusEl) {
+      statusEl.textContent = vStatus.charAt(0).toUpperCase() + vStatus.slice(1);
+      statusEl.className = `validator-val ${vStatus === 'active' ? 'green' : vStatus === 'inactive' ? '' : 'pending'}`;
+    }
+    if (aprEl) aprEl.textContent = `${vAPR.toFixed(2)}%`;
+    if (rewardsEl) rewardsEl.textContent = `${vRewards.toFixed(5)} ETH`;
+    if (badgeEl) {
+      badgeEl.textContent = vStatus.charAt(0).toUpperCase() + vStatus.slice(1);
+      badgeEl.className = `card-badge ${vStatus}`;
+    }
+  });
+
+  const balEl = document.getElementById('validatorBalance2');
+  if (balEl) balEl.textContent = `${validator.toFixed(4)} ETH`;
+}
+
+// ── LOAD TRANSACTIONS ──
+async function loadTransactions() {
+  try {
+    const res = await fetch(`${API}/api/transactions`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    transactionsData = data.transactions || [];
+    renderTransactions();
+  } catch (err) {
+    console.error('Transactions load error:', err);
+  }
+}
+
+// ── RENDER TRANSACTIONS ──
+function renderTransactions() {
+  const txs = transactionsData;
+  const recentBody = document.getElementById('recentTxBody');
+  const allBody = document.getElementById('allTxBody');
+
+  if (txs.length === 0) {
+    const empty = `<tr><td colspan="5" class="tx-empty">No transactions yet.</td></tr>`;
+    recentBody.innerHTML = `<tr><td colspan="4" class="tx-empty">No transactions yet.</td></tr>`;
+    allBody.innerHTML = empty;
+    return;
+  }
+
+  const typeClass = { deposit: 'deposit', withdrawal: 'withdrawal', reward: 'reward', trade: 'trade' };
+
+  const makeRow = (tx, cols) => {
+    const date = new Date(tx.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const isPositive = ['deposit', 'reward'].includes(tx.type);
+    const amountClass = isPositive ? 'positive' : 'negative';
+    const amountPrefix = isPositive ? '+' : '-';
+    if (cols === 4) {
+      return `<tr>
+        <td><span class="tx-type ${typeClass[tx.type] || ''}">${tx.type}</span></td>
+        <td>${tx.description || '—'}</td>
+        <td class="tx-amount ${amountClass}">${amountPrefix}${parseFloat(tx.amount).toFixed(5)} ETH</td>
+        <td>${date}</td>
+      </tr>`;
+    }
+    return `<tr>
+      <td><span class="tx-type ${typeClass[tx.type] || ''}">${tx.type}</span></td>
+      <td>${tx.description || '—'}</td>
+      <td class="tx-amount ${amountClass}">${amountPrefix}${parseFloat(tx.amount).toFixed(5)} ETH</td>
+      <td><span style="font-size:0.75rem;color:var(--green);">✓ ${tx.status || 'completed'}</span></td>
+      <td>${date}</td>
+    </tr>`;
+  };
+
+  recentBody.innerHTML = txs.slice(0, 5).map(tx => makeRow(tx, 4)).join('');
+  allBody.innerHTML = txs.map(tx => makeRow(tx, 5)).join('');
+}
+
+// ── LOAD TIERS ──
+async function loadTiers() {
+  try {
+    const res = await fetch(`${API}/api/tiers`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    renderTiers(data.tiers || [], data.userTier || null);
+  } catch (err) { console.error('Tiers load error:', err); }
+}
+
+function renderTiers(tiers, userTier) {
+  // User tier banner
+  const banner = document.getElementById('userTierBanner');
+  if (userTier) {
+    const tierColors = { green: 'var(--green)', blue: 'var(--blue)', gold: 'var(--blue-light)' };
+    const tc = tierColors[userTier.color] || 'var(--blue-light)';
+    banner.innerHTML = `
+      <div style="background:var(--bg-2);border:1px solid var(--blue-border);padding:24px 28px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${tc};"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+          <div>
+            <div style="font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-3);margin-bottom:4px;">Your Active Tier</div>
+            <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:400;color:${tc};">${userTier.tier_name}</div>
+            <div style="font-size:0.82rem;color:var(--text-2);margin-top:4px;">${userTier.description}</div>
+          </div>
+          <div style="display:flex;gap:28px;flex-wrap:wrap;">
+            <div style="text-align:center;">
+              <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:300;color:${tc};">${parseFloat(userTier.estimated_apr).toFixed(1)}%</div>
+              <div style="font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);">Est. APR</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:300;color:var(--text);">${parseFloat(userTier.amount_invested || 0).toFixed(4)}</div>
+              <div style="font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);">ETH Invested</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:300;color:var(--text);">${userTier.risk_level}</div>
+              <div style="font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);">Risk Level</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--blue-border);">
+          <div style="font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;">Strategies Included</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            ${(userTier.strategies||'').split(',').map(s => `<span style="background:var(--blue-dim);border:1px solid var(--blue-border);padding:4px 12px;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.07em;color:var(--blue-light);">${s.trim()}</span>`).join('')}
+          </div>
+        </div>
+      </div>`;
+  } else {
+    banner.innerHTML = `<div style="background:var(--bg-2);border:1px solid var(--blue-border);padding:20px 24px;text-align:center;color:var(--text-3);font-size:0.88rem;">You have not been assigned to a tier yet. Contact Aurethium to get started.</div>`;
+  }
+
+  // All tiers grid
+  const tierColors = { green: 'var(--green)', blue: 'var(--blue)', gold: 'var(--blue-light)' };
+  const grid = document.getElementById('tiersGrid');
+  if (!tiers.length) { grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);grid-column:1/-1;">No tiers available.</div>'; return; }
+  grid.innerHTML = tiers.map(t => {
+    const tc = tierColors[t.color] || 'var(--blue-light)';
+    const isActive = userTier && userTier.tier_id === t.id;
+    return `<div style="background:var(--bg-2);border:${isActive ? `2px solid ${tc}` : '1px solid var(--blue-border)'};padding:28px 24px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${tc};"></div>
+      ${isActive ? `<div style="position:absolute;top:12px;right:12px;background:${tc};color:var(--bg);font-family:var(--font-mono);font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;">Your Tier</div>` : ''}
+      <div style="font-family:var(--font-mono);font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:${tc};margin-bottom:6px;">${t.name}</div>
+      <div style="font-family:var(--font-display);font-size:2.2rem;font-weight:300;color:${tc};line-height:1;margin-bottom:4px;">${parseFloat(t.estimated_apr).toFixed(1)}%</div>
+      <div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.12em;color:var(--text-3);margin-bottom:18px;">Estimated APR</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--blue-border);">
+          <span style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-3);">Minimum</span>
+          <span style="font-size:0.85rem;color:var(--text);">$${parseFloat(t.minimum_usd).toLocaleString()}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--blue-border);">
+          <span style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-3);">Risk</span>
+          <span style="font-size:0.85rem;color:var(--text);">${t.risk_level}</span>
+        </div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;">Strategies</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        ${(t.strategies||'').split(',').map(s => `<div style="display:flex;align-items:center;gap:7px;font-size:0.78rem;color:var(--text-2);"><span style="color:${tc};font-size:0.7rem;">→</span>${s.trim()}</div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── LOAD REAL ESTATE ──
+async function loadRealEstate() {
+  try {
+    const res = await fetch(`${API}/api/real-estate`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    renderRealEstate(data.properties || []);
+  } catch (err) { console.error('Real estate load error:', err); }
+}
+
+function renderRealEstate(properties) {
+  const grid = document.getElementById('realEstateGrid');
+  if (!properties.length) {
+    grid.innerHTML = '<div style="text-align:center;padding:48px;color:var(--text-3);font-size:0.88rem;grid-column:1/-1;">No real estate properties available yet. Contact Aurethium to discuss investment opportunities.</div>';
+    return;
+  }
+  grid.innerHTML = properties.map(p => {
+    const invested = parseFloat(p.amount_invested) || 0;
+    const hasInvestment = invested > 0;
+    const totalReturn = parseFloat(p.rental_yield) + parseFloat(p.appreciation_rate);
+    return `<div style="background:var(--bg-2);border:${hasInvestment ? '1px solid var(--blue)' : '1px solid var(--blue-border)'};overflow:hidden;position:relative;">
+      ${hasInvestment ? '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--blue);"></div>' : ''}
+      <div style="padding:24px 22px;background:var(--bg-3);border-bottom:1px solid var(--blue-border);">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+          <div>
+            <div style="font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-3);margin-bottom:4px;">${p.property_type || 'Real Estate'}</div>
+            <div style="font-family:var(--font-display);font-size:1.3rem;font-weight:400;color:var(--text);line-height:1.2;">${p.name}</div>
+            <div style="font-size:0.78rem;color:var(--text-3);margin-top:4px;">${p.location || '—'}</div>
+          </div>
+          ${hasInvestment ? '<span style="background:var(--blue-dim);border:1px solid var(--blue-border);padding:4px 10px;font-family:var(--font-mono);font-size:0.58rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue-light);white-space:nowrap;flex-shrink:0;">Invested</span>' : '<span style="background:var(--bg-2);border:1px solid var(--blue-border);padding:4px 10px;font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);white-space:nowrap;flex-shrink:0;">Available</span>'}
+        </div>
+      </div>
+      <div style="padding:20px 22px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-bottom:18px;">
+          <div style="text-align:center;padding:12px 8px;border-right:1px solid var(--blue-border);">
+            <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:300;color:var(--green);">${parseFloat(p.rental_yield).toFixed(1)}%</div>
+            <div style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);margin-top:3px;">Rental Yield</div>
+          </div>
+          <div style="text-align:center;padding:12px 8px;border-right:1px solid var(--blue-border);">
+            <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:300;color:var(--blue);">${parseFloat(p.appreciation_rate).toFixed(1)}%</div>
+            <div style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);margin-top:3px;">Appreciation</div>
+          </div>
+          <div style="text-align:center;padding:12px 8px;">
+            <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:300;color:var(--blue-light);">${totalReturn.toFixed(1)}%</div>
+            <div style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);margin-top:3px;">Total Return</div>
+          </div>
+        </div>
+        ${hasInvestment ? `
+        <div style="background:var(--blue-dim);border:1px solid var(--blue-border);padding:14px 16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);">Your Investment</span>
+            <span style="font-family:var(--font-display);font-size:1.1rem;color:var(--blue-light);">$${parseFloat(invested).toLocaleString()}</span>
+          </div>
+          ${parseFloat(p.ownership_pct) > 0 ? `<div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);">Ownership Share</span>
+            <span style="font-size:0.85rem;color:var(--text);">${parseFloat(p.ownership_pct).toFixed(3)}%</span>
+          </div>` : ''}
+        </div>` : `
+        <div style="padding:12px 0;border-top:1px solid var(--blue-border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);">Min. Investment</span>
+            <span style="font-size:0.85rem;color:var(--text-2);">$${parseFloat(p.minimum_investment || 0).toLocaleString()}</span>
+          </div>
+        </div>`}
+        ${p.description ? `<div style="margin-top:14px;font-size:0.8rem;color:var(--text-3);line-height:1.65;">${p.description}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── SECTION NAVIGATION ──
+function showSection(name) {
+  ['overview', 'validator', 'transactions', 'tiers', 'real-estate'].forEach(s => {
+    document.getElementById(`section-${s}`).style.display = s === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.toggle('active', item.getAttribute('onclick')?.includes(name));
+  });
+  const titles = {
+    overview: 'Portfolio Overview',
+    validator: 'Validator Tracking',
+    transactions: 'Transaction History',
+    tiers: 'Investment Tiers',
+    'real-estate': 'Real Estate Portfolio'
+  };
+  document.getElementById('sectionTitle').textContent = titles[name] || 'Dashboard';
+  currentSection = name;
+  if (name === 'tiers') loadTiers();
+  if (name === 'real-estate') loadRealEstate();
+  if (window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
+}
+
+// ── MODALS ──
+function openAllocationModal() {
+  const p = portfolioData;
+  document.getElementById('allocValidator').value = p.validator_balance || '';
+  document.getElementById('allocBot').value = p.bot_balance || '';
+  document.getElementById('allocIdle').value = p.idle_balance || '';
+  document.getElementById('allocAlert').className = 'modal-alert';
+  document.getElementById('allocationModal').classList.add('open');
+}
+function openValidatorModal() {
+  const p = portfolioData;
+  document.getElementById('vAddress').value = p.validator_address || '';
+  document.getElementById('vStatus').value = p.validator_status || 'pending';
+  document.getElementById('vAPR').value = p.estimated_apr || '';
+  document.getElementById('vRewards').value = p.rewards_earned || '';
+  document.getElementById('validatorAlert').className = 'modal-alert';
+  document.getElementById('validatorModal').classList.add('open');
+}
+function openTxModal() {
+  document.getElementById('txType').value = 'deposit';
+  document.getElementById('txAmount').value = '';
+  document.getElementById('txDesc').value = '';
+  document.getElementById('txAlert').className = 'modal-alert';
+  document.getElementById('txModal').classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ── SAVE ALLOCATION ──
+async function saveAllocation() {
+  const validator_balance = parseFloat(document.getElementById('allocValidator').value) || 0;
+  const bot_balance = parseFloat(document.getElementById('allocBot').value) || 0;
+  const idle_balance = parseFloat(document.getElementById('allocIdle').value) || 0;
+  const alertEl = document.getElementById('allocAlert');
+  try {
+    const res = await fetch(`${API}/api/portfolio/update`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ validator_balance, bot_balance, idle_balance })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alertEl.textContent = 'Allocation updated successfully.';
+      alertEl.className = 'modal-alert show success';
+      await loadPortfolio();
+      setTimeout(() => closeModal('allocationModal'), 1200);
+    } else {
+      alertEl.textContent = data.error || 'Update failed.';
+      alertEl.className = 'modal-alert show error';
+    }
+  } catch (err) {
+    alertEl.textContent = 'Connection error. Please try again.';
+    alertEl.className = 'modal-alert show error';
+  }
+}
+
+// ── SAVE VALIDATOR ──
+async function saveValidator() {
+  const address = document.getElementById('vAddress').value.trim();
+  const status = document.getElementById('vStatus').value;
+  const estimated_apr = parseFloat(document.getElementById('vAPR').value) || 0;
+  const rewards_earned = parseFloat(document.getElementById('vRewards').value) || 0;
+  const alertEl = document.getElementById('validatorAlert');
+  try {
+    const res = await fetch(`${API}/api/validator/update`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ address, status, estimated_apr, rewards_earned })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alertEl.textContent = 'Validator updated successfully.';
+      alertEl.className = 'modal-alert show success';
+      await loadPortfolio();
+      setTimeout(() => closeModal('validatorModal'), 1200);
+    } else {
+      alertEl.textContent = data.error || 'Update failed.';
+      alertEl.className = 'modal-alert show error';
+    }
+  } catch (err) {
+    alertEl.textContent = 'Connection error. Please try again.';
+    alertEl.className = 'modal-alert show error';
+  }
+}
+
+// ── SAVE TRANSACTION ──
+async function saveTx() {
+  const type = document.getElementById('txType').value;
+  const amount = parseFloat(document.getElementById('txAmount').value);
+  const description = document.getElementById('txDesc').value.trim();
+  const alertEl = document.getElementById('txAlert');
+  if (!amount || amount <= 0) {
+    alertEl.textContent = 'Please enter a valid amount.';
+    alertEl.className = 'modal-alert show error';
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/api/transactions/add`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ type, amount, description })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alertEl.textContent = 'Transaction added successfully.';
+      alertEl.className = 'modal-alert show success';
+      await loadTransactions();
+      setTimeout(() => closeModal('txModal'), 1200);
+    } else {
+      alertEl.textContent = data.error || 'Failed to add transaction.';
+      alertEl.className = 'modal-alert show error';
+    }
+  } catch (err) {
+    alertEl.textContent = 'Connection error. Please try again.';
+    alertEl.className = 'modal-alert show error';
+  }
+}
+
+// ── LOGOUT ──
+function handleLogout() {
+  localStorage.removeItem('aurethium_token');
+  localStorage.removeItem('aurethium_user');
+  window.location.href = 'login.html';
+}
+
+// ── MOBILE SIDEBAR ──
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ── START ──
+init();
+</script>
+</body>
+</html>

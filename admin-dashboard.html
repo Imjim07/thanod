@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thanod — Admin Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#050508;--bg-2:#09090F;--bg-3:#0E0E18;--bg-4:#13131F;
+  --blue:#2563EB;--blue-light:#3B82F6;--blue-bright:#60A5FA;
+  --blue-dim:rgba(37,99,235,0.08);--blue-border:rgba(37,99,235,0.2);
+  --text:#F0F0F8;--text-2:#8A8AA8;--text-3:#4A4A68;
+  --green:#48BB78;--green-dim:rgba(72,187,120,0.1);
+  --red:#FC8181;--red-dim:rgba(252,129,129,0.1);
+  --blue:#63B3ED;--blue-dim:rgba(99,179,237,0.1);
+  --sidebar:240px;
+  --font-display:'Space Grotesk',sans-serif;
+  --font-mono:'Space Mono',monospace;--font-body:'Inter',sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:300;min-height:100vh;display:flex;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--bg-2);border-right:1px solid var(--blue-border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+.sidebar-logo{padding:24px;border-bottom:1px solid var(--blue-border);}
+.sidebar-logo-main{font-family:var(--font-display);font-size:1.35rem;font-weight:500;letter-spacing:0.06em;}
+.sidebar-logo-main span{color:var(--blue);}
+.sidebar-logo-badge{font-family:var(--font-mono);font-size:0.58rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--blue);background:var(--blue-dim);border:1px solid var(--blue-border);padding:3px 8px;margin-top:5px;display:inline-block;}
+.sidebar-nav{flex:1;padding:20px 0;overflow-y:auto;}
+.nav-section-title{font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--text-3);padding:0 20px;margin-bottom:6px;margin-top:18px;}
+.nav-section-title:first-child{margin-top:0;}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 20px;cursor:pointer;font-family:var(--font-mono);font-size:0.73rem;font-weight:500;letter-spacing:0.05em;color:var(--text-3);transition:all 0.2s;border-left:2px solid transparent;text-decoration:none;}
+.nav-item:hover{color:var(--text-2);background:var(--blue-dim);}
+.nav-item.active{color:var(--blue-light);border-left-color:var(--blue);background:var(--blue-dim);}
+.nav-item svg{flex-shrink:0;width:15px;height:15px;}
+.sidebar-footer{padding:16px;border-top:1px solid var(--blue-border);}
+.admin-tag{font-family:var(--font-mono);font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:10px;}
+.btn-logout{width:100%;background:transparent;border:1px solid var(--blue-border);color:var(--text-3);font-family:var(--font-mono);font-size:0.63rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:9px;cursor:pointer;transition:all 0.2s;border-radius:2px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.btn-logout:hover{border-color:var(--red);color:var(--red);}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{padding:18px 32px;border-bottom:1px solid var(--blue-border);display:flex;align-items:center;justify-content:space-between;background:var(--bg);position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:var(--font-display);font-size:1.4rem;font-weight:400;}
+.topbar-right{display:flex;align-items:center;gap:14px;}
+.live-badge{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:0.62rem;font-weight:600;letter-spacing:0.1em;color:var(--blue);}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.topbar-time{font-family:var(--font-mono);font-size:0.63rem;letter-spacing:0.1em;color:var(--text-3);}
+.content{padding:32px;flex:1;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--bg-2);border:1px solid var(--blue-border);padding:20px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat-card.gold::before{background:var(--blue);}
+.stat-card.green::before{background:var(--green);}
+.stat-card.blue::before{background:var(--blue);}
+.stat-card.red::before{background:var(--red);}
+.stat-label{font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;}
+.stat-value{font-family:var(--font-display);font-size:1.8rem;font-weight:300;line-height:1;}
+.stat-value.gold{color:var(--blue-light);}
+.stat-value.green{color:var(--green);}
+.stat-value.blue{color:var(--blue);}
+.stat-sub{font-size:0.72rem;color:var(--text-3);margin-top:5px;}
+
+/* SEARCH */
+.search-bar{display:flex;gap:12px;margin-bottom:20px;align-items:center;}
+.search-input{flex:1;background:var(--bg-2);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.88rem;padding:10px 16px;outline:none;transition:border-color 0.2s;border-radius:2px;}
+.search-input:focus{border-color:var(--blue);}
+.search-input::placeholder{color:var(--text-3);}
+.btn-action{font-family:var(--font-mono);font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;background:var(--blue);border:none;color:var(--bg);padding:10px 20px;cursor:pointer;transition:all 0.2s;border-radius:2px;}
+.btn-action:hover{background:var(--blue-light);}
+.btn-secondary{font-family:var(--font-mono);font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;background:transparent;border:1px solid var(--blue-border);color:var(--text-2);padding:10px 20px;cursor:pointer;transition:all 0.2s;border-radius:2px;}
+.btn-secondary:hover{border-color:var(--blue);color:var(--blue-light);}
+
+/* TABLE */
+.table-card{background:var(--bg-2);border:1px solid var(--blue-border);}
+.table-header{padding:20px 24px;border-bottom:1px solid var(--blue-border);display:flex;align-items:center;justify-content:space-between;}
+.table-title{font-family:var(--font-display);font-size:1.2rem;font-weight:400;}
+.table-count{font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.1em;color:var(--text-3);}
+.data-table{width:100%;border-collapse:collapse;}
+.data-table th{font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);padding:10px 16px;text-align:left;border-bottom:1px solid var(--blue-border);}
+.data-table td{padding:13px 16px;font-size:0.83rem;color:var(--text-2);border-bottom:1px solid rgba(201,153,58,0.06);}
+.data-table tr:hover td{background:var(--blue-dim);}
+.data-table tr:last-child td{border:none;}
+.user-name-cell{font-weight:400;color:var(--text);}
+.user-wallet{font-family:'Courier New',monospace;font-size:0.75rem;color:var(--text-3);}
+.status-badge{font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px;display:inline-block;}
+.status-badge.active{background:var(--green-dim);color:var(--green);}
+.status-badge.pending{background:var(--blue-dim);color:var(--blue-light);}
+.status-badge.inactive{background:var(--red-dim);color:var(--red);}
+.btn-view{font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;background:var(--blue-dim);border:1px solid var(--blue-border);color:var(--blue-light);padding:5px 12px;cursor:pointer;transition:all 0.2s;border-radius:2px;}
+.btn-view:hover{background:var(--blue);color:var(--bg);}
+.empty-state{text-align:center;padding:48px;color:var(--text-3);font-size:0.88rem;}
+
+/* USER DETAIL PANEL */
+.detail-panel{display:none;position:fixed;top:0;right:0;bottom:0;width:520px;background:var(--bg-2);border-left:1px solid var(--blue-border);z-index:200;overflow-y:auto;flex-direction:column;}
+.detail-panel.open{display:flex;}
+.detail-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue-bright),var(--blue));}
+.detail-header{padding:24px;border-bottom:1px solid var(--blue-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.detail-user-info{display:flex;align-items:center;gap:14px;}
+.detail-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.3rem;font-weight:500;color:var(--bg);flex-shrink:0;}
+.detail-name{font-family:var(--font-display);font-size:1.2rem;font-weight:400;}
+.detail-email{font-size:0.77rem;color:var(--text-3);margin-top:2px;}
+.detail-close{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:1.3rem;line-height:1;padding:4px;}
+.detail-close:hover{color:var(--text);}
+.detail-body{padding:24px;flex:1;}
+.detail-section{margin-bottom:28px;}
+.detail-section-title{font-family:var(--font-mono);font-size:0.65rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.detail-section-title::after{content:'';flex:1;height:1px;background:var(--blue-border);}
+.detail-row{display:flex;gap:12px;margin-bottom:12px;}
+.detail-field{flex:1;}
+.detail-label{font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:5px;}
+.detail-input{width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.85rem;padding:9px 12px;outline:none;transition:border-color 0.2s;border-radius:2px;}
+.detail-input:focus{border-color:var(--blue);}
+.detail-select{width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.85rem;padding:9px 12px;outline:none;border-radius:2px;-webkit-appearance:none;appearance:none;}
+.detail-select:focus{border-color:var(--blue);}
+.detail-select option{background:var(--bg-2);}
+.btn-save{width:100%;background:var(--blue);border:none;color:var(--bg);font-family:var(--font-mono);font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:13px;cursor:pointer;transition:all 0.25s;border-radius:2px;margin-top:8px;}
+.btn-save:hover{background:var(--blue-light);}
+.btn-save:disabled{opacity:0.5;cursor:not-allowed;}
+.detail-alert{padding:9px 13px;border-radius:2px;font-size:0.78rem;margin-bottom:12px;display:none;}
+.detail-alert.show{display:block;}
+.detail-alert.success{background:var(--green-dim);border:1px solid rgba(72,187,120,0.3);color:var(--green);}
+.detail-alert.error{background:var(--red-dim);border:1px solid rgba(252,129,129,0.3);color:var(--red);}
+
+/* TX SECTION */
+.tx-list{display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto;}
+.tx-item{background:var(--bg-3);border:1px solid rgba(201,153,58,0.08);padding:10px 13px;display:flex;align-items:center;justify-content:space-between;}
+.tx-item-left{display:flex;flex-direction:column;gap:2px;}
+.tx-item-type{font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:20px;display:inline-block;width:fit-content;}
+.tx-item-type.deposit{background:var(--green-dim);color:var(--green);}
+.tx-item-type.withdrawal{background:var(--red-dim);color:var(--red);}
+.tx-item-type.reward{background:var(--blue-dim);color:var(--blue-light);}
+.tx-item-type.trade{background:var(--blue-dim);color:var(--blue);}
+.tx-item-desc{font-size:0.75rem;color:var(--text-3);margin-top:2px;}
+.tx-item-amount{font-family:var(--font-display);font-size:1rem;font-weight:400;}
+.tx-item-amount.positive{color:var(--green);}
+.tx-item-amount.negative{color:var(--red);}
+.tx-item-date{font-size:0.68rem;color:var(--text-3);margin-top:2px;text-align:right;}
+.tx-empty{text-align:center;padding:24px;color:var(--text-3);font-size:0.82rem;}
+
+/* SPINNER */
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.loading-logo{font-family:var(--font-display);font-size:1.8rem;font-weight:400;letter-spacing:0.06em;}
+.loading-logo span{color:var(--blue);}
+.loading-bar{width:100px;height:2px;background:var(--bg-3);border-radius:2px;overflow:hidden;}
+.loading-fill{height:100%;background:var(--blue);animation:loading 1.5s ease-in-out infinite;}
+@keyframes loading{0%{width:0;margin-left:0;}50%{width:100%;margin-left:0;}100%{width:0;margin-left:100%;}}
+
+@media(max-width:900px){
+  :root{--sidebar:0px;}
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .detail-panel{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-logo">Thanod <span style="color:var(--text-3);font-size:1rem;">Admin</span></div>
+  <div class="loading-bar"><div class="loading-fill"></div></div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-main">Thanod</div>
+    <div class="sidebar-logo-badge">Admin Panel</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">Management</div>
+    <a class="nav-item active" onclick="showSection('users')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      All Users
+    </a>
+    <a class="nav-item" onclick="showSection('waitlist')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Waitlist
+    </a>
+    <a class="nav-item" onclick="showSection('transactions')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+      All Transactions
+    </a>
+    <div class="nav-section-title">Investment Config</div>
+    <a class="nav-item" onclick="showSection('tiers')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      Tier Settings
+    </a>
+    <a class="nav-item" onclick="showSection('properties')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+      Real Estate
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="admin-tag">Admin Session</div>
+    <button class="btn-logout" onclick="handleLogout()">
+      <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      Sign Out
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="sectionTitle">All Users</div>
+    <div class="topbar-right">
+      <div class="live-badge"><div class="live-dot"></div>Admin</div>
+      <div class="topbar-time" id="topbarTime"></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card gold">
+        <div class="stat-label">Total Users</div>
+        <div class="stat-value gold" id="statUsers">0</div>
+        <div class="stat-sub">Registered accounts</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Waitlist</div>
+        <div class="stat-value green" id="statWaitlist">0</div>
+        <div class="stat-sub">Pending signups</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">Active Validators</div>
+        <div class="stat-value blue" id="statValidators">0</div>
+        <div class="stat-sub">Currently staking</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">Total Transactions</div>
+        <div class="stat-value" id="statTx">0</div>
+        <div class="stat-sub">All time</div>
+      </div>
+    </div>
+
+    <!-- USERS SECTION -->
+    <div id="section-users">
+      <div class="search-bar">
+        <input type="text" class="search-input" id="userSearch" placeholder="Search by name or email..." oninput="filterUsers()">
+        <button class="btn-secondary" onclick="loadAllData()">↻ Refresh</button>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Registered Users</div>
+          <div class="table-count" id="usersCount">0 users</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email / Wallet</th>
+              <th>Portfolio (ETH)</th>
+              <th>Validator</th>
+              <th>Joined</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr><td colspan="6" class="empty-state">Loading users...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- WAITLIST SECTION -->
+    <div id="section-waitlist" style="display:none;">
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Waitlist Signups</div>
+          <div class="table-count" id="waitlistCount">0 signups</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Experience</th>
+              <th>Interest</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="waitlistTableBody">
+            <tr><td colspan="5" class="empty-state">Loading waitlist...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TRANSACTIONS SECTION -->
+    <div id="section-transactions" style="display:none;">
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">All Transactions</div>
+          <div class="table-count" id="txCount">0 transactions</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Type</th>
+              <th>Amount (ETH)</th>
+              <th>Description</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="txTableBody">
+            <tr><td colspan="5" class="empty-state">Loading transactions...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TIERS SECTION -->
+    <div id="section-tiers" style="display:none;">
+      <div style="margin-bottom:16px;font-size:0.85rem;color:var(--text-2);">Edit the three investment tier definitions. Changes are visible to all users immediately.</div>
+      <div id="tiersAdminGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+        <div style="text-align:center;padding:40px;color:var(--text-3);grid-column:1/-1;">Loading tiers...</div>
+      </div>
+    </div>
+
+    <!-- PROPERTIES SECTION -->
+    <div id="section-properties" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="font-size:0.85rem;color:var(--text-2);">Manage real estate investment properties.</div>
+        <button class="btn-action" onclick="openNewPropertyModal()">+ Add Property</button>
+      </div>
+      <div id="propertiesAdminGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div style="text-align:center;padding:40px;color:var(--text-3);grid-column:1/-1;">Loading properties...</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- NEW PROPERTY MODAL -->
+<div class="modal-overlay" id="newPropertyModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:300;display:none;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:var(--bg-2);border:1px solid var(--blue-border);padding:36px;width:100%;max-width:520px;position:relative;max-height:90vh;overflow-y:auto;">
+    <button onclick="document.getElementById('newPropertyModal').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--text-3);cursor:pointer;font-size:1.2rem;">✕</button>
+    <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;margin-bottom:8px;" id="propertyModalTitle">Add Property</div>
+    <div class="modal-alert" id="propertyAlert" style="padding:10px 14px;border-radius:2px;font-size:0.8rem;margin-bottom:12px;display:none;"></div>
+    <input type="hidden" id="editPropertyId">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div style="grid-column:1/-1;"><label class="detail-label">Property Name</label><input type="text" class="detail-input" id="propName" placeholder="e.g. Lekki Phase 1 Commercial Complex"></div>
+      <div><label class="detail-label">Location</label><input type="text" class="detail-input" id="propLocation" placeholder="Lagos, Nigeria"></div>
+      <div><label class="detail-label">Property Type</label><input type="text" class="detail-input" id="propType" placeholder="Commercial / Residential"></div>
+      <div><label class="detail-label">Rental Yield (%)</label><input type="number" class="detail-input" id="propYield" placeholder="8.5" step="0.1" min="0"></div>
+      <div><label class="detail-label">Appreciation Rate (%)</label><input type="number" class="detail-input" id="propAppreciation" placeholder="12.0" step="0.1" min="0"></div>
+      <div><label class="detail-label">Total Value (USD)</label><input type="number" class="detail-input" id="propValue" placeholder="500000" min="0"></div>
+      <div><label class="detail-label">Min. Investment (USD)</label><input type="number" class="detail-input" id="propMinInvest" placeholder="1000" min="0"></div>
+      <div style="grid-column:1/-1;"><label class="detail-label">Description</label><textarea class="detail-input" id="propDescription" placeholder="Brief description of the property..." style="resize:vertical;min-height:80px;"></textarea></div>
+    </div>
+    <button class="btn-save" onclick="saveProperty()">Save Property</button>
+  </div>
+</div>
+
+<!-- ASSIGN TIER MODAL (in detail panel) -->
+<div class="modal-overlay" id="assignTierModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:300;display:none;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:var(--bg-2);border:1px solid var(--blue-border);padding:36px;width:100%;max-width:400px;position:relative;">
+    <button onclick="document.getElementById('assignTierModal').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--text-3);cursor:pointer;font-size:1.2rem;">✕</button>
+    <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;margin-bottom:24px;">Assign Tier</div>
+    <div class="modal-alert" id="assignTierAlert" style="padding:10px 14px;border-radius:2px;font-size:0.8rem;margin-bottom:12px;display:none;"></div>
+    <div style="margin-bottom:12px;"><label class="detail-label">Select Tier</label><select class="detail-select" id="assignTierSelect"></select></div>
+    <div style="margin-bottom:12px;"><label class="detail-label">Amount Invested (ETH)</label><input type="number" class="detail-input" id="assignTierAmount" placeholder="0.00" step="0.0001" min="0"></div>
+    <div style="margin-bottom:16px;"><label class="detail-label">Notes (optional)</label><input type="text" class="detail-input" id="assignTierNotes" placeholder="e.g. Confirmed via bank transfer"></div>
+    <button class="btn-save" onclick="confirmAssignTier()">Assign Tier</button>
+  </div>
+</div>
+
+<!-- ASSIGN PROPERTY MODAL -->
+<div class="modal-overlay" id="assignPropertyModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:300;display:none;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:var(--bg-2);border:1px solid var(--blue-border);padding:36px;width:100%;max-width:420px;position:relative;">
+    <button onclick="document.getElementById('assignPropertyModal').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--text-3);cursor:pointer;font-size:1.2rem;">✕</button>
+    <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;margin-bottom:24px;">Assign Property</div>
+    <div class="modal-alert" id="assignPropAlert" style="padding:10px 14px;border-radius:2px;font-size:0.8rem;margin-bottom:12px;display:none;"></div>
+    <div style="margin-bottom:12px;"><label class="detail-label">Select Property</label><select class="detail-select" id="assignPropSelect"></select></div>
+    <div style="margin-bottom:12px;"><label class="detail-label">Amount Invested (USD)</label><input type="number" class="detail-input" id="assignPropAmount" placeholder="5000" step="0.01" min="0"></div>
+    <div style="margin-bottom:12px;"><label class="detail-label">Ownership % (optional)</label><input type="number" class="detail-input" id="assignPropOwnership" placeholder="0.50" step="0.001" min="0"></div>
+    <div style="margin-bottom:16px;"><label class="detail-label">Notes</label><input type="text" class="detail-input" id="assignPropNotes" placeholder="e.g. Payment confirmed"></div>
+    <button class="btn-save" onclick="confirmAssignProperty()">Assign Property</button>
+  </div>
+</div>
+
+<!-- USER DETAIL PANEL -->
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-header">
+    <div class="detail-user-info">
+      <div class="detail-avatar" id="detailAvatar">A</div>
+      <div>
+        <div class="detail-name" id="detailName">User</div>
+        <div class="detail-email" id="detailEmail">—</div>
+      </div>
+    </div>
+    <button class="detail-close" onclick="closeDetailPanel()">✕</button>
+  </div>
+
+  <div class="detail-body">
+    <div class="detail-alert" id="detailAlert"></div>
+
+    <!-- PORTFOLIO -->
+    <div class="detail-section">
+      <div class="detail-section-title">Portfolio Balances</div>
+      <div class="detail-row">
+        <div class="detail-field">
+          <label class="detail-label">Validator Balance (ETH)</label>
+          <input type="number" class="detail-input" id="editValidator" placeholder="0.00" step="0.0001" min="0">
+        </div>
+        <div class="detail-field">
+          <label class="detail-label">Bot Balance (ETH)</label>
+          <input type="number" class="detail-input" id="editBot" placeholder="0.00" step="0.0001" min="0">
+        </div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-field">
+          <label class="detail-label">Idle Balance (ETH)</label>
+          <input type="number" class="detail-input" id="editIdle" placeholder="0.00" step="0.0001" min="0">
+        </div>
+        <div class="detail-field">
+          <label class="detail-label">Total (auto-calculated)</label>
+          <input type="text" class="detail-input" id="editTotal" placeholder="0.00" readonly style="opacity:0.5;cursor:not-allowed;">
+        </div>
+      </div>
+      <button class="btn-save" onclick="savePortfolio()">Save Portfolio</button>
+    </div>
+
+    <!-- VALIDATOR -->
+    <div class="detail-section">
+      <div class="detail-section-title">Validator Pool</div>
+      <div class="detail-row">
+        <div class="detail-field">
+          <label class="detail-label">Validator Address</label>
+          <input type="text" class="detail-input" id="editVAddress" placeholder="0x...">
+        </div>
+        <div class="detail-field">
+          <label class="detail-label">Status</label>
+          <select class="detail-select" id="editVStatus">
+            <option value="pending">Pending</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-field">
+          <label class="detail-label">Estimated APR (%)</label>
+          <input type="number" class="detail-input" id="editVAPR" placeholder="5.20" step="0.01" min="0">
+        </div>
+        <div class="detail-field">
+          <label class="detail-label">Rewards Earned (ETH)</label>
+          <input type="number" class="detail-input" id="editVRewards" placeholder="0.00000" step="0.00001" min="0">
+        </div>
+      </div>
+      <button class="btn-save" onclick="saveValidator()">Save Validator</button>
+    </div>
+
+    <!-- ADD TRANSACTION -->
+    <div class="detail-section">
+      <div class="detail-section-title">Add Transaction</div>
+      <div class="detail-row">
+        <div class="detail-field">
+          <label class="detail-label">Type</label>
+          <select class="detail-select" id="newTxType">
+            <option value="deposit">Deposit</option>
+            <option value="withdrawal">Withdrawal</option>
+            <option value="reward">Validator Reward</option>
+            <option value="trade">Bot Trade</option>
+          </select>
+        </div>
+        <div class="detail-field">
+          <label class="detail-label">Amount (ETH)</label>
+          <input type="number" class="detail-input" id="newTxAmount" placeholder="0.00" step="0.0001" min="0">
+        </div>
+      </div>
+      <div class="detail-field" style="margin-bottom:8px;">
+        <label class="detail-label">Description</label>
+        <input type="text" class="detail-input" id="newTxDesc" placeholder="e.g. Monthly staking reward, Crypto transfer received">
+      </div>
+      <button class="btn-save" onclick="addTransaction()">Add Transaction</button>
+    </div>
+
+    <!-- TRANSACTION HISTORY -->
+    <div class="detail-section">
+      <div class="detail-section-title">Transaction History</div>
+      <div class="tx-list" id="detailTxList">
+        <div class="tx-empty">No transactions yet.</div>
+      </div>
+    </div>
+
+    <!-- INVESTMENT TIER -->
+    <div class="detail-section">
+      <div class="detail-section-title">Investment Tier</div>
+      <div id="userTierInfo" style="margin-bottom:10px;font-size:0.82rem;color:var(--text-3);">Not assigned to a tier yet.</div>
+      <button class="btn-save" onclick="openAssignTierModal()">Assign / Change Tier</button>
+    </div>
+
+    <!-- REAL ESTATE -->
+    <div class="detail-section">
+      <div class="detail-section-title">Real Estate Allocations</div>
+      <div id="userREList" style="margin-bottom:10px;">
+        <div class="tx-empty">No real estate allocations yet.</div>
+      </div>
+      <button class="btn-save" onclick="openAssignPropertyModal()">Assign Property</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API = 'https://aurethium-backend.onrender.com';
+const token = localStorage.getItem('aurethium_admin_token');
+if (!token) { window.location.href = 'admin-login.html'; }
+
+let allUsers = [];
+let allTiers = [];
+let allProperties = [];
+let selectedUserId = null;
+
+// TIME
+function updateTime() {
+  document.getElementById('topbarTime').textContent = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+// LOAD ALL DATA
+async function loadAllData() {
+  await Promise.all([loadUsers(), loadWaitlist(), loadAllTransactions(), loadStats(), loadTiersAdmin(), loadPropertiesAdmin()]);
+  document.getElementById('loadingOverlay').style.display = 'none';
+}
+
+// LOAD STATS
+async function loadStats() {
+  try {
+    const res = await fetch(`${API}/api/admin/stats`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (res.status === 401 || res.status === 403) { handleLogout(); return; }
+    const data = await res.json();
+    document.getElementById('statUsers').textContent = data.users || 0;
+    document.getElementById('statWaitlist').textContent = data.waitlist || 0;
+    document.getElementById('statValidators').textContent = data.validators || 0;
+    document.getElementById('statTx').textContent = data.transactions || 0;
+  } catch (err) { console.error('Stats error:', err); }
+}
+
+// LOAD USERS
+async function loadUsers() {
+  try {
+    const res = await fetch(`${API}/api/admin/users`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    allUsers = data.users || [];
+    document.getElementById('usersCount').textContent = `${allUsers.length} users`;
+    renderUsers(allUsers);
+  } catch (err) { console.error('Users error:', err); }
+}
+
+function renderUsers(users) {
+  const tbody = document.getElementById('usersTableBody');
+  if (users.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No users registered yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = users.map(u => {
+    const total = parseFloat(u.total_balance) || 0;
+    const vStatus = u.validator_status || 'pending';
+    const date = new Date(u.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const identifier = u.email || (u.wallet_address ? `${u.wallet_address.slice(0,8)}...` : '—');
+    return `<tr>
+      <td class="user-name-cell">${u.name || '—'}</td>
+      <td><div>${identifier}</div>${u.wallet_address ? `<div class="user-wallet">${u.wallet_address.slice(0,10)}...${u.wallet_address.slice(-6)}</div>` : ''}</td>
+      <td>${total.toFixed(4)} ETH</td>
+      <td><span class="status-badge ${vStatus}">${vStatus}</span></td>
+      <td>${date}</td>
+      <td><button class="btn-view" onclick="openUserDetail(${u.id})">Manage →</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterUsers() {
+  const q = document.getElementById('userSearch').value.toLowerCase();
+  const filtered = allUsers.filter(u =>
+    (u.name || '').toLowerCase().includes(q) ||
+    (u.email || '').toLowerCase().includes(q) ||
+    (u.wallet_address || '').toLowerCase().includes(q)
+  );
+  renderUsers(filtered);
+}
+
+// LOAD WAITLIST
+async function loadWaitlist() {
+  try {
+    const res = await fetch(`${API}/api/admin/waitlist`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const list = data.waitlist || [];
+    document.getElementById('waitlistCount').textContent = `${list.length} signups`;
+    const tbody = document.getElementById('waitlistTableBody');
+    if (list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No waitlist signups yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(w => {
+      const date = new Date(w.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      return `<tr>
+        <td class="user-name-cell">${w.name}</td>
+        <td>${w.email}</td>
+        <td>${w.experience || '—'}</td>
+        <td>${w.interest || '—'}</td>
+        <td>${date}</td>
+      </tr>`;
+    }).join('');
+  } catch (err) { console.error('Waitlist error:', err); }
+}
+
+// LOAD ALL TRANSACTIONS
+async function loadAllTransactions() {
+  try {
+    const res = await fetch(`${API}/api/admin/transactions`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const txs = data.transactions || [];
+    document.getElementById('txCount').textContent = `${txs.length} transactions`;
+    const tbody = document.getElementById('txTableBody');
+    if (txs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No transactions yet.</td></tr>';
+      return;
+    }
+    const typeColors = { deposit: 'deposit', withdrawal: 'withdrawal', reward: 'reward', trade: 'trade' };
+    tbody.innerHTML = txs.map(t => {
+      const isPositive = ['deposit', 'reward'].includes(t.type);
+      const date = new Date(t.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      return `<tr>
+        <td class="user-name-cell">${t.user_name || '—'}</td>
+        <td><span class="status-badge ${typeColors[t.type] || 'pending'}">${t.type}</span></td>
+        <td class="${isPositive ? 'tx-item-amount positive' : 'tx-item-amount negative'}">${isPositive ? '+' : '-'}${parseFloat(t.amount).toFixed(5)}</td>
+        <td>${t.description || '—'}</td>
+        <td>${date}</td>
+      </tr>`;
+    }).join('');
+  } catch (err) { console.error('Transactions error:', err); }
+}
+
+// OPEN USER DETAIL
+async function openUserDetail(userId) {
+  selectedUserId = userId;
+  const user = allUsers.find(u => u.id === userId);
+  if (!user) return;
+  document.getElementById('detailAvatar').textContent = (user.name || 'U').charAt(0).toUpperCase();
+  document.getElementById('detailName').textContent = user.name || 'No name';
+  document.getElementById('detailEmail').textContent = user.email || user.wallet_address || '—';
+  document.getElementById('editValidator').value = parseFloat(user.validator_balance) || '';
+  document.getElementById('editBot').value = parseFloat(user.bot_balance) || '';
+  document.getElementById('editIdle').value = parseFloat(user.idle_balance) || '';
+  updateTotalDisplay();
+  document.getElementById('editVAddress').value = user.validator_address || '';
+  document.getElementById('editVStatus').value = user.validator_status || 'pending';
+  document.getElementById('editVAPR').value = parseFloat(user.estimated_apr) || '';
+  document.getElementById('editVRewards').value = parseFloat(user.rewards_earned) || '';
+  document.getElementById('detailAlert').className = 'detail-alert';
+  document.getElementById('newTxAmount').value = '';
+  document.getElementById('newTxDesc').value = '';
+  await loadUserTransactions(userId);
+  await loadUserTierInfo(userId);
+  await loadUserRealEstate(userId);
+  document.getElementById('detailPanel').classList.add('open');
+}
+
+function updateTotalDisplay() {
+  const v = parseFloat(document.getElementById('editValidator').value) || 0;
+  const b = parseFloat(document.getElementById('editBot').value) || 0;
+  const i = parseFloat(document.getElementById('editIdle').value) || 0;
+  document.getElementById('editTotal').value = (v + b + i).toFixed(4) + ' ETH';
+}
+['editValidator', 'editBot', 'editIdle'].forEach(id => {
+  document.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateTotalDisplay);
+  });
+});
+document.addEventListener('input', e => {
+  if (['editValidator', 'editBot', 'editIdle'].includes(e.target.id)) updateTotalDisplay();
+});
+
+function closeDetailPanel() {
+  document.getElementById('detailPanel').classList.remove('open');
+  selectedUserId = null;
+}
+
+// LOAD USER TRANSACTIONS
+async function loadUserTransactions(userId) {
+  try {
+    const res = await fetch(`${API}/api/admin/user/${userId}/transactions`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const txs = data.transactions || [];
+    const list = document.getElementById('detailTxList');
+    if (txs.length === 0) {
+      list.innerHTML = '<div class="tx-empty">No transactions yet.</div>';
+      return;
+    }
+    list.innerHTML = txs.map(t => {
+      const isPositive = ['deposit', 'reward'].includes(t.type);
+      const date = new Date(t.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+      return `<div class="tx-item">
+        <div class="tx-item-left">
+          <span class="tx-item-type ${t.type}">${t.type}</span>
+          <span class="tx-item-desc">${t.description || '—'}</span>
+        </div>
+        <div>
+          <div class="tx-item-amount ${isPositive ? 'positive' : 'negative'}">${isPositive ? '+' : '-'}${parseFloat(t.amount).toFixed(5)}</div>
+          <div class="tx-item-date">${date}</div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) { console.error('User tx error:', err); }
+}
+
+function showDetailAlert(msg, type = 'success') {
+  const el = document.getElementById('detailAlert');
+  el.textContent = msg;
+  el.className = `detail-alert show ${type}`;
+  setTimeout(() => { el.className = 'detail-alert'; }, 3000);
+}
+
+// SAVE PORTFOLIO
+async function savePortfolio() {
+  if (!selectedUserId) return;
+  const validator_balance = parseFloat(document.getElementById('editValidator').value) || 0;
+  const bot_balance = parseFloat(document.getElementById('editBot').value) || 0;
+  const idle_balance = parseFloat(document.getElementById('editIdle').value) || 0;
+  try {
+    const res = await fetch(`${API}/api/admin/user/${selectedUserId}/portfolio`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ validator_balance, bot_balance, idle_balance })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showDetailAlert('Portfolio updated successfully.');
+      await loadUsers();
+    } else {
+      showDetailAlert(data.error || 'Update failed.', 'error');
+    }
+  } catch (err) {
+    showDetailAlert('Connection error.', 'error');
+  }
+}
+
+// SAVE VALIDATOR
+async function saveValidator() {
+  if (!selectedUserId) return;
+  const address = document.getElementById('editVAddress').value.trim();
+  const status = document.getElementById('editVStatus').value;
+  const estimated_apr = parseFloat(document.getElementById('editVAPR').value) || 0;
+  const rewards_earned = parseFloat(document.getElementById('editVRewards').value) || 0;
+  try {
+    const res = await fetch(`${API}/api/admin/user/${selectedUserId}/validator`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ address, status, estimated_apr, rewards_earned })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showDetailAlert('Validator updated successfully.');
+      await loadUsers();
+    } else {
+      showDetailAlert(data.error || 'Update failed.', 'error');
+    }
+  } catch (err) {
+    showDetailAlert('Connection error.', 'error');
+  }
+}
+
+// ADD TRANSACTION
+async function addTransaction() {
+  if (!selectedUserId) return;
+  const type = document.getElementById('newTxType').value;
+  const amount = parseFloat(document.getElementById('newTxAmount').value);
+  const description = document.getElementById('newTxDesc').value.trim();
+  if (!amount || amount <= 0) {
+    showDetailAlert('Please enter a valid amount.', 'error');
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/api/admin/user/${selectedUserId}/transaction`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ type, amount, description })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showDetailAlert('Transaction added.');
+      document.getElementById('newTxAmount').value = '';
+      document.getElementById('newTxDesc').value = '';
+      await loadUserTransactions(selectedUserId);
+      await loadAllTransactions();
+      await loadStats();
+    } else {
+      showDetailAlert(data.error || 'Failed.', 'error');
+    }
+  } catch (err) {
+    showDetailAlert('Connection error.', 'error');
+  }
+}
+
+// SECTION NAV
+function showSection(name) {
+  ['users', 'waitlist', 'transactions', 'tiers', 'properties'].forEach(s => {
+    document.getElementById(`section-${s}`).style.display = s === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.getAttribute('onclick')?.includes(`'${name}'`));
+  });
+  const titles = {
+    users: 'All Users', waitlist: 'Waitlist Signups',
+    transactions: 'All Transactions', tiers: 'Tier Settings',
+    properties: 'Real Estate Properties'
+  };
+  document.getElementById('sectionTitle').textContent = titles[name] || name;
+  closeDetailPanel();
+}
+
+// ── TIERS ADMIN ──
+async function loadTiersAdmin() {
+  try {
+    const res = await fetch(`${API}/api/admin/tiers`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const data = await res.json();
+    allTiers = data.tiers || [];
+    renderTiersAdmin(allTiers);
+    populateTierSelect();
+  } catch (err) { console.error('Tiers admin error:', err); }
+}
+
+function renderTiersAdmin(tiers) {
+  const grid = document.getElementById('tiersAdminGrid');
+  if (!tiers.length) { grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);grid-column:1/-1;">No tiers found.</div>'; return; }
+  const tierColors = { green: 'var(--green)', blue: 'var(--blue)', gold: 'var(--blue-light)' };
+  grid.innerHTML = tiers.map(t => {
+    const tc = tierColors[t.color] || 'var(--blue-light)';
+    return `<div style="background:var(--bg-2);border:1px solid var(--blue-border);padding:24px;position:relative;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${tc};"></div>
+      <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:400;color:${tc};margin-bottom:16px;">${t.name}</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+        <div><label class="detail-label">Min. Investment (USD)</label><input type="number" class="detail-input" id="tier_min_${t.id}" value="${t.minimum_usd}" step="100" min="0"></div>
+        <div><label class="detail-label">Estimated APR (%)</label><input type="number" class="detail-input" id="tier_apr_${t.id}" value="${t.estimated_apr}" step="0.1" min="0"></div>
+        <div><label class="detail-label">Risk Level</label>
+          <select class="detail-select" id="tier_risk_${t.id}">
+            <option ${t.risk_level==='Low'?'selected':''}>Low</option>
+            <option ${t.risk_level==='Medium'?'selected':''}>Medium</option>
+            <option ${t.risk_level==='High'?'selected':''}>High</option>
+          </select>
+        </div>
+        <div><label class="detail-label">Strategies (comma-separated)</label><input type="text" class="detail-input" id="tier_strategies_${t.id}" value="${t.strategies}"></div>
+        <div><label class="detail-label">Description</label><textarea class="detail-input" id="tier_desc_${t.id}" style="resize:vertical;min-height:60px;">${t.description||''}</textarea></div>
+      </div>
+      <button class="btn-save" onclick="saveTier(${t.id})">Save ${t.name} Tier</button>
+    </div>`;
+  }).join('');
+}
+
+async function saveTier(tierId) {
+  const minimum_usd = document.getElementById(`tier_min_${tierId}`).value;
+  const estimated_apr = document.getElementById(`tier_apr_${tierId}`).value;
+  const risk_level = document.getElementById(`tier_risk_${tierId}`).value;
+  const strategies = document.getElementById(`tier_strategies_${tierId}`).value;
+  const description = document.getElementById(`tier_desc_${tierId}`).value;
+  try {
+    const res = await fetch(`${API}/api/admin/tiers/${tierId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ minimum_usd, estimated_apr, risk_level, strategies, description })
+    });
+    const data = await res.json();
+    if (data.success) { alert('Tier saved successfully.'); await loadTiersAdmin(); }
+    else alert(data.error || 'Save failed.');
+  } catch (err) { alert('Connection error.'); }
+}
+
+function populateTierSelect() {
+  const sel = document.getElementById('assignTierSelect');
+  if (!sel) return;
+  sel.innerHTML = allTiers.map(t => `<option value="${t.id}">${t.name} — $${parseFloat(t.minimum_usd).toLocaleString()} min</option>`).join('');
+}
+
+function openAssignTierModal() {
+  if (!selectedUserId) return;
+  document.getElementById('assignTierAlert').style.display = 'none';
+  document.getElementById('assignTierAmount').value = '';
+  document.getElementById('assignTierNotes').value = '';
+  document.getElementById('assignTierModal').style.display = 'flex';
+}
+
+async function confirmAssignTier() {
+  const tier_id = document.getElementById('assignTierSelect').value;
+  const amount_invested = document.getElementById('assignTierAmount').value;
+  const notes = document.getElementById('assignTierNotes').value;
+  const alertEl = document.getElementById('assignTierAlert');
+  try {
+    const res = await fetch(`${API}/api/admin/user/${selectedUserId}/tier`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ tier_id, amount_invested, notes })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alertEl.textContent = 'Tier assigned successfully.';
+      alertEl.style.cssText = 'display:block;padding:10px 14px;border-radius:2px;font-size:0.8px;background:var(--green-dim);border:1px solid rgba(72,187,120,0.3);color:var(--green);';
+      await loadUsers();
+      await loadUserTierInfo(selectedUserId);
+      setTimeout(() => { document.getElementById('assignTierModal').style.display = 'none'; }, 1200);
+    } else {
+      alertEl.textContent = data.error || 'Failed.';
+      alertEl.style.cssText = 'display:block;padding:10px 14px;border-radius:2px;font-size:0.8px;background:var(--red-dim);border:1px solid rgba(252,129,129,0.3);color:var(--red);';
+    }
+  } catch (err) {
+    alertEl.textContent = 'Connection error.';
+    alertEl.style.display = 'block';
+  }
+}
+
+async function loadUserTierInfo(userId) {
+  try {
+    const res = await fetch(`${API}/api/tiers`, { headers: { 'Authorization': `Bearer ${token}` } });
+  } catch {}
+  // Just show from allUsers
+  const user = allUsers.find(u => u.id === userId);
+  const el = document.getElementById('userTierInfo');
+  if (!el) return;
+  const tier = allTiers.find(t => t.id === user?.tier_id);
+  if (tier) {
+    el.innerHTML = `<span style="color:var(--blue-light);font-family:var(--font-display);font-size:1rem;">${tier.name}</span> — ${tier.estimated_apr}% APR · ${tier.risk_level} Risk`;
+  } else {
+    el.textContent = 'Not assigned to a tier yet.';
+  }
+}
+
+// ── PROPERTIES ADMIN ──
+async function loadPropertiesAdmin() {
+  try {
+    const res = await fetch(`${API}/api/admin/properties`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const data = await res.json();
+    allProperties = data.properties || [];
+    renderPropertiesAdmin(allProperties);
+    populatePropertySelect();
+  } catch (err) { console.error('Properties admin error:', err); }
+}
+
+function renderPropertiesAdmin(properties) {
+  const grid = document.getElementById('propertiesAdminGrid');
+  if (!properties.length) {
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);grid-column:1/-1;">No properties yet. Add your first property above.</div>';
+    return;
+  }
+  grid.innerHTML = properties.map(p => `
+    <div style="background:var(--bg-2);border:1px solid var(--blue-border);padding:22px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+        <div>
+          <div style="font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:3px;">${p.property_type||'Property'}</div>
+          <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:400;color:var(--text);">${p.name}</div>
+          <div style="font-size:0.75rem;color:var(--text-3);">${p.location||'—'}</div>
+        </div>
+        <span style="font-family:var(--font-mono);font-size:0.58rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:${p.status==='active'?'var(--green-dim)':'var(--red-dim)'};color:${p.status==='active'?'var(--green)':'var(--red)'};">${p.status}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;padding:12px 0;border-top:1px solid var(--blue-border);border-bottom:1px solid var(--blue-border);">
+        <div style="text-align:center;"><div style="font-family:var(--font-display);font-size:1.3rem;color:var(--green);">${parseFloat(p.rental_yield).toFixed(1)}%</div><div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Yield</div></div>
+        <div style="text-align:center;"><div style="font-family:var(--font-display);font-size:1.3rem;color:var(--blue);">${parseFloat(p.appreciation_rate).toFixed(1)}%</div><div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Appreciation</div></div>
+        <div style="text-align:center;"><div style="font-family:var(--font-display);font-size:1.3rem;color:var(--blue-light);">$${parseFloat(p.minimum_investment||0).toLocaleString()}</div><div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Min. Invest</div></div>
+      </div>
+      <button class="btn-secondary" style="width:100%;font-size:0.62rem;" onclick="openEditPropertyModal(${p.id})">Edit Property</button>
+    </div>`).join('');
+}
+
+function populatePropertySelect() {
+  const sel = document.getElementById('assignPropSelect');
+  if (!sel) return;
+  sel.innerHTML = allProperties.map(p => `<option value="${p.id}">${p.name} — ${p.location||'—'}</option>`).join('');
+}
+
+function openNewPropertyModal() {
+  document.getElementById('propertyModalTitle').textContent = 'Add Property';
+  document.getElementById('editPropertyId').value = '';
+  ['propName','propLocation','propType','propYield','propAppreciation','propValue','propMinInvest','propDescription'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('propertyAlert').style.display = 'none';
+  document.getElementById('newPropertyModal').style.display = 'flex';
+}
+
+function openEditPropertyModal(propertyId) {
+  const p = allProperties.find(x => x.id === propertyId);
+  if (!p) return;
+  document.getElementById('propertyModalTitle').textContent = 'Edit Property';
+  document.getElementById('editPropertyId').value = p.id;
+  document.getElementById('propName').value = p.name || '';
+  document.getElementById('propLocation').value = p.location || '';
+  document.getElementById('propType').value = p.property_type || '';
+  document.getElementById('propYield').value = p.rental_yield || '';
+  document.getElementById('propAppreciation').value = p.appreciation_rate || '';
+  document.getElementById('propValue').value = p.total_value_usd || '';
+  document.getElementById('propMinInvest').value = p.minimum_investment || '';
+  document.getElementById('propDescription').value = p.description || '';
+  document.getElementById('propertyAlert').style.display = 'none';
+  document.getElementById('newPropertyModal').style.display = 'flex';
+}
+
+async function saveProperty() {
+  const editId = document.getElementById('editPropertyId').value;
+  const body = {
+    name: document.getElementById('propName').value.trim(),
+    location: document.getElementById('propLocation').value.trim(),
+    property_type: document.getElementById('propType').value.trim(),
+    rental_yield: document.getElementById('propYield').value,
+    appreciation_rate: document.getElementById('propAppreciation').value,
+    total_value_usd: document.getElementById('propValue').value,
+    minimum_investment: document.getElementById('propMinInvest').value,
+    description: document.getElementById('propDescription').value.trim(),
+    status: 'active'
+  };
+  const alertEl = document.getElementById('propertyAlert');
+  if (!body.name) {
+    alertEl.textContent = 'Property name is required.';
+    alertEl.style.cssText = 'display:block;padding:10px;background:var(--red-dim);color:var(--red);border-radius:2px;font-size:0.8rem;';
+    return;
+  }
+  try {
+    const url = editId ? `${API}/api/admin/properties/${editId}` : `${API}/api/admin/properties`;
+    const method = editId ? 'PUT' : 'POST';
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.success) {
+      alertEl.textContent = editId ? 'Property updated.' : 'Property created.';
+      alertEl.style.cssText = 'display:block;padding:10px;background:var(--green-dim);color:var(--green);border-radius:2px;font-size:0.8rem;';
+      await loadPropertiesAdmin();
+      setTimeout(() => { document.getElementById('newPropertyModal').style.display = 'none'; }, 1200);
+    } else {
+      alertEl.textContent = data.error || 'Save failed.';
+      alertEl.style.cssText = 'display:block;padding:10px;background:var(--red-dim);color:var(--red);border-radius:2px;font-size:0.8rem;';
+    }
+  } catch (err) {
+    alertEl.textContent = 'Connection error.';
+    alertEl.style.display = 'block';
+  }
+}
+
+function openAssignPropertyModal() {
+  if (!selectedUserId) return;
+  document.getElementById('assignPropAlert').style.display = 'none';
+  document.getElementById('assignPropAmount').value = '';
+  document.getElementById('assignPropOwnership').value = '';
+  document.getElementById('assignPropNotes').value = '';
+  document.getElementById('assignPropertyModal').style.display = 'flex';
+}
+
+async function confirmAssignProperty() {
+  const property_id = document.getElementById('assignPropSelect').value;
+  const amount_invested = document.getElementById('assignPropAmount').value;
+  const ownership_pct = document.getElementById('assignPropOwnership').value;
+  const notes = document.getElementById('assignPropNotes').value;
+  const alertEl = document.getElementById('assignPropAlert');
+  if (!amount_invested) {
+    alertEl.textContent = 'Please enter an investment amount.';
+    alertEl.style.cssText = 'display:block;padding:10px;background:var(--red-dim);color:var(--red);border-radius:2px;font-size:0.8rem;';
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/api/admin/user/${selectedUserId}/real-estate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ property_id, amount_invested, ownership_pct, notes, currency: 'USD' })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alertEl.textContent = 'Property assigned successfully.';
+      alertEl.style.cssText = 'display:block;padding:10px;background:var(--green-dim);color:var(--green);border-radius:2px;font-size:0.8rem;';
+      await loadUserRealEstate(selectedUserId);
+      setTimeout(() => { document.getElementById('assignPropertyModal').style.display = 'none'; }, 1200);
+    } else {
+      alertEl.textContent = data.error || 'Failed.';
+      alertEl.style.cssText = 'display:block;padding:10px;background:var(--red-dim);color:var(--red);border-radius:2px;font-size:0.8rem;';
+    }
+  } catch (err) {
+    alertEl.textContent = 'Connection error.';
+    alertEl.style.display = 'block';
+  }
+}
+
+async function loadUserRealEstate(userId) {
+  try {
+    const res = await fetch(`${API}/api/admin/user/${userId}/real-estate`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const list = document.getElementById('userREList');
+    const allocs = data.allocations || [];
+    if (!allocs.length) {
+      list.innerHTML = '<div class="tx-empty">No real estate allocations yet.</div>';
+      return;
+    }
+    list.innerHTML = allocs.map(a => `
+      <div class="tx-item" style="margin-bottom:6px;">
+        <div class="tx-item-left">
+          <span class="tx-item-type reward">${a.property_name}</span>
+          <span class="tx-item-desc">${a.location||'—'} · ${a.property_type||'—'}</span>
+          <span class="tx-item-desc">Yield: ${a.rental_yield}% + Appreciation: ${a.appreciation_rate}%</span>
+        </div>
+        <div>
+          <div class="tx-item-amount positive">$${parseFloat(a.amount_invested).toLocaleString()}</div>
+          <div class="tx-item-date">${a.ownership_pct>0?a.ownership_pct+'% share':''}</div>
+        </div>
+      </div>`).join('');
+  } catch (err) { console.error('User RE error:', err); }
+}
+
+function handleLogout() {
+  localStorage.removeItem('aurethium_admin_token');
+  window.location.href = 'admin-login.html';
+}
+
+loadAllData();
+</script>
+</body>
+</html>
