@@ -61,6 +61,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
 @keyframes spin{to{transform:rotate(360deg);}}
 @media(max-width:480px){nav{padding:14px 20px;}.auth-card{padding:32px 20px;}}
+
+.pw-wrap{position:relative;display:flex;align-items:center;}
+.pw-wrap .form-input{padding-right:42px;width:100%;}
+.pw-toggle{position:absolute;right:13px;background:none;border:none;color:var(--text-3);cursor:pointer;padding:0;display:flex;align-items:center;transition:color 0.2s;flex-shrink:0;}
+.pw-toggle:hover{color:var(--blue-bright);}
 </style>
 </head>
 <body>
@@ -75,7 +80,12 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
     <div class="auth-subtitle">// Sign in to your portfolio</div>
     <div class="auth-alert" id="alertBox"></div>
     <div class="form-group"><label class="form-label">Email Address</label><input type="email" class="form-input" id="loginEmail" placeholder="you@example.com"></div>
-    <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="loginPassword" placeholder="Your password" onkeydown="if(event.key==='Enter')handleLogin()"><div class="form-forgot"><a href="#">Forgot password?</a></div></div>
+    <div class="form-group"><label class="form-label">Password</label><div class="pw-wrap">
+          <input type="password" class="form-input" id="loginPassword" placeholder="Your password" onkeydown="if(event.key==='Enter')handleLogin()">
+          <button type="button" class="pw-toggle" onclick="togglePw('loginPassword',this)" tabindex="-1">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          </button>
+        </div><div class="form-forgot"><a href="#">Forgot password?</a></div></div>
     <button class="btn-submit" id="loginBtn" onclick="handleLogin()">Sign In</button>
     <div class="auth-divider"><span>or</span></div>
     <button class="btn-wallet" id="walletBtn" onclick="connectWallet()">
@@ -87,6 +97,15 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <script>
+
+function togglePw(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  const eyeOn = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>';
+  const eyeOff = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>';
+  btn.innerHTML = isHidden ? eyeOff : eyeOn;
+}
 const API = 'https://aurethium-backend.onrender.com';
 if (localStorage.getItem('aurethium_token')) window.location.href = 'dashboard.html';
 
@@ -105,6 +124,10 @@ async function handleLogin() {
       localStorage.setItem('aurethium_token', data.token); localStorage.setItem('aurethium_user', JSON.stringify(data.user));
       showAlert('Signed in! Loading dashboard...', 'success');
       setTimeout(() => window.location.href = 'dashboard.html', 1000);
+    } else if (data.requiresVerification && data.email) {
+      localStorage.setItem('thanod_verify_email', data.email);
+      showAlert('Please verify your email first. Redirecting...', 'success');
+      setTimeout(() => window.location.href = `verify.html?email=${encodeURIComponent(data.email)}`, 1500);
     } else { showAlert(data.error || 'Invalid email or password.'); btn.disabled = false; btn.textContent = 'Sign In'; }
   } catch { showAlert('Connection error. Please try again.'); btn.disabled = false; btn.textContent = 'Sign In'; }
 }
