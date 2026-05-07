@@ -238,6 +238,86 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   .content{padding:20px;}
   .topbar{padding:16px 20px;}
 }
+
+/* REAL ESTATE DASHBOARD */
+.re-dash-header{margin-bottom:24px;}
+.re-dash-title{font-family:var(--font-display);font-size:1.6rem;font-weight:600;letter-spacing:-0.01em;margin-bottom:4px;}
+.re-dash-sub{font-size:0.85rem;color:var(--text-2);}
+.re-gate-notice{display:flex;align-items:center;gap:12px;background:var(--blue-dim);border:1px solid var(--blue-border);padding:14px 18px;border-radius:6px;margin-bottom:24px;}
+.re-gate-notice svg{color:var(--blue-bright);flex-shrink:0;}
+.re-gate-notice-text{font-size:0.84rem;color:var(--text-2);line-height:1.6;}
+.re-gate-notice-text strong{color:var(--blue-bright);}
+.re-property-card{background:var(--bg-2);border:1px solid var(--blue-border);border-radius:8px;overflow:hidden;transition:all 0.3s;}
+.re-property-card.invested{border-color:rgba(37,99,235,0.5);box-shadow:0 8px 32px rgba(37,99,235,0.1);}
+.re-property-visual{height:140px;position:relative;display:flex;align-items:center;justify-content:center;}
+.re-property-flag{font-size:3rem;display:block;margin-bottom:6px;text-align:center;}
+.re-property-country-label{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5);text-align:center;}
+.re-property-id{position:absolute;top:10px;left:12px;font-family:var(--font-mono);font-size:0.58rem;color:rgba(255,255,255,0.4);}
+.re-property-status{position:absolute;top:10px;right:12px;font-family:var(--font-mono);font-size:0.58rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;border-radius:20px;}
+.re-property-status.invested{background:rgba(37,99,235,0.3);color:var(--blue-bright);}
+.re-property-status.available{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);}
+.re-property-body{padding:16px;}
+.re-property-type{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:4px;}
+.re-property-name{font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:3px;color:var(--text);}
+.re-property-location{font-size:0.75rem;color:var(--text-3);margin-bottom:12px;display:flex;align-items:center;gap:4px;}
+.re-metrics-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid var(--blue-border);border-radius:4px;overflow:hidden;margin-bottom:12px;}
+.re-metric{padding:8px 6px;text-align:center;border-right:1px solid var(--blue-border);}
+.re-metric:last-child{border:none;}
+.re-metric-val{font-family:var(--font-display);font-size:0.95rem;font-weight:700;line-height:1;margin-bottom:2px;}
+.re-metric-val.yield{color:#22D3EE;}
+.re-metric-val.appr{color:#818CF8;}
+.re-metric-val.total{color:var(--blue-bright);}
+.re-metric-label{font-family:var(--font-mono);font-size:0.5rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-3);}
+.re-investment-box{background:var(--blue-dim);border:1px solid var(--blue-border);border-radius:4px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;}
+.re-investment-label{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);}
+.re-investment-val{font-family:var(--font-display);font-size:1rem;font-weight:600;color:var(--blue-light);}
+.re-ownership{font-family:var(--font-mono);font-size:0.62rem;color:var(--text-3);margin-top:4px;text-align:right;}
+.re-locked-box{background:var(--bg-3);border:1px solid var(--blue-border);border-radius:4px;padding:10px 12px;text-align:center;}
+.re-locked-text{font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.08em;color:var(--text-3);}
+
+/* ── TIER CARDS ── */
+.tier-card{border-radius:12px;overflow:hidden;position:relative;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+.tier-card:hover{transform:translateY(-6px);}
+.tier-visual{height:160px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.tier-visual-glow{position:absolute;inset:0;opacity:0.5;}
+.tier-symbol{position:relative;z-index:2;text-align:center;}
+.tier-crypto-icon{font-size:3rem;display:block;margin-bottom:6px;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.6));}
+.tier-symbol-label{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.5);}
+.tier-card-id{position:absolute;top:10px;left:12px;font-family:var(--font-mono);font-size:0.58rem;color:rgba(255,255,255,0.35);z-index:3;}
+.tier-active-badge{position:absolute;top:10px;right:12px;font-family:var(--font-mono);font-size:0.58rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px;z-index:3;}
+.tier-body{padding:20px;}
+.tier-name{font-family:var(--font-mono);font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;}
+.tier-apr{font-family:var(--font-display);font-size:2.4rem;font-weight:700;letter-spacing:-0.02em;line-height:1;margin-bottom:2px;}
+.tier-apr-label{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:16px;}
+.tier-stats{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid;border-radius:6px;overflow:hidden;margin-bottom:14px;}
+.tier-stat{padding:10px 10px;text-align:center;border-right:1px solid;}
+.tier-stat:last-child{border:none;}
+.tier-stat-val{font-family:var(--font-display);font-size:0.95rem;font-weight:600;margin-bottom:2px;}
+.tier-stat-label{font-family:var(--font-mono);font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);}
+.tier-strategies{display:flex;flex-direction:column;gap:5px;}
+.tier-strategy{display:flex;align-items:center;gap:7px;font-size:0.78rem;color:var(--text-2);}
+.tier-strategy-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+
+/* ACTIVE TIER BANNER */
+.active-tier-banner{border-radius:12px;overflow:hidden;position:relative;margin-bottom:24px;}
+.atb-header{padding:24px 28px 20px;position:relative;}
+.atb-label{font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:6px;opacity:0.7;}
+.atb-name{font-family:var(--font-display);font-size:2rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px;}
+.atb-desc{font-size:0.84rem;opacity:0.7;line-height:1.6;max-width:460px;}
+.atb-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid;}
+.atb-metric{padding:16px 20px;border-right:1px solid;}
+.atb-metric:last-child{border:none;}
+.atb-metric-val{font-family:var(--font-display);font-size:1.6rem;font-weight:700;letter-spacing:-0.02em;line-height:1;margin-bottom:3px;}
+.atb-metric-label{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;}
+.atb-strategies{padding:16px 28px;border-top:1px solid;display:flex;gap:8px;flex-wrap:wrap;}
+.atb-strategy-tag{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.07em;padding:4px 12px;border-radius:20px;border:1px solid;}
+
+@media(max-width:900px){
+  #tiersGrid{grid-template-columns:1fr!important;}
+  .atb-metrics{grid-template-columns:1fr 1fr;}
+  .atb-metric:nth-child(2){border-right:none;}
+  .atb-metric:nth-child(3){border-top:1px solid;grid-column:1/-1;border-right:none;}
+}
 </style>
 </head>
 <body>
@@ -496,11 +576,15 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
     <!-- ── REAL ESTATE SECTION ── -->
     <div id="section-real-estate" style="display:none;">
-      <div style="margin-bottom:20px;">
-        <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:400;margin-bottom:6px;">Real Estate Portfolio</div>
-        <div style="font-size:0.85rem;color:var(--text-2);">Your allocations across Aurethium real estate investment properties.</div>
+      <div class="re-dash-header">
+        <div class="re-dash-title">Real Estate Portfolio</div>
+        <div class="re-dash-sub">Your crypto-backed real world asset allocations.</div>
       </div>
-      <div id="realEstateGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="re-gate-notice">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div class="re-gate-notice-text">Real estate investment is available to accounts with a minimum portfolio value of <strong>10 ETH</strong>. Properties assigned by the Thanod team after deposit confirmation.</div>
+      </div>
+      <div id="realEstateGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
         <div style="text-align:center;padding:48px;color:var(--text-3);font-size:0.88rem;grid-column:1/-1;">Loading real estate data...</div>
       </div>
     </div>
@@ -760,72 +844,135 @@ async function loadTiers() {
 }
 
 function renderTiers(tiers, userTier) {
-  // User tier banner
   const banner = document.getElementById('userTierBanner');
+
+  // Tier visual config - crypto themed
+  const tierConfig = {
+    starter: {
+      icon: '◈',
+      symbol: 'ETH',
+      bg: 'linear-gradient(135deg,#071a0f,#0a2818,#051510)',
+      glow: 'rgba(34,197,94,0.25)',
+      color: '#22C55E',
+      colorDim: 'rgba(34,197,94,0.1)',
+      colorBorder: 'rgba(34,197,94,0.25)',
+      label: 'Conservative',
+    },
+    growth: {
+      icon: '◆',
+      symbol: 'ETH+',
+      bg: 'linear-gradient(135deg,#07101a,#0a1828,#050e18)',
+      glow: 'rgba(37,99,235,0.3)',
+      color: '#60A5FA',
+      colorDim: 'rgba(37,99,235,0.1)',
+      colorBorder: 'rgba(37,99,235,0.25)',
+      label: 'Balanced',
+    },
+    premium: {
+      icon: '❋',
+      symbol: 'MAX',
+      bg: 'linear-gradient(135deg,#12071a,#1a0a28,#0e0518)',
+      glow: 'rgba(168,85,247,0.3)',
+      color: '#A855F7',
+      colorDim: 'rgba(168,85,247,0.1)',
+      colorBorder: 'rgba(168,85,247,0.25)',
+      label: 'Aggressive',
+    },
+  };
+
+  function getConfig(slug) {
+    return tierConfig[slug] || tierConfig.growth;
+  }
+
+  // Active tier banner
   if (userTier) {
-    const tierColors = { green: 'var(--green)', blue: 'var(--blue)', gold: 'var(--blue-light)' };
-    const tc = tierColors[userTier.color] || 'var(--blue-light)';
+    const cfg = getConfig(userTier.slug);
     banner.innerHTML = `
-      <div style="background:var(--bg-2);border:1px solid var(--blue-border);padding:24px 28px;position:relative;overflow:hidden;">
-        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${tc};"></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
-          <div>
-            <div style="font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-3);margin-bottom:4px;">Your Active Tier</div>
-            <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:400;color:${tc};">${userTier.tier_name}</div>
-            <div style="font-size:0.82rem;color:var(--text-2);margin-top:4px;">${userTier.description}</div>
+      <div class="active-tier-banner" style="background:linear-gradient(135deg,${cfg.bg.includes('135deg,') ? cfg.bg.split('135deg,')[1].split(')')[0].split(',').map(c => c.trim()).join(',') : '#0a0a14'});border:1px solid ${cfg.colorBorder};">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${cfg.color},transparent);"></div>
+        <div class="atb-header" style="border-color:${cfg.colorBorder};">
+          <div class="atb-label" style="color:${cfg.color};">// Your Active Investment Tier</div>
+          <div class="atb-name" style="color:${cfg.color};">${userTier.tier_name}</div>
+          <div class="atb-desc" style="color:rgba(255,255,255,0.6);">${userTier.description}</div>
+        </div>
+        <div class="atb-metrics" style="border-color:${cfg.colorBorder};">
+          <div class="atb-metric" style="border-color:${cfg.colorBorder};">
+            <div class="atb-metric-val" style="color:${cfg.color};">${parseFloat(userTier.estimated_apr).toFixed(1)}%</div>
+            <div class="atb-metric-label">Estimated APR</div>
           </div>
-          <div style="display:flex;gap:28px;flex-wrap:wrap;">
-            <div style="text-align:center;">
-              <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:300;color:${tc};">${parseFloat(userTier.estimated_apr).toFixed(1)}%</div>
-              <div style="font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);">Est. APR</div>
-            </div>
-            <div style="text-align:center;">
-              <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:300;color:var(--text);">${parseFloat(userTier.amount_invested || 0).toFixed(4)}</div>
-              <div style="font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);">ETH Invested</div>
-            </div>
-            <div style="text-align:center;">
-              <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:300;color:var(--text);">${userTier.risk_level}</div>
-              <div style="font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);">Risk Level</div>
-            </div>
+          <div class="atb-metric" style="border-color:${cfg.colorBorder};">
+            <div class="atb-metric-val" style="color:rgba(255,255,255,0.9);">${parseFloat(userTier.amount_invested || 0).toFixed(4)} ETH</div>
+            <div class="atb-metric-label">Amount Invested</div>
+          </div>
+          <div class="atb-metric" style="border-color:${cfg.colorBorder};">
+            <div class="atb-metric-val" style="color:rgba(255,255,255,0.9);">${userTier.risk_level}</div>
+            <div class="atb-metric-label">Risk Level</div>
           </div>
         </div>
-        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--blue-border);">
-          <div style="font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;">Strategies Included</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            ${(userTier.strategies||'').split(',').map(s => `<span style="background:var(--blue-dim);border:1px solid var(--blue-border);padding:4px 12px;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.07em;color:var(--blue-light);">${s.trim()}</span>`).join('')}
-          </div>
+        <div class="atb-strategies" style="border-color:${cfg.colorBorder};">
+          ${(userTier.strategies||'').split(',').map(s => `<span class="atb-strategy-tag" style="background:${cfg.colorDim};border-color:${cfg.colorBorder};color:${cfg.color};">${s.trim()}</span>`).join('')}
         </div>
       </div>`;
   } else {
-    banner.innerHTML = `<div style="background:var(--bg-2);border:1px solid var(--blue-border);padding:20px 24px;text-align:center;color:var(--text-3);font-size:0.88rem;">You have not been assigned to a tier yet. Contact Aurethium to get started.</div>`;
+    banner.innerHTML = `
+      <div style="background:var(--bg-2);border:1px solid var(--blue-border);border-radius:12px;padding:28px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:10px;">⬡</div>
+        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:8px;">No Tier Assigned</div>
+        <div style="font-size:0.88rem;color:var(--text-3);">Contact the Thanod team to get assigned to an investment tier after your deposit is confirmed.</div>
+      </div>`;
   }
 
   // All tiers grid
-  const tierColors = { green: 'var(--green)', blue: 'var(--blue)', gold: 'var(--blue-light)' };
   const grid = document.getElementById('tiersGrid');
-  if (!tiers.length) { grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);grid-column:1/-1;">No tiers available.</div>'; return; }
-  grid.innerHTML = tiers.map(t => {
-    const tc = tierColors[t.color] || 'var(--blue-light)';
-    const isActive = userTier && userTier.tier_id === t.id;
-    return `<div style="background:var(--bg-2);border:${isActive ? `2px solid ${tc}` : '1px solid var(--blue-border)'};padding:28px 24px;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${tc};"></div>
-      ${isActive ? `<div style="position:absolute;top:12px;right:12px;background:${tc};color:var(--bg);font-family:var(--font-mono);font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;">Your Tier</div>` : ''}
-      <div style="font-family:var(--font-mono);font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:${tc};margin-bottom:6px;">${t.name}</div>
-      <div style="font-family:var(--font-display);font-size:2.2rem;font-weight:300;color:${tc};line-height:1;margin-bottom:4px;">${parseFloat(t.estimated_apr).toFixed(1)}%</div>
-      <div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.12em;color:var(--text-3);margin-bottom:18px;">Estimated APR</div>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--blue-border);">
-          <span style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-3);">Minimum</span>
-          <span style="font-size:0.85rem;color:var(--text);">$${parseFloat(t.minimum_usd).toLocaleString()}</span>
+  if (!tiers.length) {
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);grid-column:1/-1;">No tiers available.</div>';
+    return;
+  }
+
+  grid.innerHTML = tiers.map((t, idx) => {
+    const cfg = getConfig(t.slug);
+    const isActive = userTier && parseInt(userTier.tier_id) === parseInt(t.id);
+    const cardNum = String(idx + 1).padStart(3, '0');
+
+    return `<div class="tier-card" style="background:var(--bg-2);border:${isActive ? `2px solid ${cfg.color}` : `1px solid ${cfg.colorBorder}`};box-shadow:${isActive ? `0 0 30px ${cfg.colorDim}` : 'none'};">
+      <!-- VISUAL -->
+      <div class="tier-visual" style="background:${cfg.bg};">
+        <div class="tier-visual-glow" style="background:radial-gradient(circle at 50% 60%,${cfg.glow},transparent 65%);"></div>
+        <div class="tier-symbol">
+          <span class="tier-crypto-icon" style="color:${cfg.color};font-style:normal;">${cfg.icon}</span>
+          <div class="tier-symbol-label">${cfg.symbol} · ${cfg.label}</div>
         </div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--blue-border);">
-          <span style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-3);">Risk</span>
-          <span style="font-size:0.85rem;color:var(--text);">${t.risk_level}</span>
-        </div>
+        <div class="tier-card-id">#TIR-${cardNum}</div>
+        ${isActive ? `<div class="tier-active-badge" style="background:${cfg.color};color:#000;">● Active</div>` : `<div class="tier-active-badge" style="background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);">Available</div>`}
       </div>
-      <div style="font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;">Strategies</div>
-      <div style="display:flex;flex-direction:column;gap:5px;">
-        ${(t.strategies||'').split(',').map(s => `<div style="display:flex;align-items:center;gap:7px;font-size:0.78rem;color:var(--text-2);"><span style="color:${tc};font-size:0.7rem;">→</span>${s.trim()}</div>`).join('')}
+
+      <!-- BODY -->
+      <div class="tier-body">
+        <div class="tier-name" style="color:${cfg.color};">${t.name} Tier</div>
+        <div class="tier-apr" style="color:${cfg.color};">${parseFloat(t.estimated_apr).toFixed(1)}%</div>
+        <div class="tier-apr-label">Estimated Annual Return</div>
+
+        <!-- STATS -->
+        <div class="tier-stats" style="border-color:${cfg.colorBorder};">
+          <div class="tier-stat" style="border-color:${cfg.colorBorder};">
+            <div class="tier-stat-val" style="color:rgba(255,255,255,0.9);">$${parseFloat(t.minimum_usd).toLocaleString()}</div>
+            <div class="tier-stat-label">Minimum</div>
+          </div>
+          <div class="tier-stat">
+            <div class="tier-stat-val" style="color:rgba(255,255,255,0.9);">${t.risk_level}</div>
+            <div class="tier-stat-label">Risk</div>
+          </div>
+        </div>
+
+        <!-- STRATEGIES -->
+        <div style="font-family:var(--font-mono);font-size:0.56rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;">Strategies Included</div>
+        <div class="tier-strategies">
+          ${(t.strategies||'').split(',').map(s => `
+            <div class="tier-strategy">
+              <span class="tier-strategy-dot" style="background:${cfg.color};"></span>
+              <span>${s.trim()}</span>
+            </div>`).join('')}
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -845,62 +992,83 @@ async function loadRealEstate() {
 function renderRealEstate(properties) {
   const grid = document.getElementById('realEstateGrid');
   if (!properties.length) {
-    grid.innerHTML = '<div style="text-align:center;padding:48px;color:var(--text-3);font-size:0.88rem;grid-column:1/-1;">No real estate properties available yet. Contact Aurethium to discuss investment opportunities.</div>';
+    grid.innerHTML = '<div style="text-align:center;padding:48px;color:var(--text-3);font-size:0.88rem;grid-column:1/-1;">No real estate properties available yet. Reach out to the Thanod team to discuss investment opportunities.</div>';
     return;
   }
-  grid.innerHTML = properties.map(p => {
+
+  // Country flag and color map
+  const countryData = {
+    'UAE': { flag: '🇦🇪', glow: 'rgba(37,99,235,0.3)', bg: 'linear-gradient(135deg,#0a0a1f,#0d1535,#071428)' },
+    'United Kingdom': { flag: '🇬🇧', glow: 'rgba(129,140,248,0.3)', bg: 'linear-gradient(135deg,#0f0a1a,#1a0d2e,#0a0815)' },
+    'Singapore': { flag: '🇸🇬', glow: 'rgba(34,211,238,0.25)', bg: 'linear-gradient(135deg,#071a0f,#0d2a1a,#051510)' },
+    'Portugal': { flag: '🇵🇹', glow: 'rgba(251,146,60,0.2)', bg: 'linear-gradient(135deg,#1a0a07,#2e1508,#150a05)' },
+    'USA': { flag: '🇺🇸', glow: 'rgba(96,165,250,0.25)', bg: 'linear-gradient(135deg,#0a1020,#0f1a35,#080e1a)' },
+    'Turkey': { flag: '🇹🇷', glow: 'rgba(239,68,68,0.2)', bg: 'linear-gradient(135deg,#1a0707,#2d0a0a,#150505)' },
+  };
+
+  function getCountryData(location) {
+    for (const [key, val] of Object.entries(countryData)) {
+      if ((location || '').includes(key)) return val;
+    }
+    return { flag: '🏢', glow: 'rgba(37,99,235,0.2)', bg: 'linear-gradient(135deg,#0a0a14,#0d0f1f,#080814)' };
+  }
+
+  grid.innerHTML = properties.map((p, idx) => {
     const invested = parseFloat(p.amount_invested) || 0;
     const hasInvestment = invested > 0;
-    const totalReturn = parseFloat(p.rental_yield) + parseFloat(p.appreciation_rate);
-    return `<div style="background:var(--bg-2);border:${hasInvestment ? '1px solid var(--blue)' : '1px solid var(--blue-border)'};overflow:hidden;position:relative;">
-      ${hasInvestment ? '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--blue);"></div>' : ''}
-      <div style="padding:24px 22px;background:var(--bg-3);border-bottom:1px solid var(--blue-border);">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
-          <div>
-            <div style="font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-3);margin-bottom:4px;">${p.property_type || 'Real Estate'}</div>
-            <div style="font-family:var(--font-display);font-size:1.3rem;font-weight:400;color:var(--text);line-height:1.2;">${p.name}</div>
-            <div style="font-size:0.78rem;color:var(--text-3);margin-top:4px;">${p.location || '—'}</div>
-          </div>
-          ${hasInvestment ? '<span style="background:var(--blue-dim);border:1px solid var(--blue-border);padding:4px 10px;font-family:var(--font-mono);font-size:0.58rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue-light);white-space:nowrap;flex-shrink:0;">Invested</span>' : '<span style="background:var(--bg-2);border:1px solid var(--blue-border);padding:4px 10px;font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);white-space:nowrap;flex-shrink:0;">Available</span>'}
+    const totalReturn = (parseFloat(p.rental_yield) + parseFloat(p.appreciation_rate)).toFixed(1);
+    const country = getCountryData(p.location);
+    const cardNum = String(idx + 1).padStart(3, '0');
+
+    return `<div class="re-property-card ${hasInvestment ? 'invested' : ''}">
+      <div class="re-property-visual" style="background:${country.bg};">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,${country.glow},transparent 70%);"></div>
+        <div style="position:relative;z-index:2;text-align:center;">
+          <span class="re-property-flag">${country.flag}</span>
+          <div class="re-property-country-label">${p.location || '—'}</div>
+        </div>
+        <div class="re-property-id">#TNR-${cardNum}</div>
+        <div class="re-property-status ${hasInvestment ? 'invested' : 'available'}">
+          ${hasInvestment ? '● Invested' : '○ Available'}
         </div>
       </div>
-      <div style="padding:20px 22px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-bottom:18px;">
-          <div style="text-align:center;padding:12px 8px;border-right:1px solid var(--blue-border);">
-            <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:300;color:var(--green);">${parseFloat(p.rental_yield).toFixed(1)}%</div>
-            <div style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);margin-top:3px;">Rental Yield</div>
+      <div class="re-property-body">
+        <div class="re-property-type">${p.property_type || 'Real Estate'}</div>
+        <div class="re-property-name">${p.name}</div>
+        <div class="re-property-location">
+          <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+          ${p.location || '—'}
+        </div>
+        <div class="re-metrics-row">
+          <div class="re-metric">
+            <div class="re-metric-val yield">${parseFloat(p.rental_yield).toFixed(1)}%</div>
+            <div class="re-metric-label">Rental</div>
           </div>
-          <div style="text-align:center;padding:12px 8px;border-right:1px solid var(--blue-border);">
-            <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:300;color:var(--blue);">${parseFloat(p.appreciation_rate).toFixed(1)}%</div>
-            <div style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);margin-top:3px;">Appreciation</div>
+          <div class="re-metric">
+            <div class="re-metric-val appr">${parseFloat(p.appreciation_rate).toFixed(1)}%</div>
+            <div class="re-metric-label">Growth</div>
           </div>
-          <div style="text-align:center;padding:12px 8px;">
-            <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:300;color:var(--blue-light);">${totalReturn.toFixed(1)}%</div>
-            <div style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);margin-top:3px;">Total Return</div>
+          <div class="re-metric">
+            <div class="re-metric-val total">${totalReturn}%</div>
+            <div class="re-metric-label">Total</div>
           </div>
         </div>
         ${hasInvestment ? `
-        <div style="background:var(--blue-dim);border:1px solid var(--blue-border);padding:14px 16px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <span style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);">Your Investment</span>
-            <span style="font-family:var(--font-display);font-size:1.1rem;color:var(--blue-light);">$${parseFloat(invested).toLocaleString()}</span>
-          </div>
-          ${parseFloat(p.ownership_pct) > 0 ? `<div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);">Ownership Share</span>
-            <span style="font-size:0.85rem;color:var(--text);">${parseFloat(p.ownership_pct).toFixed(3)}%</span>
-          </div>` : ''}
-        </div>` : `
-        <div style="padding:12px 0;border-top:1px solid var(--blue-border);">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);">Min. Investment</span>
-            <span style="font-size:0.85rem;color:var(--text-2);">$${parseFloat(p.minimum_investment || 0).toLocaleString()}</span>
-          </div>
-        </div>`}
-        ${p.description ? `<div style="margin-top:14px;font-size:0.8rem;color:var(--text-3);line-height:1.65;">${p.description}</div>` : ''}
+          <div class="re-investment-box">
+            <div>
+              <div class="re-investment-label">Your Investment</div>
+              <div class="re-investment-val">$${parseFloat(invested).toLocaleString()}</div>
+            </div>
+            ${parseFloat(p.ownership_pct) > 0 ? `<div class="re-ownership">${parseFloat(p.ownership_pct).toFixed(3)}%<br>ownership</div>` : ''}
+          </div>` : `
+          <div class="re-locked-box">
+            <div class="re-locked-text">🔒 Requires 10 ETH minimum portfolio</div>
+          </div>`}
       </div>
     </div>`;
   }).join('');
 }
+
 
 // ── SECTION NAVIGATION ──
 function showSection(name) {
