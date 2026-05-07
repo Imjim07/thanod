@@ -318,6 +318,58 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   .atb-metric:nth-child(2){border-right:none;}
   .atb-metric:nth-child(3){border-top:1px solid;grid-column:1/-1;border-right:none;}
 }
+
+/* ── PROFILE SECTION ── */
+.profile-header-card{background:var(--bg-2);border:1px solid var(--blue-border);border-radius:12px;padding:28px;display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:20px;position:relative;overflow:hidden;}
+.profile-header-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue-bright),var(--blue));}
+.profile-avatar-area{display:flex;align-items:center;gap:20px;}
+.profile-avatar-wrap{position:relative;width:80px;height:80px;flex-shrink:0;}
+.profile-avatar-ring{position:absolute;inset:-3px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-bright));z-index:0;}
+.profile-avatar-img{position:relative;z-index:1;width:80px;height:80px;border-radius:50%;background:var(--bg-3);border:3px solid var(--bg-2);display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--blue-bright);}
+.profile-avatar-img img{width:100%;height:100%;object-fit:cover;}
+.profile-avatar-upload{position:absolute;bottom:0;right:0;z-index:2;width:26px;height:26px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;border:2px solid var(--bg-2);transition:background 0.2s;}
+.profile-avatar-upload:hover{background:var(--blue-light);}
+.profile-name{font-family:var(--font-display);font-size:1.4rem;font-weight:700;letter-spacing:-0.01em;color:var(--text);margin-bottom:3px;}
+.profile-email{font-size:0.84rem;color:var(--text-3);margin-bottom:8px;}
+.profile-member-badge{display:inline-flex;align-items:center;gap:5px;background:var(--blue-dim);border:1px solid var(--blue-border);padding:3px 10px;border-radius:20px;font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue-bright);}
+.profile-joined{text-align:right;}
+.profile-joined-label{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:4px;}
+.profile-joined-val{font-family:var(--font-display);font-size:1rem;font-weight:600;color:var(--text);}
+
+.profile-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.profile-card{background:var(--bg-2);border:1px solid var(--blue-border);border-radius:12px;padding:22px;}
+.profile-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--blue-border);}
+.profile-card-title{font-family:var(--font-display);font-size:1rem;font-weight:600;}
+.profile-card-tag{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;color:var(--blue-bright);}
+.profile-field-list{display:flex;flex-direction:column;gap:0;}
+.profile-field{padding:12px 0;border-bottom:1px solid rgba(37,99,235,0.08);}
+.profile-field:last-child{border:none;}
+.profile-field-label{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:4px;}
+.profile-field-val{font-size:0.88rem;color:var(--text);}
+.profile-mono{font-family:var(--font-mono);font-size:0.75rem;color:var(--text-2);}
+.profile-verified-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);padding:3px 10px;border-radius:20px;font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.08em;color:#22C55E;}
+.profile-wallet-val{font-family:var(--font-mono);font-size:0.72rem;color:var(--blue-bright);word-break:break-all;line-height:1.5;}
+.profile-no-wallet{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-3);font-style:italic;}
+.profile-wallet-notice{display:flex;align-items:flex-start;gap:8px;margin-top:14px;padding:10px 12px;background:var(--blue-dim);border:1px solid var(--blue-border);border-radius:6px;font-size:0.76rem;color:var(--text-3);line-height:1.55;}
+.profile-wallet-notice svg{flex-shrink:0;color:var(--blue-bright);margin-top:1px;}
+.profile-action-btn{width:100%;background:transparent;border:1px solid var(--blue-border);color:var(--blue-bright);font-family:var(--font-mono);font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:10px;cursor:pointer;transition:all 0.2s;border-radius:6px;}
+.profile-action-btn:hover{background:var(--blue-dim);border-color:var(--blue);}
+.profile-input{width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.88rem;padding:10px 13px;outline:none;transition:border-color 0.2s;border-radius:6px;}
+.profile-input:focus{border-color:var(--blue);}
+.profile-input::placeholder{color:var(--text-3);}
+.profile-alert{padding:10px 14px;border-radius:6px;font-size:0.8rem;margin-bottom:12px;}
+.profile-alert.success{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);color:#22C55E;}
+.profile-alert.error{background:var(--red-dim);border:1px solid rgba(252,129,129,0.3);color:var(--red);}
+
+@media(max-width:900px){
+  .profile-grid{grid-template-columns:1fr;}
+  .profile-header-card{flex-direction:column;align-items:flex-start;}
+  .profile-joined{text-align:left;}
+}
+@media(max-width:480px){
+  .profile-avatar-area{flex-direction:column;align-items:center;text-align:center;}
+  .profile-header-card{align-items:center;text-align:center;}
+}
 </style>
 </head>
 <body>
@@ -354,6 +406,10 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       Transactions
     </a>
     <div class="nav-section-title">Account</div>
+    <a class="nav-item" onclick="showSection('profile')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      My Profile
+    </a>
     <a class="nav-item" href="index.html">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
       Back to Site
@@ -587,6 +643,138 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <div id="realEstateGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
         <div style="text-align:center;padding:48px;color:var(--text-3);font-size:0.88rem;grid-column:1/-1;">Loading real estate data...</div>
       </div>
+    </div>
+
+    <!-- ── PROFILE SECTION ── -->
+    <div id="section-profile" style="display:none;">
+
+      <!-- PROFILE HEADER CARD -->
+      <div class="profile-header-card">
+        <div class="profile-avatar-area">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar-ring"></div>
+            <div class="profile-avatar-img" id="profileAvatarDisplay">
+              <span id="profileAvatarInitial">?</span>
+            </div>
+            <label class="profile-avatar-upload" for="avatarInput" title="Upload photo">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
+            </label>
+            <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="handleAvatarUpload(this)">
+          </div>
+          <div class="profile-identity">
+            <div class="profile-name" id="profileName">Loading...</div>
+            <div class="profile-email" id="profileEmail">—</div>
+            <div class="profile-member-badge">Portfolio Member</div>
+          </div>
+        </div>
+        <div class="profile-joined">
+          <div class="profile-joined-label">Member Since</div>
+          <div class="profile-joined-val" id="profileJoined">—</div>
+        </div>
+      </div>
+
+      <!-- PROFILE GRID -->
+      <div class="profile-grid">
+
+        <!-- PERSONAL DETAILS -->
+        <div class="profile-card">
+          <div class="profile-card-header">
+            <div class="profile-card-title">Personal Details</div>
+            <div class="profile-card-tag">// Read Only</div>
+          </div>
+          <div class="profile-field-list">
+            <div class="profile-field">
+              <div class="profile-field-label">Full Name</div>
+              <div class="profile-field-val" id="pdName">—</div>
+            </div>
+            <div class="profile-field">
+              <div class="profile-field-label">Email Address</div>
+              <div class="profile-field-val" id="pdEmail">—</div>
+            </div>
+            <div class="profile-field">
+              <div class="profile-field-label">Account ID</div>
+              <div class="profile-field-val profile-mono" id="pdId">—</div>
+            </div>
+            <div class="profile-field">
+              <div class="profile-field-label">Account Status</div>
+              <div class="profile-field-val"><span class="profile-verified-badge">✓ Verified</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WALLET ADDRESSES -->
+        <div class="profile-card">
+          <div class="profile-card-header">
+            <div class="profile-card-title">Wallet Addresses</div>
+            <div class="profile-card-tag">// Web3</div>
+          </div>
+          <div class="profile-field-list">
+            <div class="profile-field">
+              <div class="profile-field-label">Connected Wallet</div>
+              <div class="profile-wallet-val" id="pdWallet">
+                <span class="profile-no-wallet">No wallet connected</span>
+              </div>
+            </div>
+            <div class="profile-field">
+              <div class="profile-field-label">Deposit Wallet</div>
+              <div class="profile-wallet-val" id="pdDepositWallet">
+                <span class="profile-no-wallet">Assigned by Thanod team after tier confirmation</span>
+              </div>
+            </div>
+          </div>
+          <div class="profile-wallet-notice">
+            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Send ETH deposits only to your assigned wallet address. Contact Thanod support to update wallet details.
+          </div>
+        </div>
+
+        <!-- SECURITY -->
+        <div class="profile-card">
+          <div class="profile-card-header">
+            <div class="profile-card-title">Security</div>
+            <div class="profile-card-tag">// Account</div>
+          </div>
+          <div class="profile-field-list">
+            <div class="profile-field">
+              <div class="profile-field-label">Password</div>
+              <div class="profile-field-val">••••••••••••</div>
+            </div>
+            <div class="profile-field">
+              <div class="profile-field-label">Email Verification</div>
+              <div class="profile-field-val"><span class="profile-verified-badge">✓ Verified</span></div>
+            </div>
+            <div class="profile-field">
+              <div class="profile-field-label">Two-Factor Auth</div>
+              <div class="profile-field-val"><span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-3);">Coming Soon</span></div>
+            </div>
+          </div>
+          <div style="margin-top:16px;">
+            <button class="profile-action-btn" onclick="showChangePassword()">Change Password</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CHANGE PASSWORD PANEL -->
+      <div class="profile-card" id="changePasswordPanel" style="display:none;margin-top:20px;">
+        <div class="profile-card-header">
+          <div class="profile-card-title">Change Password</div>
+          <button onclick="document.getElementById('changePasswordPanel').style.display='none'" style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:1.1rem;">✕</button>
+        </div>
+        <div class="profile-alert" id="pwAlert" style="display:none;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div>
+            <label class="profile-field-label" style="display:block;margin-bottom:6px;">New Password</label>
+            <input type="password" class="profile-input" id="newPassword" placeholder="Min. 8 characters">
+          </div>
+          <div>
+            <label class="profile-field-label" style="display:block;margin-bottom:6px;">Confirm Password</label>
+            <input type="password" class="profile-input" id="confirmNewPassword" placeholder="Repeat new password">
+          </div>
+        </div>
+        <button class="profile-action-btn" style="margin-top:14px;" onclick="changePassword()">Update Password</button>
+      </div>
+
     </div>
 
   </div>
@@ -1072,7 +1260,7 @@ function renderRealEstate(properties) {
 
 // ── SECTION NAVIGATION ──
 function showSection(name) {
-  ['overview', 'validator', 'transactions', 'tiers', 'real-estate'].forEach(s => {
+  ['overview', 'validator', 'transactions', 'tiers', 'real-estate', 'profile'].forEach(s => {
     document.getElementById(`section-${s}`).style.display = s === name ? 'block' : 'none';
   });
   document.querySelectorAll('.nav-item').forEach(item => {
@@ -1083,12 +1271,14 @@ function showSection(name) {
     validator: 'Validator Tracking',
     transactions: 'Transaction History',
     tiers: 'Investment Tiers',
-    'real-estate': 'Real Estate Portfolio'
+    'real-estate': 'Real Estate Portfolio',
+    profile: 'My Profile'
   };
   document.getElementById('sectionTitle').textContent = titles[name] || 'Dashboard';
   currentSection = name;
   if (name === 'tiers') loadTiers();
   if (name === 'real-estate') loadRealEstate();
+  if (name === 'profile') loadProfile();
   if (window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
 }
 
@@ -1219,6 +1409,157 @@ function handleLogout() {
   localStorage.removeItem('aurethium_token');
   localStorage.removeItem('aurethium_user');
   window.location.href = 'login.html';
+}
+
+// ── PROFILE ──
+async function loadProfile() {
+  try {
+    const res = await fetch(`${API}/api/auth/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const user = data.user;
+    if (!user) return;
+
+    // Header card
+    document.getElementById('profileName').textContent = user.name || '—';
+    document.getElementById('profileEmail').textContent = user.email || '—';
+    document.getElementById('pdName').textContent = user.name || '—';
+    document.getElementById('pdEmail').textContent = user.email || '—';
+    document.getElementById('pdId').textContent = `#THN-${String(user.id).padStart(6, '0')}`;
+
+    // Joined date
+    if (user.created_at) {
+      const joined = new Date(user.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+      document.getElementById('profileJoined').textContent = joined;
+    }
+
+    // Avatar initial
+    const initial = (user.name || user.email || 'U').charAt(0).toUpperCase();
+    document.getElementById('profileAvatarInitial').textContent = initial;
+    document.getElementById('userAvatar').textContent = initial;
+    document.getElementById('userName').textContent = user.name || 'User';
+
+    // Check for saved avatar in localStorage
+    const savedAvatar = localStorage.getItem('thanod_avatar');
+    if (savedAvatar) {
+      document.getElementById('profileAvatarDisplay').innerHTML = `<img src="${savedAvatar}" alt="Profile">`;
+      document.getElementById('userAvatar').style.background = 'none';
+      document.getElementById('userAvatar').innerHTML = `<img src="${savedAvatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    }
+
+    // Wallet
+    const walletEl = document.getElementById('pdWallet');
+    if (user.wallet_address) {
+      walletEl.innerHTML = `
+        <span style="display:flex;align-items:center;gap:8px;">
+          ${user.wallet_address}
+          <button onclick="copyToClipboard('${user.wallet_address}')" style="background:none;border:none;color:var(--blue-bright);cursor:pointer;flex-shrink:0;" title="Copy">
+            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke-width="2"/><path stroke-width="2" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+        </span>`;
+    } else {
+      walletEl.innerHTML = '<span class="profile-no-wallet">No wallet connected — use MetaMask to sign in with a wallet</span>';
+    }
+
+  } catch (err) {
+    console.error('Profile load error:', err);
+  }
+}
+
+function handleAvatarUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    alert('Image must be under 2MB');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    // Save to localStorage
+    localStorage.setItem('thanod_avatar', dataUrl);
+    // Update display
+    document.getElementById('profileAvatarDisplay').innerHTML = `<img src="${dataUrl}" alt="Profile">`;
+    document.getElementById('userAvatar').style.backgroundImage = `url(${dataUrl})`;
+    document.getElementById('userAvatar').innerHTML = `<img src="${dataUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function showChangePassword() {
+  const panel = document.getElementById('changePasswordPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+async function changePassword() {
+  const newPassword = document.getElementById('newPassword').value;
+  const confirm = document.getElementById('confirmNewPassword').value;
+  const alertEl = document.getElementById('pwAlert');
+
+  if (newPassword.length < 8) {
+    alertEl.textContent = 'Password must be at least 8 characters.';
+    alertEl.className = 'profile-alert error';
+    alertEl.style.display = 'block';
+    return;
+  }
+  if (newPassword !== confirm) {
+    alertEl.textContent = 'Passwords do not match.';
+    alertEl.className = 'profile-alert error';
+    alertEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/api/auth/change-password`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ password: newPassword })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alertEl.textContent = 'Password updated successfully.';
+      alertEl.className = 'profile-alert success';
+      alertEl.style.display = 'block';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmNewPassword').value = '';
+    } else {
+      alertEl.textContent = data.error || 'Update failed.';
+      alertEl.className = 'profile-alert error';
+      alertEl.style.display = 'block';
+    }
+  } catch {
+    alertEl.textContent = 'Connection error. Please try again.';
+    alertEl.className = 'profile-alert error';
+    alertEl.style.display = 'block';
+  }
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    notify('Wallet address copied.');
+  }).catch(() => {
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    notify('Copied.');
+  });
+}
+
+function notify(msg) {
+  let n = document.getElementById('dashNotification');
+  if (!n) {
+    n = document.createElement('div');
+    n.id = 'dashNotification';
+    n.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-2);border:1px solid var(--blue);padding:10px 24px;font-family:var(--font-mono);font-size:0.72rem;color:var(--blue-bright);z-index:9999;border-radius:6px;transition:opacity 0.3s;';
+    document.body.appendChild(n);
+  }
+  n.textContent = msg;
+  n.style.opacity = '1';
+  setTimeout(() => { n.style.opacity = '0'; }, 2500);
 }
 
 // ── MOBILE SIDEBAR ──
