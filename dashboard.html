@@ -371,6 +371,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   .profile-header-card{align-items:center;text-align:center;}
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 </head>
 <body>
 
@@ -713,6 +714,17 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
               <div class="profile-field-label">Connected Wallet</div>
               <div class="profile-wallet-val" id="pdWallet">
                 <span class="profile-no-wallet">No wallet connected</span>
+              </div>
+              <div style="margin-top:10px;" id="walletConnectArea">
+                <button class="profile-action-btn" id="connectWalletBtn" onclick="connectMetaMask()" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3L12 7L8 3"/><circle cx="17" cy="14" r="1" fill="currentColor"/></svg>
+                  Connect MetaMask
+                </button>
+              </div>
+              <div id="walletBalanceArea" style="display:none;margin-top:10px;background:var(--blue-dim);border:1px solid var(--blue-border);border-radius:6px;padding:12px 14px;">
+                <div style="font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:4px;">On-chain Balance</div>
+                <div style="font-family:var(--font-display);font-size:1.3rem;font-weight:700;color:var(--blue-bright);" id="walletBalance">—</div>
+                <div style="font-family:var(--font-mono);font-size:0.58rem;color:var(--text-3);margin-top:2px;" id="walletNetwork">—</div>
               </div>
             </div>
             <div class="profile-field">
@@ -1278,7 +1290,7 @@ function showSection(name) {
   currentSection = name;
   if (name === 'tiers') loadTiers();
   if (name === 'real-estate') loadRealEstate();
-  if (name === 'profile') loadProfile();
+  if (name === 'profile') { loadProfile(); checkExistingWalletConnection(); }
   if (window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
 }
 
@@ -1405,6 +1417,114 @@ async function saveTx() {
 }
 
 // ── LOGOUT ──
+// ── METAMASK CONNECTION ──
+let connectedWalletAddress = null;
+
+async function connectMetaMask() {
+  if (!window.ethereum) {
+    notify('MetaMask not detected. Please install MetaMask.');
+    return;
+  }
+
+  const btn = document.getElementById('connectWalletBtn');
+  btn.textContent = 'Connecting...';
+  btn.disabled = true;
+
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const address = accounts[0];
+    connectedWalletAddress = address;
+
+    // Update wallet display
+    const walletEl = document.getElementById('pdWallet');
+    walletEl.innerHTML = `
+      <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--blue-bright);">${address.slice(0,8)}...${address.slice(-6)}</span>
+        <button onclick="copyToClipboard('${address}')" style="background:none;border:none;color:var(--blue-bright);cursor:pointer;" title="Copy">
+          <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke-width="2"/><path stroke-width="2" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+        <button onclick="disconnectWallet()" style="background:none;border:none;color:var(--text-3);cursor:pointer;font-family:var(--font-mono);font-size:0.6rem;" title="Disconnect">✕</button>
+      </span>`;
+
+    // Hide connect button
+    document.getElementById('connectWalletBtn').style.display = 'none';
+
+    // Fetch balance
+    await fetchWalletBalance(address);
+
+    // Listen for account changes
+    window.ethereum.on('accountsChanged', (accounts) => {
+      if (accounts.length === 0) {
+        disconnectWallet();
+      } else {
+        connectedWalletAddress = accounts[0];
+        fetchWalletBalance(accounts[0]);
+      }
+    });
+
+    notify('Wallet connected successfully.');
+
+  } catch (err) {
+    if (err.code === 4001) {
+      notify('Connection cancelled.');
+    } else {
+      notify('Could not connect wallet. Please try again.');
+    }
+    btn.textContent = 'Connect MetaMask';
+    btn.disabled = false;
+  }
+}
+
+async function fetchWalletBalance(address) {
+  try {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const balance = await provider.getBalance(address);
+    const ethBalance = ethers.formatEther(balance);
+    const network = await provider.getNetwork();
+
+    document.getElementById('walletBalance').textContent = `${parseFloat(ethBalance).toFixed(6)} ETH`;
+    document.getElementById('walletNetwork').textContent = `Network: ${network.name.charAt(0).toUpperCase() + network.name.slice(1)}`;
+    document.getElementById('walletBalanceArea').style.display = 'block';
+
+    // Auto-refresh balance every 30 seconds
+    setTimeout(() => {
+      if (connectedWalletAddress) fetchWalletBalance(connectedWalletAddress);
+    }, 30000);
+
+  } catch (err) {
+    console.error('Balance fetch error:', err);
+    document.getElementById('walletBalance').textContent = 'Could not fetch balance';
+    document.getElementById('walletBalanceArea').style.display = 'block';
+  }
+}
+
+function disconnectWallet() {
+  connectedWalletAddress = null;
+  document.getElementById('pdWallet').innerHTML = '<span class="profile-no-wallet">No wallet connected</span>';
+  document.getElementById('walletBalanceArea').style.display = 'none';
+  const btn = document.getElementById('connectWalletBtn');
+  if (btn) { btn.style.display = 'flex'; btn.disabled = false; btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3L12 7L8 3"/><circle cx="17" cy="14" r="1" fill="currentColor"/></svg> Connect MetaMask'; }
+  notify('Wallet disconnected.');
+}
+
+// Auto-connect if user previously connected with MetaMask
+async function checkExistingWalletConnection() {
+  if (!window.ethereum) return;
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+    if (accounts.length > 0) {
+      connectedWalletAddress = accounts[0];
+      const btn = document.getElementById('connectWalletBtn');
+      if (btn) btn.style.display = 'none';
+      const walletEl = document.getElementById('pdWallet');
+      if (walletEl) {
+        walletEl.innerHTML = `<span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--blue-bright);">${accounts[0].slice(0,8)}...${accounts[0].slice(-6)}</span>`;
+      }
+      await fetchWalletBalance(accounts[0]);
+    }
+  } catch (err) { console.error('Wallet check error:', err); }
+}
+
 function handleLogout() {
   localStorage.removeItem('aurethium_token');
   localStorage.removeItem('aurethium_user');
@@ -1448,8 +1568,21 @@ async function loadProfile() {
       document.getElementById('userAvatar').innerHTML = `<img src="${savedAvatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
     }
 
-    // Wallet
-    const walletEl = document.getElementById('pdWallet');
+    // Deposit wallet
+    const depositEl = document.getElementById('pdDepositWallet');
+    if (user.deposit_wallet) {
+      depositEl.innerHTML = `
+        <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--blue-bright);word-break:break-all;">${user.deposit_wallet}</span>
+          <button onclick="copyToClipboard('${user.deposit_wallet}')" style="background:none;border:none;color:var(--blue-bright);cursor:pointer;flex-shrink:0;" title="Copy address">
+            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke-width="2"/><path stroke-width="2" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+        </span>`;
+    } else {
+      depositEl.innerHTML = '<span class="profile-no-wallet">Will be assigned after tier confirmation</span>';
+    }
+
+    // Connected wallet
     if (user.wallet_address) {
       walletEl.innerHTML = `
         <span style="display:flex;align-items:center;gap:8px;">
