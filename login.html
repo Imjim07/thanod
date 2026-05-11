@@ -66,6 +66,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .pw-wrap .form-input{padding-right:42px;width:100%;}
 .pw-toggle{position:absolute;right:13px;background:none;border:none;color:var(--text-3);cursor:pointer;padding:0;display:flex;align-items:center;transition:color 0.2s;flex-shrink:0;}
 .pw-toggle:hover{color:var(--blue-bright);}
+
+.forgot-section{display:none;margin-top:20px;padding-top:20px;border-top:1px solid var(--blue-border);}
+.forgot-section.show{display:block;}
+.forgot-title{font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:4px;}
+.forgot-sub{font-size:0.78rem;color:var(--text-3);margin-bottom:14px;line-height:1.5;}
+.forgot-success{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);color:#22C55E;padding:12px 14px;border-radius:6px;font-size:0.82rem;line-height:1.6;display:none;}
+.forgot-success.show{display:block;}
 </style>
 </head>
 <body>
@@ -85,8 +92,27 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
           <button type="button" class="pw-toggle" onclick="togglePw('loginPassword',this)" tabindex="-1">
             <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
           </button>
-        </div><div class="form-forgot"><a href="#">Forgot password?</a></div></div>
+        </div><div class="form-forgot"><a href="#" onclick="toggleForgot(event)">Forgot password?</a></div></div>
     <button class="btn-submit" id="loginBtn" onclick="handleLogin()">Sign In</button>
+    <!-- FORGOT PASSWORD SECTION -->
+    <div class="forgot-section" id="forgotSection">
+      <div class="forgot-title">Reset your password</div>
+      <div class="forgot-sub">Enter your email and we'll send you a reset link.</div>
+      <div class="forgot-success" id="forgotSuccess">
+        Reset link sent! Check your inbox and follow the instructions. The link expires in 15 minutes.
+      </div>
+      <div id="forgotForm">
+        <div class="form-group" style="margin-bottom:10px;">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" id="forgotEmail" placeholder="your@email.com" onkeydown="if(event.key==='Enter')handleForgotPassword()">
+        </div>
+        <button class="btn-submit" id="forgotBtn" onclick="handleForgotPassword()" style="margin-top:4px;">Send Reset Link</button>
+      </div>
+      <div style="text-align:center;margin-top:12px;">
+        <a href="#" onclick="toggleForgot(event)" style="font-size:0.78rem;color:var(--text-3);text-decoration:none;">← Back to sign in</a>
+      </div>
+    </div>
+
     <div class="auth-divider"><span>or</span></div>
     <button class="btn-wallet" id="walletBtn" onclick="connectWallet()">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3L12 7L8 3"/><circle cx="17" cy="14" r="1" fill="currentColor"/></svg>
@@ -105,6 +131,43 @@ function togglePw(inputId, btn) {
   const eyeOn = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>';
   const eyeOff = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>';
   btn.innerHTML = isHidden ? eyeOff : eyeOn;
+}
+
+function toggleForgot(e) {
+  e.preventDefault();
+  const section = document.getElementById('forgotSection');
+  const isShowing = section.classList.contains('show');
+  section.classList.toggle('show', !isShowing);
+  if (!isShowing) {
+    document.getElementById('forgotEmail').focus();
+  }
+}
+
+async function handleForgotPassword() {
+  const email = document.getElementById('forgotEmail').value.trim();
+  const btn = document.getElementById('forgotBtn');
+  if (!email || !email.includes('@')) {
+    document.getElementById('forgotEmail').style.borderColor = 'var(--red)';
+    return;
+  }
+  document.getElementById('forgotEmail').style.borderColor = '';
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  try {
+    const res = await fetch(`${API}/api/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    // Always show success - don't reveal if email exists or not
+    document.getElementById('forgotForm').style.display = 'none';
+    document.getElementById('forgotSuccess').classList.add('show');
+  } catch {
+    btn.disabled = false;
+    btn.textContent = 'Send Reset Link';
+    showAlert('Connection error. Please try again.');
+  }
 }
 const API = 'https://aurethium-backend.onrender.com';
 if (localStorage.getItem('aurethium_token')) window.location.href = 'dashboard.html';
