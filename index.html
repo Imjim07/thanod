@@ -448,6 +448,16 @@ footer{background:var(--bg-2);border-top:1px solid var(--blue-border);padding:64
   .re-grid{grid-template-columns:1fr;}
   .otp-container{gap:6px;}
 }
+
+/* LANG PICKER */
+.lang-picker{position:relative;}
+.lang-btn{display:flex;align-items:center;gap:5px;background:none;border:1px solid rgba(255,255,255,0.08);color:var(--text-2);font-family:var(--font-display);font-size:0.72rem;font-weight:500;padding:7px 11px;border-radius:var(--radius);cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.lang-btn:hover{border-color:var(--blue-border);color:var(--text);}
+.lang-menu{position:absolute;top:calc(100% + 8px);right:0;background:var(--bg-2);border:1px solid var(--blue-border);border-radius:8px;overflow:hidden;z-index:2000;min-width:150px;box-shadow:0 8px 32px rgba(0,0,0,0.5);display:none;}
+.lang-menu.open{display:block;}
+.lang-option{display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;background:none;border:none;font-family:var(--font-display);font-size:0.76rem;color:var(--text-2);cursor:pointer;text-align:left;transition:all 0.15s;}
+.lang-option:hover{background:var(--blue-dim);color:var(--text);}
+.lang-option.active{color:var(--blue-bright);}
 </style>
 </head>
 <body>
@@ -467,6 +477,7 @@ footer{background:var(--bg-2);border-top:1px solid var(--blue-border);padding:64
     <li><a onclick="navigate('contact')" data-page="contact">Contact</a></li>
   </ul>
   <div class="nav-right">
+    <div id="langPickerContainer"></div>
     <a href="login.html" class="nav-signin">Sign In</a>
     <a href="signup.html" class="nav-cta" style="text-decoration:none;">Get Started</a>
   </div>
@@ -484,7 +495,7 @@ footer{background:var(--bg-2);border-top:1px solid var(--blue-border);padding:64
   <a onclick="navigate('contact');closeMobileNav()">Contact</a>
   <a href="login.html">Sign In</a>
   <a href="signup.html">Get Started</a>
-
+  <div id="langPickerMobile" style="margin-top:16px;"></div>
 </div>
 
 <div class="notification" id="notification"></div>
@@ -753,9 +764,9 @@ footer{background:var(--bg-2);border-top:1px solid var(--blue-border);padding:64
         <div style="width:100%;">
           <div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.13em;text-transform:uppercase;color:var(--text-3);margin-bottom:12px;">Investment Tiers</div>
           <div style="display:flex;flex-direction:column;gap:7px;">
-            <div style="border:1px solid #22D3EE;padding:13px 16px;background:rgba(34,211,238,0.04);border-radius:var(--radius);position:relative;"><div style="position:absolute;top:-1px;right:10px;background:#22D3EE;padding:2px 7px;font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:#000;text-transform:uppercase;">Active</div><div style="font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:2px;">Starter</div><div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-3);">$500 min · ~8.5% APR · Low Risk</div></div>
-            <div style="border:1px solid var(--blue-border);padding:13px 16px;border-radius:var(--radius);"><div style="font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:2px;">Growth</div><div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-3);">$2,500 min · ~14% APR · Medium Risk</div></div>
-            <div style="border:1px solid var(--blue-border);padding:13px 16px;border-radius:var(--radius);"><div style="font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:2px;">Premium</div><div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-3);">$10,000 min · ~22% APR · High Risk</div></div>
+            <div style="border:1px solid #22D3EE;padding:13px 16px;background:rgba(34,211,238,0.04);border-radius:var(--radius);position:relative;"><div style="position:absolute;top:-1px;right:10px;background:#22D3EE;padding:2px 7px;font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:#000;text-transform:uppercase;">Active</div><div style="font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:2px;">Starter</div><div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-3);">Ξ500 min · ~8.5% APR · Low Risk</div></div>
+            <div style="border:1px solid var(--blue-border);padding:13px 16px;border-radius:var(--radius);"><div style="font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:2px;">Growth</div><div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-3);">Ξ2,500 min · ~14% APR · Medium Risk</div></div>
+            <div style="border:1px solid var(--blue-border);padding:13px 16px;border-radius:var(--radius);"><div style="font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:2px;">Premium</div><div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-3);">Ξ10,000 min · ~22% APR · High Risk</div></div>
           </div>
         </div>
       </div>
@@ -798,7 +809,7 @@ footer{background:var(--bg-2);border-top:1px solid var(--blue-border);padding:64
   <div class="section">
     <div class="about-story-grid">
       <div class="about-col"><h3>The Vision</h3><p>Most people who hold crypto do nothing with it. It sits in wallets, on exchanges, slowly losing ground to inflation. Thanod was built to change that.</p><p>We believe financial automation — once available only to institutions — should be accessible to anyone who holds crypto, regardless of how much or how little they know about markets.</p><p>Thanod brings staking, algorithmic trading, and intelligent rebalancing together in one non-custodial, risk-managed platform.</p></div>
-      <div class="about-col"><h3>Where We Stand</h3><p>Thanod is now live. Create your account, choose your investment tier, and start earning automated returns across staking, trading, and real estate.</p><p>We are committed to transparency above everything else. No promised returns. No hidden fees. Full verifiability of staking rewards.</p><p>Three investment tiers — Starter, Growth, and Premium — give every user a clear, structured path into automated crypto investment. Minimum entry from $500.</p></div>
+      <div class="about-col"><h3>Where We Stand</h3><p>Thanod is now live. Create your account, choose your investment tier, and start earning automated returns across staking, trading, and real estate.</p><p>We are committed to transparency above everything else. No promised returns. No hidden fees. Full verifiability of staking rewards.</p><p>Three investment tiers — Starter, Growth, and Premium — give every user a clear, structured path into automated crypto investment. Minimum entry from Ξ500.</p></div>
     </div>
   </div>
   <div class="section" style="padding-top:0;">
@@ -1339,7 +1350,7 @@ async function loadRealProperties(token) {
           ${has ? `<div style="background:var(--blue-dim);border:1px solid var(--blue-border);border-radius:4px;padding:12px 14px;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
               <span style="font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);">Your Investment</span>
-              <span style="font-family:var(--font-display);font-size:1.05rem;font-weight:600;color:var(--blue-bright);">$${parseFloat(invested).toLocaleString()}</span>
+              <span style="font-family:var(--font-display);font-size:1.05rem;font-weight:600;color:var(--blue-bright);">Ξ${parseFloat(invested).toLocaleString()}</span>
             </div>
             ${parseFloat(p.ownership_pct)>0?`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;"><span style="font-family:var(--font-mono);font-size:0.58rem;text-transform:uppercase;color:var(--text-3);">Ownership</span><span style="font-size:0.82rem;color:var(--text-2);">${parseFloat(p.ownership_pct).toFixed(3)}%</span></div>`:''}
           </div>` : `<div style="background:var(--bg-3);border:1px solid var(--blue-border);border-radius:4px;padding:10px 14px;text-align:center;"><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-3);">🔒 Not yet assigned</span></div>`}
@@ -1447,7 +1458,7 @@ const CHAT_SYSTEM = `You are the Thanod AI Assistant — professional and knowle
 ABOUT THANOD:
 Three automated yield layers: (1) Validator Pool — ETH staking, ~4-6% base APR, no 32 ETH minimum. (2) Trading Bot — AI-assisted 24/7 trading with drawdown caps and stop-loss. (3) Portfolio Brain — auto-rebalancing control center.
 
-INVESTMENT TIERS: Starter ($500 min, ~8.5% APR, low risk), Growth ($2,500 min, ~14% APR, medium risk), Premium ($10,000 min, ~22% APR, high risk). Tiers are assigned by the team after payment confirmation.
+INVESTMENT TIERS: Starter (Ξ500 min, ~8.5% APR, low risk), Growth (Ξ2,500 min, ~14% APR, medium risk), Premium (Ξ10,000 min, ~22% APR, high risk). Tiers are assigned by the team after payment confirmation.
 
 REAL ESTATE: Users can also invest in curated real estate properties earning rental yield + appreciation. Managed by the Thanod team.
 
@@ -1522,14 +1533,3 @@ async function getAIResponse(userText) {
     const data = await response.json();
     removeTyping();
     addBotMessage(data.reply || "I'm having a moment — please try again.");
-  } catch {
-    removeTyping();
-    addBotMessage("Connection issue. Please try again or visit our Contact page.");
-  }
-  document.getElementById('chatInput').disabled = false;
-  document.getElementById('chatInput').focus();
-}
-function escapeHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-</script>
-</body>
-</html>
