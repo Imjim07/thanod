@@ -338,7 +338,6 @@ footer{background:var(--bg-2);border-top:1px solid var(--blue-border);padding:64
   .hero-actions{flex-direction:column;align-items:flex-start;}
   .hero-actions a,.hero-actions button{width:100%;text-align:center;box-sizing:border-box;}
   .section{padding:60px 20px;}
-  .hero-actions{flex-direction:column;align-items:flex-start;}
   .cta-banner{padding:48px 24px;}
   .footer-inner{grid-template-columns:1fr;}
   footer{padding:44px 20px 0;}
@@ -348,6 +347,11 @@ footer{background:var(--bg-2);border-top:1px solid var(--blue-border);padding:64
   .chat-bubble{right:16px;bottom:16px;}
   .waitlist-inner,.contact-inner{padding:110px 20px 60px;}
   .form-card,.contact-form-card{padding:32px 20px;}
+  .form-row{grid-template-columns:1fr;}
+  .values-grid{grid-template-columns:1fr;}
+  .hero-stat{padding-right:0;border-right:none;margin-right:0;}
+  .hero-stat-num{font-size:1.9rem;}
+  .about-hero-section{padding:calc(var(--nav-h)+40px) 20px 60px;}
 }
 
 /* ═══ REAL ESTATE PAGE ═══ */
@@ -430,9 +434,19 @@ footer{background:var(--bg-2);border-top:1px solid var(--blue-border);padding:64
 @media(max-width:768px){
   .re-grid{grid-template-columns:1fr;}
   .re-stats{grid-template-columns:1fr 1fr;margin:0 20px 40px;}
-  .re-hero{padding:120px 20px 60px;}
+  .re-stat{padding:18px 16px;}
+  .re-hero{padding:110px 20px 48px;}
   .re-grid-section,.re-cta{padding-left:20px;padding-right:20px;}
   .re-cta-inner{padding:48px 24px;}
+  .re-gate{flex-direction:column;gap:10px;border-radius:16px;text-align:center;}
+}
+@media(max-width:480px){
+  .hero-headline{font-size:3rem;}
+  .section-title{font-size:1.8rem;}
+  .hero-stats{grid-template-columns:1fr 1fr;}
+  .re-stats{grid-template-columns:1fr 1fr;margin:0 16px 32px;}
+  .re-grid{grid-template-columns:1fr;}
+  .otp-container{gap:6px;}
 }
 </style>
 </head>
@@ -511,7 +525,7 @@ footer{background:var(--bg-2);border-top:1px solid var(--blue-border);padding:64
     <div class="lead-prompt">Ready to get started?</div>
     <input type="text" class="chat-lead-input" id="leadName" placeholder="Your name">
     <input type="email" class="chat-lead-input" id="leadEmail" placeholder="Your email address">
-    <button class="chat-lead-btn" onclick="window.location.href='signup.html'">Create Account →</button>
+    <button class="chat-lead-btn" onclick="submitChatLead()">Create Account →</button>
     <button class="chat-lead-skip" onclick="dismissLead()">No thanks, continue chatting</button>
   </div>
   <div class="chat-input-row" id="chatInputRow">
@@ -1132,8 +1146,8 @@ footer{background:var(--bg-2);border-top:1px solid var(--blue-border);padding:64
   <div class="waitlist-inner">
     <div>
       <div style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:20px;"><span style="color:var(--blue);">//</span> Early Access</div>
-      <h1 style="font-family:var(--font-display);font-size:clamp(2.8rem,5vw,4.5rem);font-weight:700;letter-spacing:-0.03em;line-height:1.05;margin-bottom:18px;">Be first.<br><span style="color:var(--blue-bright);">Be positioned.</span></h1>
-      <p style="font-size:0.93rem;color:var(--text-2);line-height:1.75;max-width:400px;">Thanod is preparing for launch. Join the waitlist — get priority access, founding member rates, and direct updates from the team.</p>
+      <h1 style="font-family:var(--font-display);font-size:clamp(2.8rem,5vw,4.5rem);font-weight:700;letter-spacing:-0.03em;line-height:1.05;margin-bottom:18px;">Get in early.<br><span style="color:var(--blue-bright);">Lock your rates.</span></h1>
+      <p style="font-size:0.93rem;color:var(--text-2);line-height:1.75;max-width:400px;">Thanod is live and accepting investors. Register your interest now — early members lock in founding-rate platform fees not available after the public launch window closes.</p>
       <div class="benefits">
         <div class="benefit-item"><div class="benefit-icon"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><div class="benefit-text"><h4>Priority Platform Access</h4><p>Waitlist members get first access when the platform launches.</p></div></div>
         <div class="benefit-item"><div class="benefit-icon"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="benefit-text"><h4>Founding Member Rates</h4><p>Early members lock in preferential platform fees not available after public launch.</p></div></div>
@@ -1163,7 +1177,7 @@ footer{background:var(--bg-2);border-top:1px solid var(--blue-border);padding:64
             <option>Full Platform</option>
           </select>
         </div>
-        <button class="btn-primary" style="width:100%;text-align:center;padding:15px;margin-top:4px;" onclick="submitWaitlist()">Join the Waitlist →</button>
+        <button class="btn-primary" style="width:100%;text-align:center;padding:15px;margin-top:4px;" onclick="submitWaitlist()">Register Interest →</button>
         <p class="form-note">No spam. No financial advice. Just platform updates. Unsubscribe any time.</p>
       </div>
       <div class="success-state" id="wl-success">
@@ -1339,7 +1353,9 @@ async function loadRealProperties(token) {
 }
 
 // ── HERO CANVAS ──
+let canvasRafId = null;
 function initCanvas() {
+  if (canvasRafId) { cancelAnimationFrame(canvasRafId); canvasRafId = null; }
   const canvas = document.getElementById('hero-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -1366,9 +1382,9 @@ function initCanvas() {
         ctx.strokeStyle = `rgba(37,99,235,${0.06*(1-d/120)})`; ctx.lineWidth = 0.5; ctx.stroke();
       }
     }
-    requestAnimationFrame(draw);
+    canvasRafId = requestAnimationFrame(draw);
   }
-  draw();
+  canvasRafId = requestAnimationFrame(draw);
   window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 }
 initCanvas();
