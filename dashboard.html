@@ -103,7 +103,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .content{padding:36px;flex:1;}
 
 /* STATS ROW */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
 .stat-card{
   background:var(--bg-2);border:1px solid var(--blue-border);
   padding:24px 22px;position:relative;overflow:hidden;
@@ -225,7 +225,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
 /* RESPONSIVE */
 @media(max-width:1100px){
-  .stats-row{grid-template-columns:1fr 1fr;}
+  .stats-row{grid-template-columns:1fr 1fr 1fr;}
   .dashboard-grid{grid-template-columns:1fr;}
 }
 @media(max-width:768px){
@@ -456,8 +456,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <div class="stats-row">
         <div class="stat-card gold">
           <div class="stat-label">Total Portfolio</div>
-          <div class="stat-value gold" id="statTotal">0.00</div>
-          <div class="stat-sub" id="statTotalEth">ETH</div>
+          <div class="stat-value gold" id="statTotal">$0.00</div>
+          <div class="stat-sub" id="statTotalEth">USD</div>
           <svg class="stat-icon" width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         </div>
         <div class="stat-card green">
@@ -471,12 +471,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
           <div class="stat-value blue" id="statBot">0.00</div>
           <div class="stat-sub">ETH Active</div>
           <svg class="stat-icon" width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-        </div>
-        <div class="stat-card grey">
-          <div class="stat-label">Idle Balance</div>
-          <div class="stat-value" id="statIdle">0.00</div>
-          <div class="stat-sub">ETH Available</div>
-          <svg class="stat-icon" width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="1.5"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3"/></svg>
         </div>
       </div>
 
@@ -501,16 +495,10 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
             </div>
             <div class="bar-track"><div class="bar-fill bot" id="barBot" style="width:0%"></div></div>
           </div>
-          <div class="allocation-bar">
-            <div class="allocation-label">
-              <span class="allocation-name">Idle / Liquid</span>
-              <span class="allocation-pct" id="pctIdle">0%</span>
-            </div>
-            <div class="bar-track"><div class="bar-fill idle" id="barIdle" style="width:0%"></div></div>
-          </div>
+
           <div class="allocation-total">
             <span class="allocation-total-label">Total Portfolio Value</span>
-            <span class="allocation-total-value" id="totalValueDisplay">0.00 ETH</span>
+            <span class="allocation-total-value" id="totalValueDisplay">$0.00</span>
           </div>
         </div>
 
@@ -878,6 +866,17 @@ const API = 'https://aurethium-backend.onrender.com';
 let portfolioData = {};
 let transactionsData = [];
 let currentSection = 'overview';
+let ethUsdPrice = 0;
+
+async function fetchEthPrice() {
+  try {
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+    const data = await res.json();
+    ethUsdPrice = data.ethereum?.usd || 0;
+  } catch (e) {
+    ethUsdPrice = 0;
+  }
+}
 
 // ── AUTH CHECK ──
 const token = localStorage.getItem('aurethium_token');
@@ -893,7 +892,7 @@ async function init() {
     document.getElementById('userAvatar').textContent = (user.name || 'A').charAt(0).toUpperCase();
   }
   // Load data
-  await Promise.all([loadPortfolio(), loadTransactions()]);
+  await Promise.all([fetchEthPrice(), loadPortfolio(), loadTransactions()]);
   // Hide loading
   document.getElementById('loadingOverlay').style.display = 'none';
 }
@@ -930,22 +929,24 @@ function renderPortfolio() {
   const idle = parseFloat(p.idle_balance) || 0;
 
   // Stats
-  document.getElementById('statTotal').textContent = total.toFixed(4);
+  const totalUsd = ethUsdPrice > 0 ? total * ethUsdPrice : null;
+  document.getElementById('statTotal').textContent = totalUsd !== null
+    ? `$${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : `${total.toFixed(4)} ETH`;
+  document.getElementById('statTotalEth').textContent = ethUsdPrice > 0 ? 'USD' : 'ETH';
   document.getElementById('statValidator').textContent = validator.toFixed(4);
   document.getElementById('statBot').textContent = bot.toFixed(4);
-  document.getElementById('statIdle').textContent = idle.toFixed(4);
-  document.getElementById('totalValueDisplay').textContent = `${total.toFixed(4)} ETH`;
+  document.getElementById('totalValueDisplay').textContent = totalUsd !== null
+    ? `$${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : `${total.toFixed(4)} ETH`;
 
   // Allocation bars
   const vPct = total > 0 ? Math.round((validator / total) * 100) : 0;
   const bPct = total > 0 ? Math.round((bot / total) * 100) : 0;
-  const iPct = total > 0 ? Math.round((idle / total) * 100) : 0;
   document.getElementById('barValidator').style.width = `${vPct}%`;
   document.getElementById('barBot').style.width = `${bPct}%`;
-  document.getElementById('barIdle').style.width = `${iPct}%`;
   document.getElementById('pctValidator').textContent = `${vPct}%`;
   document.getElementById('pctBot').textContent = `${bPct}%`;
-  document.getElementById('pctIdle').textContent = `${iPct}%`;
 
   // Validator info
   const vAddress = p.validator_address || 'Not configured';
