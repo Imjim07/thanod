@@ -456,7 +456,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <div class="stats-row">
         <div class="stat-card gold">
           <div class="stat-label">Total Portfolio</div>
-          <div class="stat-value gold" id="statTotal">$0.00</div>
+          <div class="stat-value gold" id="statTotal">Ξ0.00</div>
           <div class="stat-sub" id="statTotalEth">USD</div>
           <svg class="stat-icon" width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         </div>
@@ -498,7 +498,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
           <div class="allocation-total">
             <span class="allocation-total-label">Total Portfolio Value</span>
-            <span class="allocation-total-value" id="totalValueDisplay">$0.00</span>
+            <span class="allocation-total-value" id="totalValueDisplay">Ξ0.00</span>
           </div>
         </div>
 
@@ -931,13 +931,13 @@ function renderPortfolio() {
   // Stats
   const totalUsd = ethUsdPrice > 0 ? total * ethUsdPrice : null;
   document.getElementById('statTotal').textContent = totalUsd !== null
-    ? `$${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    ? `Ξ${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
     : `${total.toFixed(4)} ETH`;
   document.getElementById('statTotalEth').textContent = ethUsdPrice > 0 ? 'USD' : 'ETH';
   document.getElementById('statValidator').textContent = validator.toFixed(4);
   document.getElementById('statBot').textContent = bot.toFixed(4);
   document.getElementById('totalValueDisplay').textContent = totalUsd !== null
-    ? `$${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    ? `Ξ${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
     : `${total.toFixed(4)} ETH`;
 
   // Allocation bars
@@ -1156,7 +1156,7 @@ function renderTiers(tiers, userTier) {
         <!-- STATS -->
         <div class="tier-stats" style="border-color:${cfg.colorBorder};">
           <div class="tier-stat" style="border-color:${cfg.colorBorder};">
-            <div class="tier-stat-val" style="color:rgba(255,255,255,0.9);">$${parseFloat(t.minimum_usd).toLocaleString()}</div>
+            <div class="tier-stat-val" style="color:rgba(255,255,255,0.9);">Ξ${parseFloat(t.minimum_usd).toLocaleString()}</div>
             <div class="tier-stat-label">Minimum</div>
           </div>
           <div class="tier-stat">
@@ -1258,7 +1258,7 @@ function renderRealEstate(properties) {
           <div class="re-investment-box">
             <div>
               <div class="re-investment-label">Your Investment</div>
-              <div class="re-investment-val">$${parseFloat(invested).toLocaleString()}</div>
+              <div class="re-investment-val">Ξ${parseFloat(invested).toLocaleString()}</div>
             </div>
             ${parseFloat(p.ownership_pct) > 0 ? `<div class="re-ownership">${parseFloat(p.ownership_pct).toFixed(3)}%<br>ownership</div>` : ''}
           </div>` : `
