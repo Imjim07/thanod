@@ -944,7 +944,7 @@ async function saveTier(tierId) {
 function populateTierSelect() {
   const sel = document.getElementById('assignTierSelect');
   if (!sel) return;
-  sel.innerHTML = allTiers.map(t => `<option value="${t.id}">${t.name} — $${parseFloat(t.minimum_usd).toLocaleString()} min</option>`).join('');
+  sel.innerHTML = allTiers.map(t => `<option value="${t.id}">${t.name} — Ξ${parseFloat(t.minimum_usd).toLocaleString()} min</option>`).join('');
 }
 
 function openAssignTierModal() {
@@ -1029,7 +1029,7 @@ function renderPropertiesAdmin(properties) {
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;padding:12px 0;border-top:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border);">
         <div style="text-align:center;"><div style="font-family:var(--font-display);font-size:1.3rem;color:var(--green);">${parseFloat(p.rental_yield).toFixed(1)}%</div><div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Yield</div></div>
         <div style="text-align:center;"><div style="font-family:var(--font-display);font-size:1.3rem;color:var(--blue);">${parseFloat(p.appreciation_rate).toFixed(1)}%</div><div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Appreciation</div></div>
-        <div style="text-align:center;"><div style="font-family:var(--font-display);font-size:1.3rem;color:var(--gold-light);">$${parseFloat(p.minimum_investment||0).toLocaleString()}</div><div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Min. Invest</div></div>
+        <div style="text-align:center;"><div style="font-family:var(--font-display);font-size:1.3rem;color:var(--gold-light);">Ξ${parseFloat(p.minimum_investment||0).toLocaleString()}</div><div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Min. Invest</div></div>
       </div>
       <button class="btn-secondary" style="width:100%;font-size:0.62rem;" onclick="openEditPropertyModal(${p.id})">Edit Property</button>
     </div>`).join('');
@@ -1173,7 +1173,7 @@ async function loadUserRealEstate(userId) {
           <span class="tx-item-desc">Yield: ${a.rental_yield}% + Appreciation: ${a.appreciation_rate}%</span>
         </div>
         <div>
-          <div class="tx-item-amount positive">$${parseFloat(a.amount_invested).toLocaleString()}</div>
+          <div class="tx-item-amount positive">Ξ${parseFloat(a.amount_invested).toLocaleString()}</div>
           <div class="tx-item-date">${a.ownership_pct>0?a.ownership_pct+'% share':''}</div>
         </div>
       </div>`).join('');
