@@ -412,6 +412,17 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   <div class="detail-body">
     <div class="detail-alert" id="detailAlert"></div>
 
+    <!-- JOIN DATE -->
+    <div class="detail-section">
+      <div class="detail-section-title">Account Info</div>
+      <div class="detail-field" style="margin-bottom:10px;">
+        <label class="detail-label">Member Since (Join Date)</label>
+        <input type="date" class="detail-input" id="editJoinDate">
+      </div>
+      <div class="detail-alert" id="joinDateAlert" style="display:none;padding:8px 12px;border-radius:4px;font-size:0.78rem;margin-bottom:8px;"></div>
+      <button class="btn-save" onclick="saveJoinDate()">Update Join Date</button>
+    </div>
+
     <!-- PORTFOLIO -->
     <div class="detail-section">
       <div class="detail-section-title">Portfolio Balances</div>
@@ -431,7 +442,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
           <input type="number" class="detail-input" id="editIdle" placeholder="0.00" step="0.0001" min="0">
         </div>
         <div class="detail-field">
-          <label class="detail-label">Total (auto-calculated)</label>
+          <label class="detail-label">Total incl. Rewards (auto)</label>
           <input type="text" class="detail-input" id="editTotal" placeholder="0.00" readonly style="opacity:0.5;cursor:not-allowed;">
         </div>
       </div>
@@ -683,6 +694,9 @@ async function openUserDetail(userId) {
   document.getElementById('editBot').value = parseFloat(user.bot_balance) || '';
   document.getElementById('editIdle').value = parseFloat(user.idle_balance) || '';
   updateTotalDisplay();
+  const joinDate = user.created_at ? new Date(user.created_at).toISOString().slice(0, 10) : '';
+  document.getElementById('editJoinDate').value = joinDate;
+  document.getElementById('joinDateAlert').style.display = 'none';
   document.getElementById('editDepositWallet').value = user.deposit_wallet || '';
   document.getElementById('depositWalletAlert').style.display = 'none';
   document.getElementById('editVAddress').value = user.validator_address || '';
@@ -702,7 +716,8 @@ function updateTotalDisplay() {
   const v = parseFloat(document.getElementById('editValidator').value) || 0;
   const b = parseFloat(document.getElementById('editBot').value) || 0;
   const i = parseFloat(document.getElementById('editIdle').value) || 0;
-  document.getElementById('editTotal').value = (v + b + i).toFixed(4) + ' ETH';
+  const r = parseFloat(document.getElementById('editVRewards').value) || 0;
+  document.getElementById('editTotal').value = (v + b + i + r).toFixed(4) + ' ETH';
 }
 ['editValidator', 'editBot', 'editIdle'].forEach(id => {
   document.addEventListener('DOMContentLoaded', () => {
@@ -711,7 +726,7 @@ function updateTotalDisplay() {
   });
 });
 document.addEventListener('input', e => {
-  if (['editValidator', 'editBot', 'editIdle'].includes(e.target.id)) updateTotalDisplay();
+  if (['editValidator', 'editBot', 'editIdle', 'editVRewards'].includes(e.target.id)) updateTotalDisplay();
 });
 
 function closeDetailPanel() {
@@ -812,6 +827,37 @@ async function saveDepositWallet() {
   }
 }
 
+async function saveJoinDate() {
+  if (!selectedUserId) return;
+  const join_date = document.getElementById('editJoinDate').value;
+  const alertEl = document.getElementById('joinDateAlert');
+  if (!join_date) {
+    alertEl.textContent = 'Please select a date.';
+    alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/api/admin/user/${selectedUserId}/join-date`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ join_date })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alertEl.textContent = 'Join date updated successfully.';
+      alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--green-dim);color:var(--green);border:1px solid rgba(72,187,120,0.3);';
+      await loadUsers();
+      setTimeout(() => { alertEl.style.display = 'none'; }, 3000);
+    } else {
+      alertEl.textContent = data.error || 'Failed to update join date.';
+      alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
+    }
+  } catch (err) {
+    alertEl.textContent = 'Connection error.';
+    alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
+  }
+}
+
 async function saveValidator() {
   if (!selectedUserId) return;
   const address = document.getElementById('editVAddress').value.trim();
@@ -906,7 +952,7 @@ function renderTiersAdmin(tiers) {
       <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${tc};"></div>
       <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:400;color:${tc};margin-bottom:16px;">${t.name}</div>
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
-        <div><label class="detail-label">Min. Investment (USD)</label><input type="number" class="detail-input" id="tier_min_${t.id}" value="${t.minimum_usd}" step="100" min="0"></div>
+        <div><label class="detail-label">Min. Investment (ETH)</label><input type="number" class="detail-input" id="tier_min_${t.id}" value="${t.minimum_usd}" step="0.01" min="0"></div>
         <div><label class="detail-label">Estimated APR (%)</label><input type="number" class="detail-input" id="tier_apr_${t.id}" value="${t.estimated_apr}" step="0.1" min="0"></div>
         <div><label class="detail-label">Risk Level</label>
           <select class="detail-select" id="tier_risk_${t.id}">
