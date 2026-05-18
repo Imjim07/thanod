@@ -2064,30 +2064,6 @@ async function checkExistingWalletConnection() {
 }
 
 
-// ── ETH PRICE & CONVERSION ──
-let ethPriceUSD = null;
-
-async function fetchETHPrice() {
-  try {
-    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-    const data = await res.json();
-    ethPriceUSD = data.ethereum?.usd || null;
-  } catch {
-    ethPriceUSD = null;
-  }
-  return ethPriceUSD;
-}
-
-function usdToETH(usd) {
-  if (!ethPriceUSD || !usd) return null;
-  return (parseFloat(usd) / ethPriceUSD);
-}
-
-function formatETH(val, decimals = 4) {
-  if (val === null || val === undefined) return '—';
-  return parseFloat(val).toFixed(decimals) + ' ETH';
-}
-
 // ── DEPOSIT & WITHDRAWAL ──────────────────────────────
 let currentDepCurrency = 'ETH';
 let currentWthCurrency = 'ETH';
