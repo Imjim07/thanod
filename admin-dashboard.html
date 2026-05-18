@@ -203,6 +203,18 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
       Real Estate
     </a>
+    <a class="nav-item" onclick="showSection('deposits')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v16m0-16l-4 4m4-4l4 4M3 20h18"/></svg>
+      Deposits
+    </a>
+    <a class="nav-item" onclick="showSection('withdrawals')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 20V4m0 16l-4-4m4 4l4-4M3 4h18"/></svg>
+      Withdrawals
+    </a>
+    <a class="nav-item" onclick="showSection('settings')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+      Settings
+    </a>
   </nav>
   <div class="sidebar-footer">
     <div class="admin-tag">// Admin Session</div>
@@ -346,6 +358,35 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     </div>
 
   </div>
+    <!-- DEPOSITS -->
+    <div id="section-deposits" style="display:none;">
+      <div style="margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+        <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);">Filter:</div>
+        <button class="filter-btn active" onclick="filterDeposits('all',this)">All</button>
+        <button class="filter-btn" onclick="filterDeposits('pending',this)">Pending</button>
+        <button class="filter-btn" onclick="filterDeposits('confirmed',this)">Confirmed</button>
+        <button class="filter-btn" onclick="filterDeposits('rejected',this)">Rejected</button>
+      </div>
+      <div id="depositsTable"></div>
+    </div>
+
+    <!-- WITHDRAWALS -->
+    <div id="section-withdrawals" style="display:none;">
+      <div style="margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+        <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);">Filter:</div>
+        <button class="filter-btn active" onclick="filterWithdrawals('all',this)">All</button>
+        <button class="filter-btn" onclick="filterWithdrawals('pending',this)">Pending</button>
+        <button class="filter-btn" onclick="filterWithdrawals('approved',this)">Approved</button>
+        <button class="filter-btn" onclick="filterWithdrawals('rejected',this)">Rejected</button>
+      </div>
+      <div id="withdrawalsTable"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="section-settings" style="display:none;">
+      <div id="settingsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;"></div>
+    </div>
+
 </main>
 
 <!-- NEW PROPERTY MODAL -->
@@ -412,17 +453,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   <div class="detail-body">
     <div class="detail-alert" id="detailAlert"></div>
 
-    <!-- JOIN DATE -->
-    <div class="detail-section">
-      <div class="detail-section-title">Account Info</div>
-      <div class="detail-field" style="margin-bottom:10px;">
-        <label class="detail-label">Member Since (Join Date)</label>
-        <input type="date" class="detail-input" id="editJoinDate">
-      </div>
-      <div class="detail-alert" id="joinDateAlert" style="display:none;padding:8px 12px;border-radius:4px;font-size:0.78rem;margin-bottom:8px;"></div>
-      <button class="btn-save" onclick="saveJoinDate()">Update Join Date</button>
-    </div>
-
     <!-- PORTFOLIO -->
     <div class="detail-section">
       <div class="detail-section-title">Portfolio Balances</div>
@@ -442,7 +472,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
           <input type="number" class="detail-input" id="editIdle" placeholder="0.00" step="0.0001" min="0">
         </div>
         <div class="detail-field">
-          <label class="detail-label">Total incl. Rewards (auto)</label>
+          <label class="detail-label">Total (auto-calculated)</label>
           <input type="text" class="detail-input" id="editTotal" placeholder="0.00" readonly style="opacity:0.5;cursor:not-allowed;">
         </div>
       </div>
@@ -694,9 +724,6 @@ async function openUserDetail(userId) {
   document.getElementById('editBot').value = parseFloat(user.bot_balance) || '';
   document.getElementById('editIdle').value = parseFloat(user.idle_balance) || '';
   updateTotalDisplay();
-  const joinDate = user.created_at ? new Date(user.created_at).toISOString().slice(0, 10) : '';
-  document.getElementById('editJoinDate').value = joinDate;
-  document.getElementById('joinDateAlert').style.display = 'none';
   document.getElementById('editDepositWallet').value = user.deposit_wallet || '';
   document.getElementById('depositWalletAlert').style.display = 'none';
   document.getElementById('editVAddress').value = user.validator_address || '';
@@ -716,8 +743,7 @@ function updateTotalDisplay() {
   const v = parseFloat(document.getElementById('editValidator').value) || 0;
   const b = parseFloat(document.getElementById('editBot').value) || 0;
   const i = parseFloat(document.getElementById('editIdle').value) || 0;
-  const r = parseFloat(document.getElementById('editVRewards').value) || 0;
-  document.getElementById('editTotal').value = (v + b + i + r).toFixed(4) + ' ETH';
+  document.getElementById('editTotal').value = (v + b + i).toFixed(4) + ' ETH';
 }
 ['editValidator', 'editBot', 'editIdle'].forEach(id => {
   document.addEventListener('DOMContentLoaded', () => {
@@ -726,7 +752,7 @@ function updateTotalDisplay() {
   });
 });
 document.addEventListener('input', e => {
-  if (['editValidator', 'editBot', 'editIdle', 'editVRewards'].includes(e.target.id)) updateTotalDisplay();
+  if (['editValidator', 'editBot', 'editIdle'].includes(e.target.id)) updateTotalDisplay();
 });
 
 function closeDetailPanel() {
@@ -827,37 +853,6 @@ async function saveDepositWallet() {
   }
 }
 
-async function saveJoinDate() {
-  if (!selectedUserId) return;
-  const join_date = document.getElementById('editJoinDate').value;
-  const alertEl = document.getElementById('joinDateAlert');
-  if (!join_date) {
-    alertEl.textContent = 'Please select a date.';
-    alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
-    return;
-  }
-  try {
-    const res = await fetch(`${API}/api/admin/user/${selectedUserId}/join-date`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ join_date })
-    });
-    const data = await res.json();
-    if (data.success) {
-      alertEl.textContent = 'Join date updated successfully.';
-      alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--green-dim);color:var(--green);border:1px solid rgba(72,187,120,0.3);';
-      await loadUsers();
-      setTimeout(() => { alertEl.style.display = 'none'; }, 3000);
-    } else {
-      alertEl.textContent = data.error || 'Failed to update join date.';
-      alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
-    }
-  } catch (err) {
-    alertEl.textContent = 'Connection error.';
-    alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
-  }
-}
-
 async function saveValidator() {
   if (!selectedUserId) return;
   const address = document.getElementById('editVAddress').value.trim();
@@ -952,7 +947,7 @@ function renderTiersAdmin(tiers) {
       <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${tc};"></div>
       <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:400;color:${tc};margin-bottom:16px;">${t.name}</div>
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
-        <div><label class="detail-label">Min. Investment (ETH)</label><input type="number" class="detail-input" id="tier_min_${t.id}" value="${t.minimum_usd}" step="0.01" min="0"></div>
+        <div><label class="detail-label">Min. Investment (USD)</label><input type="number" class="detail-input" id="tier_min_${t.id}" value="${t.minimum_usd}" step="100" min="0"></div>
         <div><label class="detail-label">Estimated APR (%)</label><input type="number" class="detail-input" id="tier_apr_${t.id}" value="${t.estimated_apr}" step="0.1" min="0"></div>
         <div><label class="detail-label">Risk Level</label>
           <select class="detail-select" id="tier_risk_${t.id}">
@@ -990,7 +985,7 @@ async function saveTier(tierId) {
 function populateTierSelect() {
   const sel = document.getElementById('assignTierSelect');
   if (!sel) return;
-  sel.innerHTML = allTiers.map(t => `<option value="${t.id}">${t.name} — Ξ${parseFloat(t.minimum_usd).toLocaleString()} min</option>`).join('');
+  sel.innerHTML = allTiers.map(t => `<option value="${t.id}">${t.name} — $${parseFloat(t.minimum_usd).toLocaleString()} min</option>`).join('');
 }
 
 function openAssignTierModal() {
@@ -1075,7 +1070,7 @@ function renderPropertiesAdmin(properties) {
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;padding:12px 0;border-top:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border);">
         <div style="text-align:center;"><div style="font-family:var(--font-display);font-size:1.3rem;color:var(--green);">${parseFloat(p.rental_yield).toFixed(1)}%</div><div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Yield</div></div>
         <div style="text-align:center;"><div style="font-family:var(--font-display);font-size:1.3rem;color:var(--blue);">${parseFloat(p.appreciation_rate).toFixed(1)}%</div><div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Appreciation</div></div>
-        <div style="text-align:center;"><div style="font-family:var(--font-display);font-size:1.3rem;color:var(--gold-light);">Ξ${parseFloat(p.minimum_investment||0).toLocaleString()}</div><div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Min. Invest</div></div>
+        <div style="text-align:center;"><div style="font-family:var(--font-display);font-size:1.3rem;color:var(--gold-light);">$${parseFloat(p.minimum_investment||0).toLocaleString()}</div><div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Min. Invest</div></div>
       </div>
       <button class="btn-secondary" style="width:100%;font-size:0.62rem;" onclick="openEditPropertyModal(${p.id})">Edit Property</button>
     </div>`).join('');
@@ -1219,11 +1214,236 @@ async function loadUserRealEstate(userId) {
           <span class="tx-item-desc">Yield: ${a.rental_yield}% + Appreciation: ${a.appreciation_rate}%</span>
         </div>
         <div>
-          <div class="tx-item-amount positive">Ξ${parseFloat(a.amount_invested).toLocaleString()}</div>
+          <div class="tx-item-amount positive">$${parseFloat(a.amount_invested).toLocaleString()}</div>
           <div class="tx-item-date">${a.ownership_pct>0?a.ownership_pct+'% share':''}</div>
         </div>
       </div>`).join('');
   } catch (err) { console.error('User RE error:', err); }
+}
+
+// ── ADMIN DEPOSITS ──
+let allDeposits = [];
+let allWithdrawals = [];
+
+async function loadAdminDeposits() {
+  const el = document.getElementById('depositsTable');
+  el.innerHTML = '<div style="padding:32px;text-align:center;color:var(--text-3);">Loading...</div>';
+  try {
+    const res = await fetch(`${API}/api/admin/deposits`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    allDeposits = data.deposits || [];
+    renderDepositsTable(allDeposits);
+  } catch (err) {
+    el.innerHTML = '<div style="padding:20px;color:var(--text-3);">Could not load deposits.</div>';
+  }
+}
+
+function filterDeposits(status, btn) {
+  document.querySelectorAll('#section-deposits .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = status === 'all' ? allDeposits : allDeposits.filter(d => d.status === status);
+  renderDepositsTable(filtered);
+}
+
+function renderDepositsTable(deposits) {
+  const el = document.getElementById('depositsTable');
+  if (!deposits.length) {
+    el.innerHTML = '<div style="padding:32px;text-align:center;color:var(--text-3);">No deposits found.</div>';
+    return;
+  }
+  el.innerHTML = `
+    <table class="data-table">
+      <thead><tr>
+        <th>User</th><th>Currency</th><th>Amount</th><th>TX Hash</th><th>Date</th><th>Status</th><th>Actions</th>
+      </tr></thead>
+      <tbody>
+        ${deposits.map(d => `<tr>
+          <td><div style="font-weight:600;">${d.user_name || '—'}</div><div style="font-size:0.72rem;color:var(--text-3);">${d.user_email || '—'}</div></td>
+          <td><span style="font-family:var(--font-mono);font-weight:700;color:var(--blue-bright);">${d.currency}</span></td>
+          <td><span style="font-family:var(--font-display);font-size:1rem;font-weight:600;">${parseFloat(d.amount).toFixed(6)}</span></td>
+          <td><span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-3);">${d.tx_hash ? d.tx_hash.slice(0,16)+'...' : '—'}</span></td>
+          <td style="font-size:0.78rem;color:var(--text-3);">${new Date(d.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</td>
+          <td><span class="status-badge ${d.status}">${d.status}</span></td>
+          <td>
+            ${d.status === 'pending' ? `
+              <button class="btn-action confirm" onclick="adminConfirmDeposit(${d.id})">Confirm</button>
+              <button class="btn-action reject" onclick="adminRejectDeposit(${d.id})">Reject</button>
+            ` : `<span style="font-size:0.75rem;color:var(--text-3);">${d.admin_notes || '—'}</span>`}
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+async function adminConfirmDeposit(id) {
+  const notes = prompt('Add a note for the user (optional):') || '';
+  try {
+    const res = await fetch(`${API}/api/admin/deposits/${id}/confirm`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ admin_notes: notes })
+    });
+    const data = await res.json();
+    if (data.success) { showToast('Deposit confirmed. User notified.', 'success'); loadAdminDeposits(); }
+    else showToast(data.error || 'Failed.', 'error');
+  } catch { showToast('Connection error.', 'error'); }
+}
+
+async function adminRejectDeposit(id) {
+  const notes = prompt('Reason for rejection (required):');
+  if (!notes) return;
+  try {
+    const res = await fetch(`${API}/api/admin/deposits/${id}/reject`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ admin_notes: notes })
+    });
+    const data = await res.json();
+    if (data.success) { showToast('Deposit rejected. User notified.', 'success'); loadAdminDeposits(); }
+    else showToast(data.error || 'Failed.', 'error');
+  } catch { showToast('Connection error.', 'error'); }
+}
+
+// ── ADMIN WITHDRAWALS ──
+async function loadAdminWithdrawals() {
+  const el = document.getElementById('withdrawalsTable');
+  el.innerHTML = '<div style="padding:32px;text-align:center;color:var(--text-3);">Loading...</div>';
+  try {
+    const res = await fetch(`${API}/api/admin/withdrawals`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    allWithdrawals = data.withdrawals || [];
+    renderWithdrawalsTable(allWithdrawals);
+  } catch (err) {
+    el.innerHTML = '<div style="padding:20px;color:var(--text-3);">Could not load withdrawals.</div>';
+  }
+}
+
+function filterWithdrawals(status, btn) {
+  document.querySelectorAll('#section-withdrawals .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = status === 'all' ? allWithdrawals : allWithdrawals.filter(w => w.status === status);
+  renderWithdrawalsTable(filtered);
+}
+
+function renderWithdrawalsTable(withdrawals) {
+  const el = document.getElementById('withdrawalsTable');
+  if (!withdrawals.length) {
+    el.innerHTML = '<div style="padding:32px;text-align:center;color:var(--text-3);">No withdrawals found.</div>';
+    return;
+  }
+  el.innerHTML = `
+    <table class="data-table">
+      <thead><tr>
+        <th>User</th><th>Currency</th><th>Amount</th><th>To Wallet</th><th>Date</th><th>Status</th><th>Actions</th>
+      </tr></thead>
+      <tbody>
+        ${withdrawals.map(w => `<tr>
+          <td><div style="font-weight:600;">${w.user_name || '—'}</div><div style="font-size:0.72rem;color:var(--text-3);">${w.user_email || '—'}</div></td>
+          <td><span style="font-family:var(--font-mono);font-weight:700;color:var(--blue-bright);">${w.currency}</span></td>
+          <td><span style="font-family:var(--font-display);font-size:1rem;font-weight:600;">${parseFloat(w.amount).toFixed(6)}</span></td>
+          <td><span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-3);">${w.wallet_to ? w.wallet_to.slice(0,16)+'...' : '—'}</span></td>
+          <td style="font-size:0.78rem;color:var(--text-3);">${new Date(w.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</td>
+          <td><span class="status-badge ${w.status}">${w.status}</span></td>
+          <td>
+            ${w.status === 'pending' ? `
+              <button class="btn-action confirm" onclick="adminApproveWithdrawal(${w.id})">Approve</button>
+              <button class="btn-action reject" onclick="adminRejectWithdrawal(${w.id})">Reject</button>
+            ` : `<span style="font-size:0.75rem;color:var(--text-3);">${w.admin_notes || '—'}</span>`}
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+async function adminApproveWithdrawal(id) {
+  const notes = prompt('Add a note for the user (optional):') || '';
+  try {
+    const res = await fetch(`${API}/api/admin/withdrawals/${id}/approve`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ admin_notes: notes })
+    });
+    const data = await res.json();
+    if (data.success) { showToast('Withdrawal approved. User notified.', 'success'); loadAdminWithdrawals(); }
+    else showToast(data.error || 'Failed.', 'error');
+  } catch { showToast('Connection error.', 'error'); }
+}
+
+async function adminRejectWithdrawal(id) {
+  const notes = prompt('Reason for rejection (required):');
+  if (!notes) return;
+  try {
+    const res = await fetch(`${API}/api/admin/withdrawals/${id}/reject`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ admin_notes: notes })
+    });
+    const data = await res.json();
+    if (data.success) { showToast('Withdrawal rejected. User notified.', 'success'); loadAdminWithdrawals(); }
+    else showToast(data.error || 'Failed.', 'error');
+  } catch { showToast('Connection error.', 'error'); }
+}
+
+// ── PLATFORM SETTINGS ──
+let currentSettings = {};
+
+async function loadPlatformSettings() {
+  try {
+    const res = await fetch(`${API}/api/settings`);
+    const data = await res.json();
+    currentSettings = data.settings || {};
+    renderSettings();
+  } catch (err) {
+    document.getElementById('settingsGrid').innerHTML = '<div style="color:var(--text-3);">Could not load settings.</div>';
+  }
+}
+
+function renderSettings() {
+  const settingFields = [
+    { key: 'min_deposit_eth', label: 'Minimum Deposit (ETH)', type: 'number', step: '0.01' },
+    { key: 'min_deposit_btc', label: 'Minimum Deposit (BTC)', type: 'number', step: '0.001' },
+    { key: 'min_withdrawal_eth', label: 'Minimum Withdrawal (ETH)', type: 'number', step: '0.01' },
+    { key: 'min_withdrawal_btc', label: 'Minimum Withdrawal (BTC)', type: 'number', step: '0.001' },
+    { key: 'deposit_wallet_eth', label: 'Platform ETH Deposit Wallet', type: 'text' },
+    { key: 'deposit_wallet_btc', label: 'Platform BTC Deposit Wallet', type: 'text' },
+    { key: 'processing_time', label: 'Processing Time Message', type: 'text' },
+  ];
+  const grid = document.getElementById('settingsGrid');
+  grid.innerHTML = settingFields.map(f => `
+    <div style="background:var(--bg-2);border:1px solid var(--blue-border);border-radius:8px;padding:20px;">
+      <label style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-bright);display:block;margin-bottom:8px;">${f.label}</label>
+      <div style="display:flex;gap:8px;">
+        <input type="${f.type}" class="detail-input" id="setting_${f.key}" value="${currentSettings[f.key] || ''}" ${f.step ? `step="${f.step}"` : ''} style="flex:1;">
+        <button class="btn-save" style="white-space:nowrap;" onclick="saveSetting('${f.key}')">Save</button>
+      </div>
+      <div id="settingAlert_${f.key}" style="font-size:0.75rem;margin-top:6px;display:none;"></div>
+    </div>`).join('');
+}
+
+async function saveSetting(key) {
+  const value = document.getElementById(`setting_${key}`).value;
+  const alertEl = document.getElementById(`settingAlert_${key}`);
+  try {
+    const res = await fetch(`${API}/api/admin/settings`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ key, value })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alertEl.textContent = '✓ Saved';
+      alertEl.style.cssText = 'font-size:0.75rem;margin-top:6px;display:block;color:#22C55E;';
+      currentSettings[key] = value;
+      setTimeout(() => { alertEl.style.display = 'none'; }, 2000);
+    } else {
+      alertEl.textContent = data.error || 'Failed to save.';
+      alertEl.style.cssText = 'font-size:0.75rem;margin-top:6px;display:block;color:var(--red);';
+    }
+  } catch { alertEl.textContent = 'Connection error.'; alertEl.style.display = 'block'; }
 }
 
 function handleLogout() {
