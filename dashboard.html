@@ -512,6 +512,10 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
     <!-- ── OVERVIEW ── -->
     <div id="section-overview">
+
+      <!-- ACTIVE TIER BANNER -->
+      <div id="overviewTierBanner" style="display:none;margin-bottom:20px;"></div>
+
       <div class="stats-row">
         <div class="stat-card gold">
           <div class="stat-label">Total Portfolio</div>
@@ -744,17 +748,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
             Copy Address
           </button>
 
-          <!-- CONNECT WALLET BUTTONS -->
-          <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <button onclick="connectMetaMaskDeposit()" style="background:transparent;border:1px solid rgba(245,130,32,0.3);color:#F58220;font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.08em;padding:8px;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.2s;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="#F58220"><path d="M21.49 4.27L13.25.15a2.63 2.63 0 00-2.5 0L2.51 4.27A2.63 2.63 0 001 6.67v10.66c0 .95.52 1.83 1.36 2.3l8.25 4.54a2.63 2.63 0 002.78 0l8.25-4.54A2.63 2.63 0 0023 17.33V6.67a2.63 2.63 0 00-1.51-2.4z"/></svg>
-              MetaMask
-            </button>
-            <button onclick="connectCoinbaseDeposit()" style="background:transparent;border:1px solid rgba(0,82,255,0.3);color:#0052FF;font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.08em;padding:8px;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.2s;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="#0052FF"><circle cx="12" cy="12" r="12"/><path fill="white" d="M12 6a6 6 0 100 12A6 6 0 0012 6zm-2.5 6a2.5 2.5 0 115 0 2.5 2.5 0 01-5 0z"/></svg>
-              Coinbase
-            </button>
-          </div>
+
         </div>
 
         <!-- SUBMIT TX CARD -->
@@ -770,14 +764,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
           </div>
 
           <div style="margin-bottom:14px;">
-            <label style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:6px;">Transaction Hash (TX ID)</label>
-            <input type="text" id="depTxHash" placeholder="0x..." style="width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-mono);font-size:0.72rem;padding:11px 14px;outline:none;border-radius:6px;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--blue-border)'">
-            <div style="font-size:0.72rem;color:var(--text-3);margin-top:4px;">Copy the TX hash from your wallet or blockchain explorer after sending.</div>
-          </div>
-
-          <div style="margin-bottom:14px;">
-            <label style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:6px;">Sending From (Your Wallet)</label>
-            <input type="text" id="depFromWallet" placeholder="0x... (optional)" style="width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-mono);font-size:0.72rem;padding:11px 14px;outline:none;border-radius:6px;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--blue-border)'">
+            <label style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:6px;">Your Name / Reference</label>
+            <input type="text" id="depFromWallet" placeholder="Your name or account reference" style="width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-display);font-size:0.85rem;padding:11px 14px;outline:none;border-radius:6px;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--blue-border)'">
           </div>
 
           <div id="depAlert" style="display:none;padding:10px 14px;border-radius:6px;font-size:0.8rem;margin-bottom:12px;"></div>
@@ -1297,10 +1285,54 @@ async function loadTiers() {
     });
     const data = await res.json();
     renderTiers(data.tiers || [], data.userTier || null);
+    renderOverviewTierBanner(data.userTier || null);
   } catch (err) { console.error('Tiers load error:', err); }
 }
 
-function renderTiers(tiers, userTier) {
+function renderOverviewTierBanner(userTier) {
+  const banner = document.getElementById('overviewTierBanner');
+  if (!banner) return;
+  if (!userTier) { banner.style.display = 'none'; return; }
+
+  const tierColors = {
+    starter: { color: '#22C55E', dim: 'rgba(34,197,94,0.08)', border: 'rgba(34,197,94,0.25)', icon: '◈' },
+    growth:  { color: '#60A5FA', dim: 'rgba(37,99,235,0.08)',  border: 'rgba(37,99,235,0.25)',  icon: '◆' },
+    premium: { color: '#A855F7', dim: 'rgba(168,85,247,0.08)', border: 'rgba(168,85,247,0.25)', icon: '❋' },
+  };
+  const cfg = tierColors[userTier.slug] || tierColors.growth;
+
+  banner.style.display = 'block';
+  banner.innerHTML = `
+    <div style="background:${cfg.dim};border:1px solid ${cfg.border};border-radius:10px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${cfg.color},transparent);"></div>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:44px;height:44px;background:${cfg.dim};border:1px solid ${cfg.border};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:${cfg.color};">${cfg.icon}</div>
+        <div>
+          <div style="font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.14em;text-transform:uppercase;color:${cfg.color};margin-bottom:2px;">Active Investment Tier</div>
+          <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;color:${cfg.color};">${userTier.tier_name}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;">
+        <div style="text-align:center;">
+          <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:${cfg.color};">${parseFloat(userTier.estimated_apr).toFixed(1)}%</div>
+          <div style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);">Est. APR</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:rgba(255,255,255,0.9);">${parseFloat(userTier.amount_invested || 0).toFixed(4)}</div>
+          <div style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);">ETH Invested</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:rgba(255,255,255,0.9);">${userTier.risk_level || '—'}</div>
+          <div style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);">Risk Level</div>
+        </div>
+      </div>
+      <button onclick="showSection('tiers')" style="background:${cfg.color};border:none;color:${userTier.slug === 'starter' ? '#000' : '#fff'};font-family:var(--font-mono);font-size:0.62rem;font-weight:700;letter-spacing:0.08em;padding:8px 16px;cursor:pointer;border-radius:6px;white-space:nowrap;">View Tier Details →</button>
+    </div>`;
+}
+
+async function renderTiers(tiers, userTier) {
+  // Fetch ETH price first
+  await fetchETHPrice();
   const banner = document.getElementById('userTierBanner');
 
   // Tier visual config - crypto themed
@@ -1412,7 +1444,7 @@ function renderTiers(tiers, userTier) {
         <!-- STATS -->
         <div class="tier-stats" style="border-color:${cfg.colorBorder};">
           <div class="tier-stat" style="border-color:${cfg.colorBorder};">
-            <div class="tier-stat-val" style="color:rgba(255,255,255,0.9);">$${parseFloat(t.minimum_usd).toLocaleString()}</div>
+            <div class="tier-stat-val" style="color:rgba(255,255,255,0.9);">${usdToETH(t.minimum_usd) ? usdToETH(t.minimum_usd).toFixed(3)+' ETH' : '$'+parseFloat(t.minimum_usd).toLocaleString()}</div>
             <div class="tier-stat-label">Minimum</div>
           </div>
           <div class="tier-stat">
@@ -1680,6 +1712,31 @@ async function saveTx() {
 }
 
 // ── LOGOUT ──
+
+// ── ETH PRICE & CONVERSION ──
+let ethPriceUSD = null;
+
+async function fetchETHPrice() {
+  try {
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+    const data = await res.json();
+    ethPriceUSD = data.ethereum?.usd || null;
+  } catch {
+    ethPriceUSD = null;
+  }
+  return ethPriceUSD;
+}
+
+function usdToETH(usd) {
+  if (!ethPriceUSD || !usd) return null;
+  return (parseFloat(usd) / ethPriceUSD);
+}
+
+function formatETH(val, decimals = 4) {
+  if (val === null || val === undefined) return '—';
+  return parseFloat(val).toFixed(decimals) + ' ETH';
+}
+
 // ── DEPOSIT & WITHDRAWAL ──
 let platformSettings = {};
 let currentDepositCurrency = 'ETH';
@@ -2004,6 +2061,31 @@ async function checkExistingWalletConnection() {
       await fetchWalletBalance(accounts[0]);
     }
   } catch (err) { console.error('Wallet check error:', err); }
+}
+
+
+// ── ETH PRICE & CONVERSION ──
+let ethPriceUSD = null;
+
+async function fetchETHPrice() {
+  try {
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+    const data = await res.json();
+    ethPriceUSD = data.ethereum?.usd || null;
+  } catch {
+    ethPriceUSD = null;
+  }
+  return ethPriceUSD;
+}
+
+function usdToETH(usd) {
+  if (!ethPriceUSD || !usd) return null;
+  return (parseFloat(usd) / ethPriceUSD);
+}
+
+function formatETH(val, decimals = 4) {
+  if (val === null || val === undefined) return '—';
+  return parseFloat(val).toFixed(decimals) + ' ETH';
 }
 
 // ── DEPOSIT & WITHDRAWAL ──────────────────────────────
