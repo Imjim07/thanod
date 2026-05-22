@@ -1807,15 +1807,6 @@ function switchEmailTab(tab) {
   else loadEmailCenter();
 }
 
-const emailTemplates = {
-  deposit_confirmed: { subject: 'Your deposit has been confirmed', body: 'Great news — your deposit has been received and confirmed on the Thanod platform.\n\nYour portfolio has been updated and your investment is now active. You can view your current portfolio breakdown in your dashboard.\n\nThank you for investing with Thanod.' },
-  withdrawal_processed: { subject: 'Your withdrawal has been processed', body: 'Your withdrawal request has been processed and the funds have been sent to your specified wallet address.\n\nPlease allow a few minutes for the transaction to confirm on the blockchain depending on network conditions.\n\nIf you have any questions reply to this email and we will assist you.' },
-  tier_upgraded: { subject: 'Your investment tier has been updated', body: 'Your Thanod investment tier has been updated. Your new tier is now active and your portfolio strategies have been adjusted accordingly.\n\nLog in to your dashboard to view your updated tier details and projected returns.' },
-  account_update: { subject: 'Important update to your Thanod account', body: 'We are reaching out with an important update regarding your Thanod account.\n\nPlease log in to your dashboard to review the latest changes and ensure your account information is up to date.' },
-  investment_update: { subject: 'Investment update from Thanod', body: 'We have an update regarding your investment portfolio on the Thanod platform.\n\nLog in to your dashboard to view the latest performance data and any changes to your allocations.' },
-  welcome_back: { subject: 'Welcome back to Thanod', body: 'It is great to have you back. Your Thanod portfolio continues to work for you across our three investment strategies — Validator Pool, AI Trading Bot, and Real Estate.\n\nLog in to your dashboard to see your latest returns and portfolio overview.' },
-  platform_announcement: { subject: 'Important announcement from Thanod', body: 'We have an important announcement to share with the Thanod community.\n\nPlease log in to your dashboard or reply to this email if you have any questions or concerns.' },
-};
 
 function applyEmailTemplate(templateKey, subjectId, bodyId) {
   if (templateKey === 'custom') return;
