@@ -17,9 +17,11 @@
   --green:#48BB78;--green-dim:rgba(72,187,120,0.1);
   --red:#FC8181;--red-dim:rgba(252,129,129,0.1);
   --blue:#63B3ED;--blue-dim:rgba(99,179,237,0.1);
+  --blue-bright:#60A5FA;--blue-border:rgba(37,99,235,0.2);
   --sidebar:240px;
   --font-display:'Space Grotesk',sans-serif;
   --font-ui:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;
+  --font-mono:'Courier New',monospace;
 }
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:300;min-height:100vh;display:flex;}
@@ -166,6 +168,27 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   .detail-panel{width:100%;}
 }
 
+/* FILTER BUTTONS */
+.filter-btn{font-family:var(--font-ui);font-size:0.63rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;background:transparent;border:1px solid var(--gold-border);color:var(--text-3);padding:7px 16px;cursor:pointer;border-radius:4px;transition:all 0.2s;}
+.filter-btn:hover{border-color:var(--gold);color:var(--gold-light);}
+.filter-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold-light);}
+
+/* ACTION BUTTON VARIANTS */
+.btn-action.confirm{background:rgba(72,187,120,0.12);border:1px solid rgba(72,187,120,0.3);color:var(--green);margin-right:6px;}
+.btn-action.confirm:hover{background:var(--green);color:#000;}
+.btn-action.reject{background:rgba(252,129,129,0.1);border:1px solid rgba(252,129,129,0.3);color:var(--red);}
+.btn-action.reject:hover{background:var(--red);color:#000;}
+.btn-action.approve{background:rgba(72,187,120,0.12);border:1px solid rgba(72,187,120,0.3);color:var(--green);margin-right:6px;}
+.btn-action.approve:hover{background:var(--green);color:#000;}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:9000;display:flex;flex-direction:column;gap:10px;}
+.toast{padding:12px 20px;border-radius:6px;font-family:var(--font-ui);font-size:0.78rem;font-weight:500;letter-spacing:0.02em;max-width:320px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:toastIn 0.25s ease;backdrop-filter:blur(8px);}
+.toast.success{background:rgba(22,28,18,0.96);border:1px solid rgba(72,187,120,0.4);color:var(--green);}
+.toast.error{background:rgba(28,14,14,0.96);border:1px solid rgba(252,129,129,0.4);color:var(--red);}
+.toast.info{background:rgba(12,16,24,0.96);border:1px solid var(--blue-border);color:var(--blue-bright);}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
 /* ── EMAIL CENTER ── */
 .email-quick-btn{width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text-2);font-family:var(--font-body);font-size:0.82rem;padding:10px 14px;cursor:pointer;border-radius:6px;text-align:left;transition:all 0.2s;}
 .email-quick-btn:hover{background:var(--blue-dim);border-color:var(--blue);color:var(--text);}
@@ -253,32 +276,33 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
   <div class="content">
 
-    <!-- STATS -->
-    <div class="stats-row">
-      <div class="stat-card gold">
-        <div class="stat-label">Total Users</div>
-        <div class="stat-value gold" id="statUsers">0</div>
-        <div class="stat-sub">Registered accounts</div>
-      </div>
-      <div class="stat-card green">
-        <div class="stat-label">Waitlist</div>
-        <div class="stat-value green" id="statWaitlist">0</div>
-        <div class="stat-sub">Pending signups</div>
-      </div>
-      <div class="stat-card blue">
-        <div class="stat-label">Active Validators</div>
-        <div class="stat-value blue" id="statValidators">0</div>
-        <div class="stat-sub">Currently staking</div>
-      </div>
-      <div class="stat-card red">
-        <div class="stat-label">Total Transactions</div>
-        <div class="stat-value" id="statTx">0</div>
-        <div class="stat-sub">All time</div>
-      </div>
-    </div>
-
     <!-- USERS SECTION -->
     <div id="section-users">
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card gold">
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value gold" id="statUsers">0</div>
+          <div class="stat-sub">Registered accounts</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Waitlist</div>
+          <div class="stat-value green" id="statWaitlist">0</div>
+          <div class="stat-sub">Pending signups</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Active Validators</div>
+          <div class="stat-value blue" id="statValidators">0</div>
+          <div class="stat-sub">Currently staking</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Total Transactions</div>
+          <div class="stat-value" id="statTx">0</div>
+          <div class="stat-sub">All time</div>
+        </div>
+      </div>
+
       <div class="search-bar">
         <input type="text" class="search-input" id="userSearch" placeholder="Search by name or email..." oninput="filterUsers()">
         <button class="btn-secondary" onclick="loadAllData()">↻ Refresh</button>
@@ -373,7 +397,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       </div>
     </div>
 
-  </div>
     <!-- DEPOSITS -->
     <div id="section-deposits" style="display:none;">
       <div style="margin-bottom:16px;display:flex;align-items:center;gap:12px;">
@@ -442,7 +465,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
             <div style="margin-bottom:14px;">
               <label class="detail-label">Message Body</label>
               <textarea id="emailBody" class="detail-input" placeholder="Write your message here...&#10;&#10;Use double line breaks for paragraphs." style="width:100%;min-height:180px;resize:vertical;line-height:1.6;" oninput="updatePreview('emailBody','emailPreview','emailSubject')"></textarea>
-              <div style="font-size:0.72rem;color:var(--text-3);margin-top:4px;">Double line breaks create new paragraphs. No HTML needed.</div>
             </div>
             <div id="emailSendAlert" style="display:none;padding:10px 14px;border-radius:6px;font-size:0.8rem;margin-bottom:12px;"></div>
             <button onclick="sendIndividualEmail()" id="emailSendBtn" class="btn-save" style="width:100%;">Send Email</button>
@@ -520,7 +542,11 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <div id="settingsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;"></div>
     </div>
 
+  </div><!-- /content -->
 </main>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
 
 <!-- NEW PROPERTY MODAL -->
 <div class="modal-overlay" id="newPropertyModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:300;display:none;align-items:center;justify-content:center;padding:24px;">
@@ -973,6 +999,17 @@ async function savePortfolio() {
 
 // SAVE VALIDATOR
 
+// ── TOAST ─────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
+  toast.innerHTML = `<span style="font-size:1rem;line-height:1;">${icon}</span><span>${msg}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(10px)'; toast.style.transition = 'all 0.3s ease'; setTimeout(() => toast.remove(), 300); }, 3500);
+}
+
 // ── EMAIL CENTER ──────────────────────────────────────
 
 const emailTemplates = {
@@ -993,158 +1030,7 @@ const quickTemplates = {
   platform_update:    { template: 'announcement', subject: 'Important Update from Thanod',                body: 'Dear Thanod community,\n\nWe have an important update to share with you.\n\n{message}\n\nThank you for your continued trust in Thanod.' },
 };
 
-function quickTemplate(key) {
-  const t = quickTemplates[key];
-  if (!t) return;
-  document.getElementById('emailTemplate').value = t.template;
-  document.getElementById('emailSubject').value = t.subject;
-  document.getElementById('emailBody').value = t.body;
-  applyEmailTemplate(t.template);
-}
 
-function applyEmailTemplate(val) {
-  const t = emailTemplates[val];
-  if (!t) return;
-  if (t.subject) document.getElementById('emailSubject').value = t.subject;
-  if (t.body && val !== 'custom') document.getElementById('emailBody').value = t.body;
-  const badge = document.getElementById('emailPreviewBadge');
-  const tag = document.getElementById('emailPreviewTag');
-  if (val !== 'custom') {
-    badge.style.display = 'block';
-    tag.textContent = t.tag + ' — this tag will appear at the top of the email';
-  } else {
-    badge.style.display = 'none';
-  }
-}
-
-function handleRecipientTypeChange(val) {
-  document.getElementById('emailUserSelector').style.display = val === 'individual' ? 'block' : 'none';
-  document.getElementById('emailTierSelector').style.display = val === 'tier' ? 'block' : 'none';
-}
-
-function populateEmailUserSelector() {
-  const sel = document.getElementById('emailUserId');
-  if (!sel || !allUsers.length) return;
-  sel.innerHTML = allUsers.map(u => `<option value="${u.id}">${u.name} — ${u.email}</option>`).join('');
-}
-
-async function sendAdminEmail() {
-  const recipientType = document.getElementById('emailRecipientType').value;
-  const userId = document.getElementById('emailUserId').value;
-  const tierFilter = document.getElementById('emailTierFilter').value;
-  const subject = document.getElementById('emailSubject').value.trim();
-  const body = document.getElementById('emailBody').value.trim();
-  const template = document.getElementById('emailTemplate').value;
-  const alertEl = document.getElementById('emailAlert');
-  const btn = document.getElementById('emailSendBtn');
-
-  const showAlert = (msg, type='error') => {
-    alertEl.textContent = msg;
-    alertEl.style.cssText = `display:block;padding:10px 14px;border-radius:6px;font-size:0.8rem;background:${type==='error'?'rgba(248,113,113,0.1)':'rgba(52,211,153,0.1)'};border:1px solid ${type==='error'?'rgba(248,113,113,0.3)':'rgba(52,211,153,0.3)'};color:${type==='error'?'var(--red)':'var(--green)'};`;
-  };
-
-  if (!subject) { showAlert('Please enter a subject line.'); return; }
-  if (!body) { showAlert('Please write a message.'); return; }
-  if (recipientType === 'individual' && !userId) { showAlert('Please select a user.'); return; }
-
-  // Confirm broadcast
-  if (recipientType === 'broadcast') {
-    if (!confirm(`This will send an email to ALL verified users. Are you sure?`)) return;
-  }
-
-  btn.disabled = true;
-  btn.innerHTML = '<svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="animation:spin 0.7s linear infinite"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12a8 8 0 018-8v8z"/></svg> Sending...';
-
-  try {
-    const payload = { recipient_type: recipientType, subject, body, template };
-    if (recipientType === 'individual') payload.user_id = userId;
-    if (recipientType === 'tier') payload.tier_filter = tierFilter;
-
-    const res = await fetch(`${API}/api/admin/email/send`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-
-    if (data.success) {
-      showAlert(data.message, 'success');
-      // Clear form
-      document.getElementById('emailSubject').value = '';
-      document.getElementById('emailBody').value = '';
-      document.getElementById('emailTemplate').value = 'custom';
-      document.getElementById('emailPreviewBadge').style.display = 'none';
-      // Reload logs
-      setTimeout(loadEmailLogs, 1000);
-    } else {
-      showAlert(data.error || 'Failed to send email.');
-    }
-  } catch {
-    showAlert('Connection error. Please try again.');
-  }
-
-  btn.disabled = false;
-  btn.innerHTML = '<svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg> Send Email';
-}
-
-async function loadEmailCenter() {
-  populateEmailUserSelector();
-  await loadEmailLogs();
-  await loadEmailStats();
-}
-
-async function loadEmailStats() {
-  try {
-    const res = await fetch(`${API}/api/admin/email/logs`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await res.json();
-    const logs = data.logs || [];
-    document.getElementById('emailStatSent').textContent = logs.filter(l => l.status === 'sent').length;
-    document.getElementById('emailStatFailed').textContent = logs.filter(l => l.status === 'failed').length;
-  } catch {}
-}
-
-async function loadEmailLogs() {
-  const container = document.getElementById('emailLogContainer');
-  if (!container) return;
-  try {
-    const res = await fetch(`${API}/api/admin/email/logs`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await res.json();
-    const logs = data.logs || [];
-
-    if (!logs.length) {
-      container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);font-size:0.85rem;">No emails sent yet.</div>';
-      return;
-    }
-
-    container.innerHTML = `
-      <div class="email-log-header">
-        <div class="email-log-header-cell">Date</div>
-        <div class="email-log-header-cell">Subject</div>
-        <div class="email-log-header-cell">Recipient</div>
-        <div class="email-log-header-cell">Type</div>
-        <div class="email-log-header-cell">Status</div>
-      </div>
-      ${logs.map(log => `
-        <div class="email-log-row">
-          <div class="email-log-cell mono">${new Date(log.sent_at).toLocaleDateString()} ${new Date(log.sent_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>
-          <div class="email-log-cell" style="font-size:0.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${log.subject}">${log.subject}</div>
-          <div class="email-log-cell mono" style="font-size:0.68rem;">${log.recipient_type === 'broadcast' ? '📢 All Users' : log.recipient_type === 'tier' ? '🏷️ By Tier' : log.recipient_email || '—'}</div>
-          <div class="email-log-cell mono" style="font-size:0.68rem;text-transform:uppercase;">${log.template || 'custom'}</div>
-          <div class="email-log-cell">
-            <span class="${log.status === 'sent' ? 'status-sent' : 'status-failed'}">● ${log.status}</span>
-            ${log.error_message ? `<div style="font-size:0.62rem;color:var(--text-3);margin-top:2px;" title="${log.error_message}">Error</div>` : ''}
-          </div>
-        </div>
-      `).join('')}
-    `;
-  } catch {
-    container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);">Could not load email log.</div>';
-  }
-}
 
 async function saveDepositWallet() {
   if (!selectedUserId) return;
@@ -1253,8 +1139,8 @@ function showSection(name) {
   closeDetailPanel();
   if (name === 'settings') loadPlatformSettings();
   if (name === 'email-center') loadEmailCenter();
-  if (name === 'deposits') loadDeposits('all');
-  if (name === 'withdrawals') loadWithdrawals('all');
+  if (name === 'deposits') loadAdminDeposits();
+  if (name === 'withdrawals') loadAdminWithdrawals();
 }
 
 // ── TIERS ADMIN ──
@@ -1849,7 +1735,7 @@ async function sendIndividualEmail() {
   if (!body) { showAlert('Please write a message.'); return; }
   btn.disabled = true; btn.textContent = 'Sending...';
   try {
-    const res = await fetch(`${API}/api/admin/email/send`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ userId, subject, body, template }) });
+    const res = await fetch(`${API}/api/admin/email/send`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ recipient_type: 'individual', user_id: userId, subject, body, template }) });
     const data = await res.json();
     if (data.success) {
       showAlert(data.message, 'success');
@@ -1876,7 +1762,8 @@ async function sendBroadcastEmail() {
   if (!confirm(`Send to ${countText}? This cannot be undone.`)) return;
   btn.disabled = true; btn.textContent = 'Sending...';
   try {
-    const res = await fetch(`${API}/api/admin/email/broadcast`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ subject, body, template, tierFilter }) });
+    const recipient_type = tierFilter === 'all' ? 'broadcast' : 'tier';
+    const res = await fetch(`${API}/api/admin/email/send`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ recipient_type, tier_filter: tierFilter, subject, body, template }) });
     const data = await res.json();
     if (data.success) {
       showAlert(data.message, 'success');
