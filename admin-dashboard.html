@@ -221,6 +221,10 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
       All Users
     </a>
+    <a class="nav-item" onclick="showSection('balances')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      User Balances
+    </a>
     <a class="nav-item" onclick="showSection('waitlist')">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
       Waitlist
@@ -539,8 +543,140 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
     <!-- SETTINGS -->
     <div id="section-settings" style="display:none;">
-      <div id="settingsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;"></div>
-    </div>
+
+      <!-- Row 1: Deposit limits + Withdrawal limits -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+
+        <!-- Deposit Limits -->
+        <div class="table-card">
+          <div class="table-header">
+            <div>
+              <div class="table-title">Deposit Limits</div>
+              <div class="table-count" style="margin-top:2px;">Minimum amounts per currency</div>
+            </div>
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--green);opacity:0.7;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v16m0-16l-4 4m4-4l4 4M3 20h18"/></svg>
+          </div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:14px;" id="settingsDepositGroup"></div>
+        </div>
+
+        <!-- Withdrawal Limits -->
+        <div class="table-card">
+          <div class="table-header">
+            <div>
+              <div class="table-title">Withdrawal Limits</div>
+              <div class="table-count" style="margin-top:2px;">Minimum amounts per currency</div>
+            </div>
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--red);opacity:0.7;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 20V4m0 16l-4-4m4 4l4-4M3 4h18"/></svg>
+          </div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:14px;" id="settingsWithdrawalGroup"></div>
+        </div>
+
+      </div>
+
+      <!-- Row 2: Wallet Addresses (full-width) -->
+      <div class="table-card" style="margin-bottom:20px;">
+        <div class="table-header">
+          <div>
+            <div class="table-title">Platform Deposit Wallets</div>
+            <div class="table-count" style="margin-top:2px;">Addresses users send funds to</div>
+          </div>
+        </div>
+        <div style="padding:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;" id="settingsWalletGroup"></div>
+      </div>
+
+      <!-- Row 3: Send wallet info + General settings -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+        <!-- Send wallet addresses to user -->
+        <div class="table-card">
+          <div class="table-header">
+            <div>
+              <div class="table-title">Send Wallet Info</div>
+              <div class="table-count" style="margin-top:2px;">Email deposit addresses to a client</div>
+            </div>
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--blue-bright);opacity:0.7;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </div>
+          <div style="padding:20px;">
+            <label class="detail-label" style="margin-bottom:8px;">Select Client</label>
+            <select id="walletSendUser" class="detail-select" style="margin-bottom:16px;">
+              <option value="">Loading users...</option>
+            </select>
+            <div style="background:var(--bg-3);border:1px solid var(--gold-border);border-radius:6px;padding:14px;margin-bottom:16px;font-size:0.78rem;color:var(--text-3);line-height:1.65;">
+              This will send the selected user an email containing the platform ETH, BTC, and SOL deposit wallet addresses.
+            </div>
+            <button class="btn-save" style="margin-top:0;" onclick="sendWalletInfo()" id="walletSendBtn">Send Wallet Info</button>
+            <div id="walletSendAlert" style="margin-top:10px;font-size:0.78rem;display:none;"></div>
+          </div>
+        </div>
+
+        <!-- General settings -->
+        <div class="table-card">
+          <div class="table-header">
+            <div>
+              <div class="table-title">General</div>
+              <div class="table-count" style="margin-top:2px;">Platform-wide config</div>
+            </div>
+          </div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:14px;" id="settingsGeneralGroup"></div>
+        </div>
+
+      </div>
+
+    </div><!-- /section-settings -->
+
+    <!-- USER BALANCES OVERVIEW -->
+    <div id="section-balances" style="display:none;">
+
+      <!-- Summary stats -->
+      <div class="stats-row" style="margin-bottom:24px;" id="balancesStats">
+        <div class="stat-card blue">
+          <div class="stat-label">Total AUM</div>
+          <div class="stat-value blue" id="bStatAum">—</div>
+          <div class="stat-sub">Combined portfolio ETH</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Validator Pool</div>
+          <div class="stat-value green" id="bStatValidator">—</div>
+          <div class="stat-sub">Total validator balance</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-label">Active Portfolios</div>
+          <div class="stat-value gold" id="bStatActive">—</div>
+          <div class="stat-sub">Users with balance &gt; 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg Balance</div>
+          <div class="stat-value" id="bStatAvg" style="color:var(--text-2);">—</div>
+          <div class="stat-sub">Per active portfolio</div>
+        </div>
+      </div>
+
+      <!-- Balance table -->
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Portfolio Overview — All Users</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="search-input" id="balanceSearch" placeholder="Filter by name or email…" style="width:220px;padding:7px 12px;font-size:0.8rem;" oninput="filterBalances()">
+            <button class="btn-secondary" onclick="loadUserBalances()">Refresh</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table" id="balancesTable">
+            <thead><tr>
+              <th>User</th>
+              <th>Validator Bal.</th>
+              <th>Bot Bal.</th>
+              <th>Idle Bal.</th>
+              <th style="color:var(--blue-bright);">Total (ETH)</th>
+            </tr></thead>
+            <tbody id="balancesBody">
+              <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-3);">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /section-balances -->
 
   </div><!-- /content -->
 </main>
@@ -1121,7 +1257,7 @@ async function addTransaction() {
 
 // SECTION NAV
 function showSection(name) {
-  ['users', 'waitlist', 'transactions', 'tiers', 'properties', 'deposits', 'withdrawals', 'settings', 'email-center'].forEach(s => {
+  ['users', 'waitlist', 'transactions', 'tiers', 'properties', 'deposits', 'withdrawals', 'settings', 'email-center', 'balances'].forEach(s => {
     const el = document.getElementById(`section-${s}`);
     if (el) el.style.display = s === name ? 'block' : 'none';
   });
@@ -1133,7 +1269,7 @@ function showSection(name) {
     transactions: 'All Transactions', tiers: 'Tier Settings',
     properties: 'Real Estate Properties', deposits: 'Deposit Requests',
     withdrawals: 'Withdrawal Requests', settings: 'Platform Settings',
-    'email-center': 'Email Center'
+    'email-center': 'Email Center', balances: 'User Balance Overview'
   };
   document.getElementById('sectionTitle').textContent = titles[name] || name;
   closeDetailPanel();
@@ -1141,6 +1277,7 @@ function showSection(name) {
   if (name === 'email-center') loadEmailCenter();
   if (name === 'deposits') loadAdminDeposits();
   if (name === 'withdrawals') loadAdminWithdrawals();
+  if (name === 'balances') loadUserBalances();
 }
 
 // ── TIERS ADMIN ──
@@ -1621,28 +1758,102 @@ async function loadPlatformSettings() {
 }
 
 function renderSettings() {
-  const settingFields = [
-    { key: 'min_deposit_eth', label: 'Minimum Deposit (ETH)', type: 'number', step: '0.01' },
-    { key: 'min_deposit_btc', label: 'Minimum Deposit (BTC)', type: 'number', step: '0.001' },
-    { key: 'min_deposit_sol', label: 'Minimum Deposit (SOL)', type: 'number', step: '0.1' },
-    { key: 'min_withdrawal_eth', label: 'Minimum Withdrawal (ETH)', type: 'number', step: '0.01' },
-    { key: 'min_withdrawal_btc', label: 'Minimum Withdrawal (BTC)', type: 'number', step: '0.001' },
-    { key: 'min_withdrawal_sol', label: 'Minimum Withdrawal (SOL)', type: 'number', step: '0.1' },
-    { key: 'deposit_wallet_eth', label: 'Platform ETH Deposit Wallet', type: 'text' },
-    { key: 'deposit_wallet_btc', label: 'Platform BTC Deposit Wallet', type: 'text' },
-    { key: 'deposit_wallet_sol', label: 'Platform SOL Deposit Wallet', type: 'text' },
+  function settingRow(f) {
+    return `<div>
+      <label class="detail-label" style="margin-bottom:6px;">${f.label}</label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="${f.type}" class="detail-input" id="setting_${f.key}" value="${currentSettings[f.key] || ''}" ${f.step ? `step="${f.step}"` : ''} style="flex:1;padding:9px 12px;">
+        <button onclick="saveSetting('${f.key}')" style="background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--gold-light);font-family:var(--font-ui);font-size:0.65rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:9px 16px;cursor:pointer;border-radius:2px;white-space:nowrap;transition:all 0.2s;" onmouseover="this.style.background='var(--gold)';this.style.color='var(--bg)';" onmouseout="this.style.background='var(--gold-dim)';this.style.color='var(--gold-light)';">Save</button>
+      </div>
+      <div id="settingAlert_${f.key}" style="font-size:0.73rem;margin-top:5px;display:none;"></div>
+    </div>`;
+  }
+
+  const depositFields = [
+    { key: 'min_deposit_eth', label: 'ETH — Minimum Deposit', type: 'number', step: '0.01' },
+    { key: 'min_deposit_btc', label: 'BTC — Minimum Deposit', type: 'number', step: '0.001' },
+    { key: 'min_deposit_sol', label: 'SOL — Minimum Deposit', type: 'number', step: '0.1' },
+  ];
+  const withdrawalFields = [
+    { key: 'min_withdrawal_eth', label: 'ETH — Minimum Withdrawal', type: 'number', step: '0.01' },
+    { key: 'min_withdrawal_btc', label: 'BTC — Minimum Withdrawal', type: 'number', step: '0.001' },
+    { key: 'min_withdrawal_sol', label: 'SOL — Minimum Withdrawal', type: 'number', step: '0.1' },
+  ];
+  const generalFields = [
     { key: 'processing_time', label: 'Processing Time Message', type: 'text' },
   ];
-  const grid = document.getElementById('settingsGrid');
-  grid.innerHTML = settingFields.map(f => `
-    <div style="background:var(--bg-2);border:1px solid var(--blue-border);border-radius:8px;padding:20px;">
-      <label style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-bright);display:block;margin-bottom:8px;">${f.label}</label>
-      <div style="display:flex;gap:8px;">
-        <input type="${f.type}" class="detail-input" id="setting_${f.key}" value="${currentSettings[f.key] || ''}" ${f.step ? `step="${f.step}"` : ''} style="flex:1;">
-        <button class="btn-save" style="white-space:nowrap;" onclick="saveSetting('${f.key}')">Save</button>
+
+  const walletMeta = [
+    { key: 'deposit_wallet_eth', label: 'Ethereum (ETH)', symbol: 'Ξ', color: '#60A5FA', border: 'rgba(96,165,250,0.25)', bg: 'rgba(96,165,250,0.04)' },
+    { key: 'deposit_wallet_btc', label: 'Bitcoin (BTC)',  symbol: '₿', color: '#F7931A', border: 'rgba(247,147,26,0.25)', bg: 'rgba(247,147,26,0.04)' },
+    { key: 'deposit_wallet_sol', label: 'Solana (SOL)',   symbol: '◎', color: '#9945FF', border: 'rgba(153,69,255,0.25)', bg: 'rgba(153,69,255,0.04)' },
+  ];
+
+  document.getElementById('settingsDepositGroup').innerHTML    = depositFields.map(settingRow).join('');
+  document.getElementById('settingsWithdrawalGroup').innerHTML = withdrawalFields.map(settingRow).join('');
+  document.getElementById('settingsGeneralGroup').innerHTML    = generalFields.map(settingRow).join('');
+
+  document.getElementById('settingsWalletGroup').innerHTML = walletMeta.map(w => `
+    <div style="background:${w.bg};border:2px solid ${w.border};border-radius:10px;padding:18px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <div style="width:36px;height:36px;background:${w.bg};border:1px solid ${w.border};border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:${w.color};">${w.symbol}</div>
+        <div>
+          <div style="font-family:var(--font-ui);font-size:0.78rem;font-weight:600;color:${w.color};">${w.label}</div>
+          <div style="font-size:0.65rem;color:var(--text-3);">Deposit address</div>
+        </div>
       </div>
-      <div id="settingAlert_${f.key}" style="font-size:0.75rem;margin-top:6px;display:none;"></div>
+      <input type="text" class="detail-input" id="setting_${w.key}" value="${currentSettings[w.key] || ''}" placeholder="Wallet address…" style="margin-bottom:10px;font-family:var(--font-mono);font-size:0.72rem;border-color:${w.border};">
+      <button onclick="saveSetting('${w.key}')" style="width:100%;background:${w.bg};border:1px solid ${w.border};color:${w.color};font-family:var(--font-ui);font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:9px 0;cursor:pointer;border-radius:4px;transition:all 0.2s;">Save Address</button>
+      <div id="settingAlert_${w.key}" style="font-size:0.73rem;margin-top:6px;display:none;"></div>
     </div>`).join('');
+
+  // Populate wallet-sender user dropdown using email center users
+  loadWalletSenderUsers();
+}
+
+async function loadWalletSenderUsers() {
+  try {
+    const res = await fetch(`${API}/api/admin/email/users`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const data = await res.json();
+    const sel = document.getElementById('walletSendUser');
+    if (!sel) return;
+    const users = data.users || [];
+    sel.innerHTML = '<option value="">— Select a client —</option>' +
+      users.map(u => `<option value="${u.id}">${u.name} — ${u.email}</option>`).join('');
+  } catch { /* silently ignore */ }
+}
+
+async function sendWalletInfo() {
+  const userId = document.getElementById('walletSendUser').value;
+  const btn = document.getElementById('walletSendBtn');
+  const alertEl = document.getElementById('walletSendAlert');
+  if (!userId) {
+    alertEl.textContent = 'Please select a client first.';
+    alertEl.style.cssText = 'font-size:0.78rem;margin-top:10px;display:block;color:var(--red);';
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  try {
+    const res = await fetch(`${API}/api/admin/send-wallet-info/${userId}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success) {
+      alertEl.textContent = '✓ Wallet info sent successfully.';
+      alertEl.style.cssText = 'font-size:0.78rem;margin-top:10px;display:block;color:var(--green);';
+      setTimeout(() => { alertEl.style.display = 'none'; }, 4000);
+    } else {
+      throw new Error(data.error || 'Failed.');
+    }
+  } catch (err) {
+    alertEl.textContent = err.message;
+    alertEl.style.cssText = 'font-size:0.78rem;margin-top:10px;display:block;color:var(--red);';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send Wallet Info';
+  }
 }
 
 async function saveSetting(key) {
@@ -1665,6 +1876,67 @@ async function saveSetting(key) {
       alertEl.style.cssText = 'font-size:0.75rem;margin-top:6px;display:block;color:var(--red);';
     }
   } catch { alertEl.textContent = 'Connection error.'; alertEl.style.display = 'block'; }
+}
+
+// ── USER BALANCES OVERVIEW ─────────────────────────────
+let allBalanceUsers = [];
+
+async function loadUserBalances() {
+  const tbody = document.getElementById('balancesBody');
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-3);">Loading...</td></tr>';
+  try {
+    const res = await fetch(`${API}/api/admin/users`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const data = await res.json();
+    allBalanceUsers = (data.users || []).sort((a, b) => parseFloat(b.total_balance || 0) - parseFloat(a.total_balance || 0));
+    renderBalancesTable(allBalanceUsers);
+    renderBalancesStats(allBalanceUsers);
+  } catch {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-3);">Could not load data.</td></tr>';
+  }
+}
+
+function filterBalances() {
+  const q = document.getElementById('balanceSearch').value.toLowerCase();
+  const filtered = q ? allBalanceUsers.filter(u => (u.name||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q)) : allBalanceUsers;
+  renderBalancesTable(filtered);
+}
+
+function renderBalancesStats(users) {
+  const active = users.filter(u => parseFloat(u.total_balance || 0) > 0);
+  const totalAum = users.reduce((s, u) => s + parseFloat(u.total_balance || 0), 0);
+  const totalValidator = users.reduce((s, u) => s + parseFloat(u.validator_balance || 0), 0);
+  const avg = active.length ? totalAum / active.length : 0;
+  document.getElementById('bStatAum').textContent       = 'Ξ' + totalAum.toFixed(4);
+  document.getElementById('bStatValidator').textContent = 'Ξ' + totalValidator.toFixed(4);
+  document.getElementById('bStatActive').textContent    = active.length;
+  document.getElementById('bStatAvg').textContent       = 'Ξ' + avg.toFixed(4);
+}
+
+function renderBalancesTable(users) {
+  const tbody = document.getElementById('balancesBody');
+  if (!users.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-3);">No users found.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = users.map(u => {
+    const vb = parseFloat(u.validator_balance || 0);
+    const bb = parseFloat(u.bot_balance || 0);
+    const ib = parseFloat(u.idle_balance || 0);
+    const tb = parseFloat(u.total_balance || 0);
+    const hasBalance = tb > 0;
+    return `<tr>
+      <td>
+        <div class="user-name-cell">${u.name || '—'}</div>
+        <div style="font-size:0.72rem;color:var(--text-3);">${u.email || '—'}</div>
+      </td>
+      <td><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--green);">Ξ${vb.toFixed(4)}</span></td>
+      <td><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--blue);">Ξ${bb.toFixed(4)}</span></td>
+      <td><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--text-3);">Ξ${ib.toFixed(4)}</span></td>
+      <td>
+        <span style="font-family:var(--font-mono);font-size:0.9rem;font-weight:600;color:${hasBalance ? 'var(--blue-bright)' : 'var(--text-3)'};">Ξ${tb.toFixed(4)}</span>
+      </td>
+    </tr>`;
+  }).join('');
 }
 
 // ── EMAIL CENTER ──────────────────────────────────────
