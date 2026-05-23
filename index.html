@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thanod — Automated Crypto Investment Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%232563EB'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='sans-serif' font-size='18' font-weight='700' fill='white'>T</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#050508;
+  --bg-2:#09090F;
+  --bg-3:#0E0E18;
+  --bg-4:#13131F;
+  --blue:#2563EB;
+  --blue-light:#3B82F6;
+  --blue-bright:#60A5FA;
+  --blue-pale:#BFDBFE;
+  --blue-dim:rgba(37,99,235,0.08);
+  --blue-border:rgba(37,99,235,0.2);
+  --blue-glow:rgba(37,99,235,0.15);
+  --text:#F0F0F8;
+  --text-2:#8A8AA8;
+  --text-3:#4A4A68;
+  --green:#22D3EE;
+  --green-dim:rgba(34,211,238,0.08);
+  --white:#FFFFFF;
+  --font-display:'Space Grotesk',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'Space Mono',monospace;
+  --nav-h:72px;
+  --max-w:1200px;
+  --radius:4px;
+}
+
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:400;line-height:1.65;overflow-x:hidden;}
+
+/* GRAIN */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 60px;transition:all 0.4s;}
+nav.scrolled{background:rgba(5,5,8,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--blue-border);}
+.nav-logo{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;color:var(--text);cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:8px;}
+.nav-logo-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:white;}
+.nav-links{display:flex;gap:36px;list-style:none;}
+.nav-links a{font-family:var(--font-display);font-size:0.82rem;font-weight:500;letter-spacing:0.02em;color:var(--text-2);text-decoration:none;cursor:pointer;transition:color 0.25s;}
+.nav-links a:hover,.nav-links a.active{color:var(--text);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-signin{font-family:var(--font-display);font-size:0.78rem;font-weight:500;color:var(--text-2);text-decoration:none;padding:9px 18px;border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius);transition:all 0.25s;cursor:pointer;}
+.nav-signin:hover{color:var(--text);border-color:var(--blue-border);}
+.nav-cta{font-family:var(--font-display);font-size:0.78rem;font-weight:600;color:var(--white);background:var(--blue);border:none;padding:9px 22px;cursor:pointer;transition:all 0.25s;border-radius:var(--radius);text-decoration:none;}
+.nav-cta:hover{background:var(--blue-light);transform:translateY(-1px);}
+.nav-dash{font-family:var(--font-display);font-size:0.78rem;font-weight:600;color:var(--blue-bright);text-decoration:none;padding:9px 18px;border:1px solid var(--blue-border);border-radius:var(--radius);transition:all 0.25s;display:none;}
+.nav-dash:hover{background:var(--blue-dim);}
+.menu-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:5px;}
+.menu-toggle span{width:22px;height:1.5px;background:var(--text);display:block;}
+
+/* MOBILE NAV */
+.mobile-nav{display:none;position:fixed;inset:0;background:rgba(5,5,8,0.98);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:28px;}
+.mobile-nav.open{display:flex;}
+.mobile-nav a{font-family:var(--font-display);font-size:2rem;font-weight:600;color:var(--text-2);text-decoration:none;cursor:pointer;transition:color 0.2s;}
+.mobile-nav a:hover{color:var(--blue-bright);}
+.mobile-close{position:absolute;top:24px;right:28px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-3);}
+
+/* PAGES */
+.page{display:none;min-height:100vh;overflow-x:hidden;}
+.page.active{display:block;}
+@keyframes pageIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.page-in{animation:pageIn 0.35s ease forwards;}
+
+/* BUTTONS */
+.btn-primary{font-family:var(--font-display);font-size:0.82rem;font-weight:600;letter-spacing:0.01em;color:var(--white);background:var(--blue);border:none;padding:14px 32px;cursor:pointer;transition:all 0.25s;display:inline-block;text-decoration:none;border-radius:var(--radius);}
+.btn-primary:hover{background:var(--blue-light);transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,99,235,0.3);}
+.btn-outline{font-family:var(--font-display);font-size:0.82rem;font-weight:500;color:var(--text-2);background:transparent;border:1px solid rgba(255,255,255,0.12);padding:13px 30px;cursor:pointer;transition:all 0.25s;display:inline-block;border-radius:var(--radius);}
+.btn-outline:hover{color:var(--text);border-color:var(--blue-border);background:var(--blue-dim);}
+
+/* SECTIONS */
+.section{max-width:var(--max-w);margin:0 auto;padding:96px 60px;}
+.section-label{font-family:var(--font-mono);font-size:0.68rem;font-weight:400;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.section-label::before{content:'//';color:var(--blue);font-size:0.62rem;}
+.section-title{font-family:var(--font-display);font-size:clamp(2rem,3.8vw,3.2rem);font-weight:700;letter-spacing:-0.02em;line-height:1.1;color:var(--text);margin-bottom:16px;}
+.section-title span{color:var(--blue-bright);}
+.section-sub{font-size:1rem;color:var(--text-2);max-width:500px;line-height:1.75;}
+
+/* HERO */
+.hero{min-height:100vh;position:relative;overflow:hidden;display:flex;align-items:center;}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(37,99,235,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,0.05) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 75%);pointer-events:none;}
+.hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(37,99,235,0.12) 0%,transparent 65%);pointer-events:none;}
+#hero-canvas{position:absolute;inset:0;opacity:0.5;pointer-events:none;}
+.hero-content{position:relative;z-index:10;max-width:var(--max-w);margin:0 auto;padding:calc(var(--nav-h) + 80px) 60px 100px;width:100%;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(37,99,235,0.1);border:1px solid var(--blue-border);padding:6px 14px;border-radius:20px;margin-bottom:32px;font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-bright);opacity:0;animation:fadeUp 0.7s ease 0.2s forwards;}
+.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--blue-bright);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.hero-headline{font-family:var(--font-display);font-size:clamp(3.5rem,7.5vw,7.5rem);font-weight:700;letter-spacing:-0.03em;line-height:1;color:var(--text);margin-bottom:28px;max-width:760px;opacity:0;animation:fadeUp 0.7s ease 0.4s forwards;}
+.hero-headline span{color:var(--blue-bright);position:relative;}
+.hero-headline span::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),transparent);}
+.hero-sub{font-size:1.05rem;font-weight:400;color:var(--text-2);max-width:480px;line-height:1.78;margin-bottom:44px;opacity:0;animation:fadeUp 0.7s ease 0.6s forwards;}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;opacity:0;animation:fadeUp 0.7s ease 0.8s forwards;}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:80px;padding-top:40px;border-top:1px solid rgba(255,255,255,0.06);opacity:0;animation:fadeUp 0.7s ease 1s forwards;}
+.hero-stat{padding-right:28px;border-right:1px solid rgba(255,255,255,0.06);margin-right:28px;}
+.hero-stat:last-child{border:none;margin:0;}
+.hero-stat-num{font-family:var(--font-display);font-size:2.4rem;font-weight:700;color:var(--blue-bright);letter-spacing:-0.02em;line-height:1;}
+.hero-stat-label{font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-top:5px;}
+
+/* TICKER STRIP */
+.ticker-strip{background:var(--blue);padding:10px 0;overflow:hidden;position:relative;}
+.ticker-inner{display:flex;gap:48px;animation:ticker 25s linear infinite;width:max-content;}
+.ticker-item{font-family:var(--font-mono);font-size:0.72rem;font-weight:400;color:rgba(255,255,255,0.85);letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;display:flex;align-items:center;gap:8px;}
+.ticker-item::before{content:'◆';font-size:0.5rem;opacity:0.6;}
+@keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* PILLARS */
+.pillars-bg{background:var(--bg-2);border-top:1px solid var(--blue-border);border-bottom:1px solid var(--blue-border);}
+.pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--blue-border);border:1px solid var(--blue-border);margin-top:52px;border-radius:var(--radius);overflow:hidden;}
+.pillar-card{background:var(--bg-2);padding:44px 36px 48px;position:relative;overflow:hidden;transition:background 0.3s;}
+.pillar-card:hover{background:var(--bg-3);}
+.pillar-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--blue);opacity:0;transition:opacity 0.3s;}
+.pillar-card:hover::before{opacity:1;}
+.pillar-num{font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.16em;color:var(--blue-border);margin-bottom:20px;}
+.pillar-icon{width:44px;height:44px;background:var(--blue-dim);border:1px solid var(--blue-border);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--blue-bright);margin-bottom:18px;}
+.pillar-tag{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:8px;}
+.pillar-title{font-family:var(--font-display);font-size:1.35rem;font-weight:600;letter-spacing:-0.01em;margin-bottom:12px;}
+.pillar-desc{font-size:0.88rem;color:var(--text-2);line-height:1.75;}
+
+/* MANIFESTO */
+.manifesto{text-align:center;background:var(--bg);}
+.blue-line{width:1px;height:60px;background:linear-gradient(to bottom,transparent,var(--blue),transparent);margin:0 auto 40px;}
+.manifesto-quote{font-family:var(--font-display);font-size:clamp(1.6rem,3.5vw,2.8rem);font-weight:600;letter-spacing:-0.02em;line-height:1.25;max-width:780px;margin:0 auto 40px;color:var(--text);}
+.manifesto-quote span{color:var(--blue-bright);}
+
+/* TRUST */
+.trust-bg{background:var(--bg-2);border-top:1px solid var(--blue-border);}
+.trust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:52px;}
+.trust-item{padding:32px;border:1px solid var(--blue-border);border-radius:var(--radius);background:var(--bg-3);transition:all 0.3s;position:relative;overflow:hidden;}
+.trust-item::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--blue);transform:scaleX(0);transition:transform 0.3s;}
+.trust-item:hover::after{transform:scaleX(1);}
+.trust-item:hover{border-color:rgba(37,99,235,0.35);}
+.trust-icon{width:40px;height:40px;background:var(--blue-dim);border:1px solid var(--blue-border);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--blue-bright);margin-bottom:18px;}
+.trust-title{font-family:var(--font-display);font-size:1.1rem;font-weight:600;margin-bottom:10px;}
+.trust-desc{font-size:0.86rem;color:var(--text-2);line-height:1.75;}
+
+/* CTA BANNER */
+.cta-banner{background:linear-gradient(135deg,#0a0a14 0%,#0d0f1f 50%,#080814 100%);border:1px solid var(--blue-border);padding:72px 60px;text-align:center;position:relative;overflow:hidden;border-radius:var(--radius);}
+.cta-banner::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,0.1) 0%,transparent 65%);pointer-events:none;}
+.cta-banner-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:16px;}
+.cta-banner-title{font-family:var(--font-display);font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;letter-spacing:-0.02em;margin-bottom:14px;}
+.cta-banner-sub{color:var(--text-2);font-size:0.95rem;max-width:440px;margin:0 auto 32px;line-height:1.75;}
+
+/* HOW IT WORKS */
+.steps-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;margin-top:64px;}
+.step-item{display:flex;gap:20px;padding:28px;border:1px solid transparent;border-radius:var(--radius);transition:all 0.3s;}
+.step-item:hover{border-color:var(--blue-border);background:var(--bg-2);}
+.step-num{font-family:var(--font-mono);font-size:0.7rem;font-weight:700;color:var(--blue);background:var(--blue-dim);border:1px solid var(--blue-border);width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:6px;margin-top:2px;}
+.step-content h3{font-family:var(--font-display);font-size:1.15rem;font-weight:600;letter-spacing:-0.01em;margin-bottom:8px;}
+.step-content p{font-size:0.88rem;color:var(--text-2);line-height:1.78;}
+.step-connector{width:1px;height:20px;background:linear-gradient(to bottom,var(--blue-border),transparent);margin-left:36px;}
+.arch-box{background:var(--bg-2);border:1px solid var(--blue-border);padding:40px;position:sticky;top:100px;border-radius:var(--radius);}
+.arch-layer{background:var(--blue-dim);border:1px solid var(--blue-border);padding:16px 18px;display:flex;align-items:center;gap:12px;border-radius:var(--radius);}
+.arch-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.arch-connector{width:1px;height:20px;background:var(--blue-border);margin-left:20px;}
+.arch-tag{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:2px;}
+.arch-name{font-family:var(--font-display);font-size:0.95rem;font-weight:500;}
+.arch-apy{margin-left:auto;font-family:var(--font-mono);font-size:0.65rem;color:var(--text-2);flex-shrink:0;}
+.arch-pill{border:1px solid var(--blue-border);padding:4px 10px;font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.08em;color:var(--text-3);border-radius:20px;}
+
+/* FEATURES */
+.feature-block{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;padding:72px 0;border-top:1px solid var(--blue-border);}
+.feature-block.reverse{direction:rtl;}
+.feature-block.reverse>*{direction:ltr;}
+.feature-tag{font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:12px;}
+.feature-title{font-family:var(--font-display);font-size:2rem;font-weight:700;letter-spacing:-0.02em;line-height:1.15;margin-bottom:16px;}
+.feature-desc{font-size:0.92rem;color:var(--text-2);line-height:1.78;margin-bottom:22px;}
+.feature-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.feature-list li{font-size:0.86rem;color:var(--text-2);display:flex;align-items:flex-start;gap:10px;}
+.feature-list li::before{content:'→';color:var(--blue-bright);font-size:0.78rem;margin-top:2px;flex-shrink:0;}
+.feature-visual{background:var(--bg-2);border:1px solid var(--blue-border);padding:40px;min-height:280px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);position:relative;overflow:hidden;}
+.feature-visual::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),transparent);}
+
+/* ABOUT */
+.about-hero-section{background:var(--bg-2);padding:calc(var(--nav-h) + 80px) 60px 80px;border-bottom:1px solid var(--blue-border);}
+.about-big-title{font-family:var(--font-display);font-size:clamp(3rem,6vw,6rem);font-weight:700;letter-spacing:-0.03em;line-height:0.95;color:var(--text);}
+.about-big-title span{color:var(--blue-bright);}
+.about-story-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+.about-col h3{font-family:var(--font-display);font-size:1.4rem;font-weight:600;margin-bottom:18px;}
+.about-col p{font-size:0.9rem;color:var(--text-2);line-height:1.82;margin-bottom:16px;}
+.certs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--blue-border);border:1px solid var(--blue-border);margin-top:48px;border-radius:var(--radius);overflow:hidden;}
+.cert-item{background:var(--bg-2);padding:28px 20px;text-align:center;}
+.cert-icon{font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--blue-bright);margin-bottom:8px;}
+.cert-name{font-family:var(--font-display);font-size:0.8rem;font-weight:600;color:var(--text);}
+.cert-body{font-size:0.72rem;color:var(--text-3);margin-top:3px;}
+.values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px;}
+.value-card{padding:32px 28px;border:1px solid var(--blue-border);border-radius:var(--radius);background:var(--bg-2);transition:all 0.3s;}
+.value-card:hover{border-color:rgba(37,99,235,0.4);box-shadow:0 8px 32px rgba(37,99,235,0.08);}
+.value-icon{width:40px;height:40px;background:var(--blue-dim);border:1px solid var(--blue-border);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--blue-bright);margin-bottom:16px;}
+.value-title{font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:8px;}
+.value-desc{font-size:0.84rem;color:var(--text-2);line-height:1.75;}
+
+/* WAITLIST */
+.waitlist-inner{max-width:var(--max-w);margin:0 auto;padding:150px 60px 100px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+.benefits{display:flex;flex-direction:column;gap:24px;margin-top:44px;}
+.benefit-item{display:flex;gap:16px;align-items:flex-start;}
+.benefit-icon{width:38px;height:38px;min-width:38px;background:var(--blue-dim);border:1px solid var(--blue-border);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--blue-bright);}
+.benefit-text h4{font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:3px;}
+.benefit-text p{font-size:0.83rem;color:var(--text-2);line-height:1.65;}
+.form-card{background:var(--bg-2);border:1px solid var(--blue-border);padding:48px 44px;border-radius:var(--radius);position:relative;}
+.form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue-bright),var(--blue));border-radius:var(--radius) var(--radius) 0 0;}
+.form-title{font-family:var(--font-display);font-size:1.6rem;font-weight:700;letter-spacing:-0.01em;margin-bottom:4px;}
+.form-subtitle{font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.1em;color:var(--text-3);margin-bottom:28px;}
+.form-group{margin-bottom:16px;}
+.form-label{font-family:var(--font-display);font-size:0.72rem;font-weight:500;letter-spacing:0.06em;color:var(--text-2);display:block;margin-bottom:6px;}
+.form-input{width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.9rem;padding:11px 14px;outline:none;transition:border-color 0.25s;border-radius:var(--radius);}
+.form-select{width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.9rem;padding:11px 40px 11px 14px;outline:none;transition:border-color 0.25s;border-radius:var(--radius);-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2360A5FA' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.form-input:focus,.form-select:focus{border-color:var(--blue);}
+.form-input::placeholder{color:var(--text-3);}
+.form-select option{background:var(--bg-3);color:var(--text);}
+.form-note{font-size:0.72rem;color:var(--text-3);margin-top:10px;text-align:center;line-height:1.5;}
+.success-state{text-align:center;padding:28px 0;display:none;}
+.success-title{font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--blue-bright);margin-bottom:8px;}
+.success-msg{font-size:0.88rem;color:var(--text-2);line-height:1.7;}
+
+/* CONTACT */
+.contact-inner{max-width:var(--max-w);margin:0 auto;padding:150px 60px 100px;display:grid;grid-template-columns:1fr 1.3fr;gap:80px;align-items:start;}
+.contact-title{font-family:var(--font-display);font-size:clamp(2.5rem,4vw,4rem);font-weight:700;letter-spacing:-0.02em;line-height:1.05;margin-bottom:20px;}
+.contact-intro{font-size:0.92rem;color:var(--text-2);line-height:1.75;max-width:360px;margin-bottom:44px;}
+.contact-details{display:flex;flex-direction:column;gap:24px;margin-top:8px;}
+.contact-detail-item{display:flex;gap:14px;align-items:flex-start;}
+.contact-detail-item svg{color:var(--blue-bright);margin-top:2px;flex-shrink:0;}
+.contact-detail-item strong{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:3px;}
+.contact-detail-item span{font-size:0.88rem;color:var(--text-2);}
+.contact-form-card{background:var(--bg-2);border:1px solid var(--blue-border);padding:48px 44px;border-radius:var(--radius);}
+.contact-form-title{font-family:var(--font-display);font-size:1.6rem;font-weight:700;letter-spacing:-0.01em;margin-bottom:4px;}
+.contact-form-sub{font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.1em;color:var(--text-3);margin-bottom:28px;}
+.form-textarea{width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.9rem;padding:11px 14px;outline:none;transition:border-color 0.25s;border-radius:var(--radius);resize:vertical;min-height:120px;}
+.form-textarea:focus{border-color:var(--blue);}
+.form-textarea::placeholder{color:var(--text-3);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-success-title{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--blue-bright);margin-bottom:8px;}
+.form-success-msg{font-size:0.88rem;color:var(--text-2);line-height:1.7;}
+
+/* NOTIFICATION */
+.notification{position:fixed;bottom:24px;right:24px;background:var(--bg-2);border:1px solid var(--blue);padding:12px 20px;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.06em;color:var(--blue-bright);z-index:9998;opacity:0;transform:translateY(6px);transition:all 0.3s;pointer-events:none;border-radius:var(--radius);}
+.notification.show{opacity:1;transform:translateY(0);}
+
+/* FOOTER */
+footer{background:var(--bg-2);border-top:1px solid var(--blue-border);padding:64px 60px 0;}
+.footer-inner{max-width:var(--max-w);margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:56px;padding-bottom:56px;}
+.footer-logo{font-family:var(--font-display);font-size:1.3rem;font-weight:700;letter-spacing:-0.02em;display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.footer-logo-mark{width:24px;height:24px;background:var(--blue);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:white;}
+.footer-tagline{font-size:0.83rem;color:var(--text-3);line-height:1.7;max-width:260px;}
+.footer-col-title{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:16px;}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.footer-links a{font-size:0.83rem;color:var(--text-3);text-decoration:none;cursor:pointer;transition:color 0.2s;}
+.footer-links a:hover{color:var(--blue-bright);}
+.footer-bottom{max-width:var(--max-w);margin:0 auto;padding:22px 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;gap:20px;}
+.footer-copy{font-size:0.75rem;color:var(--text-3);}
+.footer-legal{font-size:0.7rem;color:var(--text-3);font-style:italic;max-width:480px;text-align:right;}
+
+/* CHATBOT */
+.chat-bubble{position:fixed;bottom:28px;right:28px;width:56px;height:56px;border-radius:50%;background:var(--blue);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:white;z-index:9990;box-shadow:0 4px 24px rgba(37,99,235,0.4);transition:all 0.25s;}
+.chat-bubble:hover{background:var(--blue-light);transform:scale(1.07);}
+.chat-pulse{position:absolute;top:4px;right:4px;width:10px;height:10px;border-radius:50%;background:#22D3EE;border:2px solid var(--bg);}
+.chat-pulse::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:2px solid #22D3EE;animation:chatPulse 2s ease-out infinite;}
+@keyframes chatPulse{0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(2);}}
+.chat-window{position:fixed;bottom:96px;right:28px;width:360px;max-height:540px;background:var(--bg-2);border:1px solid var(--blue-border);display:flex;flex-direction:column;z-index:9989;box-shadow:0 20px 60px rgba(0,0,0,0.5);transform:translateY(14px) scale(0.97);opacity:0;pointer-events:none;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);border-radius:12px;}
+.chat-window.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all;}
+.chat-window::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue-bright),var(--blue));border-radius:12px 12px 0 0;}
+.chat-header{padding:14px 16px;border-bottom:1px solid var(--blue-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.chat-header-info{display:flex;align-items:center;gap:10px;}
+.chat-avatar{width:34px;height:34px;border-radius:50%;background:var(--blue);color:white;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:0.9rem;font-weight:700;flex-shrink:0;}
+.chat-name{font-family:var(--font-display);font-size:0.82rem;font-weight:600;}
+.chat-status{font-family:var(--font-mono);font-size:0.6rem;color:var(--text-3);display:flex;align-items:center;gap:5px;margin-top:1px;}
+.chat-online-dot{width:5px;height:5px;border-radius:50%;background:#22D3EE;}
+.chat-close-btn{background:none;border:none;color:var(--text-3);cursor:pointer;padding:4px;transition:color 0.2s;}
+.chat-close-btn:hover{color:var(--text);}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:var(--blue-border) transparent;}
+.chat-msg{display:flex;gap:7px;align-items:flex-end;}
+.chat-msg.bot{justify-content:flex-start;}
+.chat-msg.user{justify-content:flex-end;}
+.chat-bubble-msg{max-width:82%;padding:10px 13px;font-size:0.84rem;line-height:1.6;border-radius:10px;}
+.chat-msg.bot .chat-bubble-msg{background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);}
+.chat-msg.user .chat-bubble-msg{background:var(--blue);color:white;}
+.chat-typing{display:flex;gap:4px;align-items:center;padding:11px 13px;background:var(--bg-3);border:1px solid var(--blue-border);width:fit-content;border-radius:10px;}
+.chat-typing span{width:5px;height:5px;border-radius:50%;background:var(--blue-bright);animation:typingDot 1.2s ease-in-out infinite;}
+.chat-typing span:nth-child(2){animation-delay:0.2s;}
+.chat-typing span:nth-child(3){animation-delay:0.4s;}
+@keyframes typingDot{0%,60%,100%{opacity:0.25;transform:translateY(0);}30%{opacity:1;transform:translateY(-4px);}}
+.chat-quick-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;}
+.chat-quick-btns button{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.06em;color:var(--blue-bright);background:var(--blue-dim);border:1px solid var(--blue-border);padding:5px 11px;cursor:pointer;transition:all 0.2s;border-radius:20px;}
+.chat-quick-btns button:hover{background:var(--blue);color:white;}
+.chat-lead-capture{padding:14px;background:var(--bg-3);border-top:1px solid var(--blue-border);flex-shrink:0;}
+.lead-prompt{font-family:var(--font-display);font-size:0.95rem;font-weight:600;color:var(--blue-bright);margin-bottom:10px;text-align:center;}
+.chat-lead-input{width:100%;background:var(--bg-2);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.82rem;padding:8px 12px;outline:none;margin-bottom:6px;border-radius:6px;transition:border-color 0.2s;}
+.chat-lead-input:focus{border-color:var(--blue);}
+.chat-lead-input::placeholder{color:var(--text-3);}
+.chat-lead-btn{width:100%;background:var(--blue);border:none;color:white;font-family:var(--font-display);font-size:0.72rem;font-weight:600;letter-spacing:0.06em;padding:10px;cursor:pointer;transition:background 0.2s;border-radius:6px;}
+.chat-lead-btn:hover{background:var(--blue-light);}
+.chat-lead-skip{display:block;width:100%;background:none;border:none;color:var(--text-3);font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.06em;text-align:center;cursor:pointer;margin-top:7px;transition:color 0.2s;}
+.chat-lead-skip:hover{color:var(--text-2);}
+.chat-input-row{padding:11px 13px;border-top:1px solid var(--blue-border);display:flex;gap:7px;align-items:center;flex-shrink:0;}
+.chat-input{flex:1;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.84rem;padding:8px 12px;outline:none;border-radius:6px;transition:border-color 0.2s;}
+.chat-input:focus{border-color:var(--blue);}
+.chat-input::placeholder{color:var(--text-3);}
+.chat-send-btn{width:34px;height:34px;background:var(--blue);border:none;color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;border-radius:6px;transition:background 0.2s;}
+.chat-send-btn:hover{background:var(--blue-light);}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  nav{padding:0 32px;}
+  .section,.waitlist-inner,.contact-inner{padding-left:32px;padding-right:32px;}
+  .pillars-grid{grid-template-columns:1fr;}
+  .steps-grid{grid-template-columns:1fr;}
+  .feature-block{grid-template-columns:1fr;gap:36px;}
+  .feature-block.reverse{direction:ltr;}
+  .trust-grid{grid-template-columns:1fr;}
+  .about-story-grid{grid-template-columns:1fr;}
+  .values-grid{grid-template-columns:1fr 1fr;}
+  .waitlist-inner,.contact-inner{grid-template-columns:1fr;}
+  .footer-inner{grid-template-columns:1fr 1fr;gap:36px;}
+  .hero-stats{grid-template-columns:1fr 1fr;gap:20px;}
+  .hero-content{padding:calc(var(--nav-h)+40px) 32px 80px;}
+  .certs-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:768px){
+  .nav-links,.nav-right{display:none;}
+  .menu-toggle{display:flex;}
+  nav{padding:0 20px;}
+  .hero-content{padding:calc(var(--nav-h)+20px) 20px 60px;}
+  .hero-badge{display:flex;width:fit-content;}
+  .hero-actions{flex-direction:column;align-items:flex-start;}
+  .hero-actions a,.hero-actions button{width:100%;text-align:center;box-sizing:border-box;}
+  .section{padding:60px 20px;}
+  .cta-banner{padding:48px 24px;}
+  .footer-inner{grid-template-columns:1fr;}
+  footer{padding:44px 20px 0;}
+  .footer-bottom{flex-direction:column;text-align:center;}
+  .footer-legal{text-align:center;}
+  .chat-window{right:12px;left:12px;width:auto;bottom:88px;}
+  .chat-bubble{right:16px;bottom:16px;}
+  .waitlist-inner,.contact-inner{padding:110px 20px 60px;}
+  .form-card,.contact-form-card{padding:32px 20px;}
+  .form-row{grid-template-columns:1fr;}
+  .values-grid{grid-template-columns:1fr;}
+  .hero-stat{padding-right:0;border-right:none;margin-right:0;}
+  .hero-stat-num{font-size:1.9rem;}
+  .about-hero-section{padding:calc(var(--nav-h)+40px) 20px 60px;}
+}
+
+/* ═══ REAL ESTATE PAGE ═══ */
+.re-hero{padding:150px 60px 80px;max-width:var(--max-w);margin:0 auto;}
+.re-tag{font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.re-tag::before{content:'//';color:var(--blue);}
+.re-headline{font-family:var(--font-display);font-size:clamp(2.8rem,6vw,5.5rem);font-weight:700;letter-spacing:-0.03em;line-height:1;margin-bottom:20px;}
+.re-headline span{color:var(--blue-bright);}
+.re-sub{font-size:1rem;color:var(--text-2);max-width:560px;line-height:1.78;margin-bottom:32px;}
+.re-gate{display:inline-flex;align-items:center;gap:12px;background:rgba(37,99,235,0.06);border:1px solid var(--blue-border);padding:14px 24px;border-radius:40px;}
+.re-gate-icon{width:36px;height:36px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.re-gate-text{font-family:var(--font-display);font-size:0.88rem;font-weight:500;color:var(--text-2);}
+.re-gate-text strong{color:var(--blue-bright);font-weight:700;}
+
+/* STATS BAR */
+.re-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--blue-border);background:var(--bg-2);margin:0 60px 60px;max-width:var(--max-w);margin-left:auto;margin-right:auto;}
+.re-stat{padding:24px 28px;border-right:1px solid var(--blue-border);position:relative;}
+.re-stat:last-child{border:none;}
+.re-stat-num{font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--blue-bright);letter-spacing:-0.02em;line-height:1;margin-bottom:4px;}
+.re-stat-label{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);}
+
+/* PROPERTY GRID */
+.re-grid-section{max-width:var(--max-w);margin:0 auto;padding:0 60px 80px;}
+.re-grid-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-3);margin-bottom:24px;display:flex;align-items:center;gap:12px;}
+.re-grid-label::after{content:'';flex:1;height:1px;background:var(--blue-border);}
+.re-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:60px;}
+
+/* NFT CARD */
+.re-card{background:var(--bg-2);border:1px solid var(--blue-border);border-radius:12px;overflow:hidden;position:relative;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);cursor:default;}
+.re-card:hover{transform:translateY(-8px);border-color:rgba(37,99,235,0.5);box-shadow:0 24px 60px rgba(37,99,235,0.15),0 0 0 1px rgba(37,99,235,0.1);}
+.re-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue-bright));opacity:0;transition:opacity 0.3s;}
+.re-card:hover::before{opacity:1;}
+
+/* CARD VISUAL */
+.re-card-visual{height:200px;position:relative;overflow:hidden;}
+.re-card-visual-bg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;}
+.re-card-visual-inner{position:relative;z-index:2;text-align:center;}
+.re-card-flag{font-size:3.5rem;margin-bottom:8px;display:block;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5));}
+.re-card-country{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.7);}
+.re-card-id{position:absolute;top:12px;left:14px;font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;color:rgba(255,255,255,0.4);z-index:3;}
+.re-card-badge{position:absolute;top:12px;right:14px;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.1);padding:4px 10px;border-radius:20px;font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.7);z-index:3;}
+.re-card-glow{position:absolute;inset:0;opacity:0.4;}
+
+/* CARD BODY */
+.re-card-body{padding:20px;}
+.re-card-type{font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:6px;}
+.re-card-name{font-family:var(--font-display);font-size:1.1rem;font-weight:700;letter-spacing:-0.01em;color:var(--text);margin-bottom:4px;line-height:1.2;}
+.re-card-location{font-size:0.78rem;color:var(--text-3);margin-bottom:16px;display:flex;align-items:center;gap:5px;}
+.re-card-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid var(--blue-border);border-radius:6px;overflow:hidden;margin-bottom:14px;}
+.re-card-metric{padding:10px 8px;text-align:center;border-right:1px solid var(--blue-border);}
+.re-card-metric:last-child{border:none;}
+.re-card-metric-val{font-family:var(--font-display);font-size:1rem;font-weight:700;line-height:1;margin-bottom:3px;}
+.re-card-metric-val.yield{color:#22D3EE;}
+.re-card-metric-val.appreciation{color:#818CF8;}
+.re-card-metric-val.total{color:var(--blue-bright);}
+.re-card-metric-label{font-family:var(--font-mono);font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);}
+.re-card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--blue-border);}
+.re-card-min{font-family:var(--font-mono);font-size:0.62rem;color:var(--text-3);}
+.re-card-min strong{color:var(--text-2);}
+.re-card-lock{display:flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--blue);background:var(--blue-dim);border:1px solid var(--blue-border);padding:5px 10px;border-radius:20px;}
+
+/* CTA SECTION */
+.re-cta{max-width:var(--max-w);margin:0 auto;padding:0 60px 100px;}
+.re-cta-inner{background:linear-gradient(135deg,#080816,#0a0a1a,#080816);border:1px solid var(--blue-border);border-radius:16px;padding:72px 60px;text-align:center;position:relative;overflow:hidden;}
+.re-cta-inner::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(37,99,235,0.08) 0%,transparent 65%);pointer-events:none;}
+.re-cta-tag{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:16px;}
+.re-cta-title{font-family:var(--font-display);font-size:clamp(2rem,4vw,3.2rem);font-weight:700;letter-spacing:-0.02em;margin-bottom:14px;}
+.re-cta-sub{font-size:0.95rem;color:var(--text-2);max-width:480px;margin:0 auto 32px;line-height:1.75;}
+.re-cta-gate{display:inline-flex;align-items:center;gap:8px;background:rgba(37,99,235,0.08);border:1px solid var(--blue-border);padding:10px 20px;border-radius:30px;font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.1em;color:var(--blue-bright);margin-bottom:28px;}
+
+@media(max-width:1024px){
+  .re-grid{grid-template-columns:1fr 1fr;}
+  .re-stats{grid-template-columns:1fr 1fr;}
+  .re-stats .re-stat:nth-child(2){border-right:none;}
+  .re-stats .re-stat:nth-child(3){border-top:1px solid var(--blue-border);}
+  .re-stats .re-stat:nth-child(4){border-top:1px solid var(--blue-border);border-right:none;}
+  .re-hero,.re-grid-section,.re-cta{padding-left:32px;padding-right:32px;}
+  .re-stats{margin-left:32px;margin-right:32px;}
+}
+@media(max-width:768px){
+  .re-grid{grid-template-columns:1fr;}
+  .re-stats{grid-template-columns:1fr 1fr;margin:0 20px 40px;}
+  .re-stat{padding:18px 16px;}
+  .re-hero{padding:110px 20px 48px;}
+  .re-grid-section,.re-cta{padding-left:20px;padding-right:20px;}
+  .re-cta-inner{padding:48px 24px;}
+  .re-gate{flex-direction:column;gap:10px;border-radius:16px;text-align:center;}
+}
+@media(max-width:480px){
+  .hero-headline{font-size:3rem;}
+  .section-title{font-size:1.8rem;}
+  .hero-stats{grid-template-columns:1fr 1fr;}
+  .re-stats{grid-template-columns:1fr 1fr;margin:0 16px 32px;}
+  .re-grid{grid-template-columns:1fr;}
+  .otp-container{gap:6px;}
+}
+
+/* LANG PICKER */
+.lang-picker{position:relative;}
+.lang-btn{display:flex;align-items:center;gap:5px;background:none;border:1px solid rgba(255,255,255,0.08);color:var(--text-2);font-family:var(--font-display);font-size:0.72rem;font-weight:500;padding:7px 11px;border-radius:var(--radius);cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.lang-btn:hover{border-color:var(--blue-border);color:var(--text);}
+.lang-menu{position:absolute;top:calc(100% + 8px);right:0;background:var(--bg-2);border:1px solid var(--blue-border);border-radius:8px;overflow:hidden;z-index:2000;min-width:150px;box-shadow:0 8px 32px rgba(0,0,0,0.5);display:none;}
+.lang-menu.open{display:block;}
+.lang-option{display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;background:none;border:none;font-family:var(--font-display);font-size:0.76rem;color:var(--text-2);cursor:pointer;text-align:left;transition:all 0.15s;}
+.lang-option:hover{background:var(--blue-dim);color:var(--text);}
+.lang-option.active{color:var(--blue-bright);}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a class="nav-logo" href="javascript:void(0)" onclick="navigate('home')">
+    <div class="nav-logo-mark">T</div>
+    Thanod
+  </a>
+  <ul class="nav-links">
+    <li><a href="javascript:void(0)" onclick="navigate('home')" data-page="home" class="active">Home</a></li>
+    <li><a href="javascript:void(0)" onclick="navigate('how-it-works')" data-page="how-it-works">How It Works</a></li>
+    <li><a href="javascript:void(0)" onclick="navigate('features')" data-page="features">Features</a></li>
+    <li><a href="javascript:void(0)" onclick="navigate('about')" data-page="about">About</a></li>
+    <li><a href="javascript:void(0)" onclick="navigate('real-estate')" data-page="real-estate">Real Estate</a></li>
+    <li><a href="javascript:void(0)" onclick="navigate('contact')" data-page="contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <div id="langPickerContainer"></div>
+    <a href="login.html" class="nav-signin">Sign In</a>
+    <a href="signup.html" class="nav-cta" style="text-decoration:none;">Get Started</a>
+  </div>
+  <button class="menu-toggle" onclick="openMobileNav()"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-close" onclick="closeMobileNav()">✕</button>
+  <a href="javascript:void(0)" onclick="navigate('home');closeMobileNav()">Home</a>
+  <a href="javascript:void(0)" onclick="navigate('how-it-works');closeMobileNav()">How It Works</a>
+  <a href="javascript:void(0)" onclick="navigate('features');closeMobileNav()">Features</a>
+  <a href="javascript:void(0)" onclick="navigate('about');closeMobileNav()">About</a>
+  <a href="javascript:void(0)" onclick="navigate('real-estate');closeMobileNav()">Real Estate</a>
+  <a href="javascript:void(0)" onclick="navigate('contact');closeMobileNav()">Contact</a>
+  <a href="login.html">Sign In</a>
+  <a href="signup.html">Get Started</a>
+  <div id="langPickerMobile" style="margin-top:16px;"></div>
+</div>
+
+<div class="notification" id="notification"></div>
+
+<!-- CHATBOT BUBBLE -->
+<button class="chat-bubble" id="chatBubble" onclick="toggleChat()">
+  <svg id="chatIconOpen" width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+  <svg id="chatIconClose" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+  <span class="chat-pulse"></span>
+</button>
+
+<!-- CHAT WINDOW -->
+<div class="chat-window" id="chatWindow">
+  <div class="chat-header">
+    <div class="chat-header-info">
+      <div class="chat-avatar">T</div>
+      <div>
+        <div class="chat-name">Thanod Assistant</div>
+        <div class="chat-status"><span class="chat-online-dot"></span>Online</div>
+      </div>
+    </div>
+    <button class="chat-close-btn" onclick="toggleChat()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg bot">
+      <div class="chat-bubble-msg">Hello! I'm the Thanod assistant. Ask me anything about the platform, our investment tiers, or how to get started.</div>
+    </div>
+    <div class="chat-quick-btns" id="quickBtns">
+      <button onclick="sendQuick('How does Thanod work?')">How it works</button>
+      <button onclick="sendQuick('What are the investment tiers?')">Investment tiers</button>
+      <button onclick="sendQuick('How do I get started on Thanod?')">Get started</button>
+      <button onclick="sendQuick('Is my crypto safe?')">Security</button>
+    </div>
+  </div>
+  <div class="chat-lead-capture" id="leadCapture" style="display:none;">
+    <div class="lead-prompt">Ready to get started?</div>
+    <input type="text" class="chat-lead-input" id="leadName" placeholder="Your name">
+    <input type="email" class="chat-lead-input" id="leadEmail" placeholder="Your email address">
+    <button class="chat-lead-btn" onclick="submitChatLead()">Create Account →</button>
+    <button class="chat-lead-skip" onclick="dismissLead()">No thanks, continue chatting</button>
+  </div>
+  <div class="chat-input-row" id="chatInputRow">
+    <input type="text" class="chat-input" id="chatInput" placeholder="Ask anything about Thanod…" onkeydown="if(event.key==='Enter')sendMessage()">
+    <button class="chat-send-btn" onclick="sendMessage()">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+    </button>
+  </div>
+</div>
+
+
+<!-- ═══════════ HOME ═══════════ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-glow"></div>
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-content">
+      <div class="hero-badge">Now Live · Automated Crypto Investment</div>
+      <h1 class="hero-headline">Your Crypto.<br><span>Working 24/7.</span></h1>
+      <p class="hero-sub">Thanod combines Ethereum staking, AI-driven trading, and real estate investment into one seamless automated platform. Create your account and start today.</p>
+      <div class="hero-actions">
+        <a href="signup.html" class="btn-primary" style="text-decoration:none;">Get Started Free</a>
+        <button class="btn-outline" onclick="navigate('how-it-works')">See How It Works</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-num">3</div><div class="hero-stat-label">Yield Layers</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">24/7</div><div class="hero-stat-label">Automation</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">Non</div><div class="hero-stat-label">Custodial</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">3</div><div class="hero-stat-label">Investment Tiers</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker-strip">
+    <div class="ticker-inner">
+      <span class="ticker-item">ETH Validator Pool</span>
+      <span class="ticker-item">AI Trading Bot</span>
+      <span class="ticker-item">Portfolio Brain</span>
+      <span class="ticker-item">Non-Custodial</span>
+      <span class="ticker-item">Starter · Growth · Premium Tiers</span>
+      <span class="ticker-item">Real Estate Investment</span>
+      <span class="ticker-item">Auto-Rebalancing</span>
+      <span class="ticker-item">Risk-First Design</span>
+      <span class="ticker-item">ETH Validator Pool</span>
+      <span class="ticker-item">AI Trading Bot</span>
+      <span class="ticker-item">Portfolio Brain</span>
+      <span class="ticker-item">Non-Custodial</span>
+      <span class="ticker-item">Starter · Growth · Premium Tiers</span>
+      <span class="ticker-item">Real Estate Investment</span>
+      <span class="ticker-item">Auto-Rebalancing</span>
+      <span class="ticker-item">Risk-First Design</span>
+    </div>
+  </div>
+
+  <!-- PILLARS -->
+  <section class="pillars-bg">
+    <div class="section">
+      <div class="section-label">System Architecture</div>
+      <h2 class="section-title">One platform.<br><span>Three yield engines.</span></h2>
+      <div class="pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-num">01 // VALIDATOR_POOL</div>
+          <div class="pillar-icon"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div>
+          <div class="pillar-tag">Ethereum Staking</div>
+          <h3 class="pillar-title">Validator Pool Engine</h3>
+          <p class="pillar-desc">Pool with other users to stake ETH and earn validator rewards — even if you hold less than 32 ETH. Steady, predictable yield as your foundation.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">02 // TRADING_BOT</div>
+          <div class="pillar-icon"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+          <div class="pillar-tag">AI-Assisted Trading</div>
+          <h3 class="pillar-title">Active Alpha Engine</h3>
+          <p class="pillar-desc">AI-assisted strategies — momentum scalping, grid trading, CEX↔DEX arbitrage — running 24/7 with drawdown caps and stop-loss enforcement built in.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">03 // PORTFOLIO_BRAIN</div>
+          <div class="pillar-icon"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg></div>
+          <div class="pillar-tag">Intelligent Control</div>
+          <h3 class="pillar-title">Portfolio Brain</h3>
+          <p class="pillar-desc">One dashboard for everything. Auto-rebalances across validator, bot, and idle allocations based on live market conditions in real time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section class="manifesto">
+    <div class="section" style="text-align:center;">
+      <div class="blue-line"></div>
+      <p class="manifesto-quote">"Put your crypto to work automatically across <span>staking + trading + real estate</span> — and never look back."</p>
+      <div class="blue-line"></div>
+    </div>
+  </section>
+
+  <!-- TRUST -->
+  <section class="trust-bg">
+    <div class="section">
+      <div class="section-label">Why Thanod</div>
+      <h2 class="section-title">Built for trust.<br><span>Engineered for returns.</span></h2>
+      <div class="trust-grid">
+        <div class="trust-item">
+          <div class="trust-icon"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>
+          <h3 class="trust-title">Non-Custodial by Default</h3>
+          <p class="trust-desc">Your funds stay yours. Thanod operates via exchange API keys and smart contracts — we never hold your assets directly.</p>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+          <h3 class="trust-title">Risk-First Design</h3>
+          <p class="trust-desc">Max drawdown caps. Stop-loss enforcement. Three investment tiers from conservative to aggressive. Risk controls built into the core.</p>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></div>
+          <h3 class="trust-title">Full Transparency</h3>
+          <p class="trust-desc">Real-time performance data. On-chain verifiable staking rewards. No hidden fees, no promised profits — just clear, honest numbers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="section" style="padding-top:0;">
+    <div class="cta-banner">
+      <div class="cta-banner-label">// Live Now</div>
+      <div class="cta-banner-title">Start investing today.</div>
+      <p class="cta-banner-sub">Create your account in under a minute. Choose your investment tier and let Thanod put your crypto to work.</p>
+      <a href="signup.html" class="btn-primary" style="text-decoration:none;">Create Account →</a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo"><div class="footer-logo-mark">T</div>Thanod</div>
+        <p class="footer-tagline">Automated crypto investment — staking, AI trading, and real estate in one platform. Live now.</p>
+      </div>
+      <div><div class="footer-col-title">Platform</div><ul class="footer-links"><li><a href="javascript:void(0)" onclick="navigate('how-it-works')">How It Works</a></li><li><a href="javascript:void(0)" onclick="navigate('features')">Features</a></li><li><a href="signup.html">Create Account</a></li></ul></div>
+      <div><div class="footer-col-title">Company</div><ul class="footer-links"><li><a href="javascript:void(0)" onclick="navigate('about')">About</a></li><li><a href="javascript:void(0)" onclick="navigate('contact')">Contact</a></li></ul></div>
+      <div><div class="footer-col-title">Legal</div><ul class="footer-links"><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Risk Disclosure</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p class="footer-copy">© 2025 Thanod. All rights reserved.</p><p class="footer-legal">Crypto investments carry risk. Thanod does not guarantee returns. Past performance is not indicative of future results.</p></div>
+  </footer>
+</div>
+
+
+<!-- ═══════════ HOW IT WORKS ═══════════ -->
+<div class="page" id="page-how-it-works">
+  <div class="section" style="padding-top:150px;">
+    <div class="section-label">Simple by Design</div>
+    <h1 class="section-title">How <span>Thanod</span> works</h1>
+    <p class="section-sub">Three layers of yield generation running continuously. Set your preferences once — Thanod handles everything else.</p>
+    <div class="steps-grid">
+      <div>
+        <div class="step-item"><div class="step-num">01</div><div class="step-content"><h3>Connect Your Account</h3><p>Link your crypto exchange via API key or connect your Web3 wallet. Thanod is non-custodial — your assets remain on your exchange at all times.</p></div></div>
+        <div class="step-connector"></div>
+        <div class="step-item"><div class="step-num">02</div><div class="step-content"><h3>Choose Your Tier</h3><p>Select Starter, Growth, or Premium based on your investment level and risk appetite. Each tier unlocks different strategies and expected returns.</p></div></div>
+        <div class="step-connector"></div>
+        <div class="step-item"><div class="step-num">03</div><div class="step-content"><h3>Thanod Goes to Work</h3><p>Staking rewards compound automatically. The trading bot executes strategies around the clock. The Portfolio Brain monitors and rebalances in real time.</p></div></div>
+        <div class="step-connector"></div>
+        <div class="step-item"><div class="step-num">04</div><div class="step-content"><h3>Track Everything</h3><p>Your dashboard shows total balance across all layers, live APR projections, bot performance, real estate allocation, and full transaction history.</p></div></div>
+      </div>
+      <div>
+        <div class="arch-box">
+          <div style="margin-bottom:24px;"><div class="section-label" style="margin-bottom:6px;">Architecture</div><div style="font-family:var(--font-display);font-size:1.2rem;font-weight:600;">Three Layers, One Platform</div></div>
+          <div class="arch-layer"><div class="arch-dot" style="background:var(--blue);"></div><div><div class="arch-tag">Layer 1</div><div class="arch-name">Validator Pool</div></div><div class="arch-apy">~4–6% APR</div></div>
+          <div class="arch-connector"></div>
+          <div class="arch-layer"><div class="arch-dot" style="background:var(--blue-light);"></div><div><div class="arch-tag">Layer 2</div><div class="arch-name">Trading Bot</div></div><div class="arch-apy">Active Alpha</div></div>
+          <div class="arch-connector"></div>
+          <div class="arch-layer"><div class="arch-dot" style="background:var(--blue-bright);"></div><div><div class="arch-tag">Layer 3</div><div class="arch-name">Portfolio Brain</div></div><div class="arch-apy">Auto-Rebalance</div></div>
+          <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--blue-border);">
+            <div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px;">You Control</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <span class="arch-pill">Tier</span><span class="arch-pill">Risk Level</span><span class="arch-pill">Allocation</span><span class="arch-pill">Withdrawals</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="max-width:var(--max-w);margin:0 auto;padding:0 60px 100px;">
+    <div class="cta-banner"><div class="cta-banner-title">Ready to start?</div><a href="signup.html" class="btn-primary" style="text-decoration:none;margin-top:8px;display:inline-block;">Create Account</a></div>
+  </div>
+  <footer><div class="footer-inner"><div><div class="footer-logo"><div class="footer-logo-mark">T</div>Thanod</div><p class="footer-tagline">Automated crypto investment.</p></div><div><div class="footer-col-title">Platform</div><ul class="footer-links"><li><a onclick="navigate('how-it-works')">How It Works</a></li><li><a onclick="navigate('features')">Features</a></li><li><a href="signup.html">Create Account</a></li></ul></div><div><div class="footer-col-title">Company</div><ul class="footer-links"><li><a onclick="navigate('about')">About</a></li><li><a onclick="navigate('contact')">Contact</a></li></ul></div><div><div class="footer-col-title">Legal</div><ul class="footer-links"><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li><li><a href="#">Risk Disclosure</a></li></ul></div></div><div class="footer-bottom"><p class="footer-copy">© 2025 Thanod.</p><p class="footer-legal">Crypto investments carry risk. Thanod does not guarantee returns.</p></div></footer>
+</div>
+
+
+<!-- ═══════════ FEATURES ═══════════ -->
+<div class="page" id="page-features">
+  <div class="section" style="padding-top:150px;padding-bottom:0;">
+    <div class="section-label">Platform Features</div>
+    <h1 class="section-title">Three engines.<br><span>Built to perform.</span></h1>
+    <p class="section-sub">Each layer complements the others — creating a compounding yield machine that adapts to live market conditions.</p>
+  </div>
+  <div class="section" style="padding-top:0;">
+    <div class="feature-block">
+      <div>
+        <div class="feature-tag">// 01 · Validator Pool Engine</div>
+        <h2 class="feature-title">Your Staking Foundation</h2>
+        <p class="feature-desc">The Validator Pool is your trust anchor. Pool ETH to participate in Ethereum proof-of-stake validation — earning steady APR without the 32 ETH barrier.</p>
+        <ul class="feature-list"><li>ETH validator pooling — no 32 ETH minimum</li><li>Auto-compounding of validator rewards</li><li>Live APR display and earnings projections</li><li>Slashing risk monitoring with insurance pool</li><li>Dynamic routing to best-performing validators</li></ul>
+      </div>
+      <div class="feature-visual">
+        <div style="text-align:center;width:100%;">
+          <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;">Estimated Base APR</div>
+          <div style="font-family:var(--font-display);font-size:4rem;font-weight:700;color:var(--blue-bright);letter-spacing:-0.03em;margin-bottom:24px;">~5%</div>
+          <div style="display:flex;flex-direction:column;gap:7px;text-align:left;">
+            <div style="background:var(--blue-dim);border:1px solid var(--blue-border);padding:10px 14px;display:flex;justify-content:space-between;border-radius:var(--radius);"><span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-2);">Status</span><span style="font-family:var(--font-mono);font-size:0.65rem;color:#22D3EE;">● Active</span></div>
+            <div style="background:var(--blue-dim);border:1px solid var(--blue-border);padding:10px 14px;display:flex;justify-content:space-between;border-radius:var(--radius);"><span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-2);">Slashing Risk</span><span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--blue-bright);">Monitored</span></div>
+            <div style="background:var(--blue-dim);border:1px solid var(--blue-border);padding:10px 14px;display:flex;justify-content:space-between;border-radius:var(--radius);"><span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-2);">Rewards</span><span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text);">Auto-compound</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feature-block reverse">
+      <div>
+        <div class="feature-tag">// 02 · Trading Bot</div>
+        <h2 class="feature-title">Your Active Alpha Engine</h2>
+        <p class="feature-desc">AI-assisted strategies running continuously — from momentum scalping to grid trading and arbitrage — governed by strict risk controls at every level.</p>
+        <ul class="feature-list"><li>Momentum scalping strategy</li><li>Grid trading across volatile pairs</li><li>CEX ↔ DEX arbitrage</li><li>AI-assisted signal generation</li><li>Max drawdown cap + stop-loss enforcement</li><li>Starter / Growth / Premium strategy modes</li></ul>
+      </div>
+      <div class="feature-visual">
+        <div style="width:100%;">
+          <div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.13em;text-transform:uppercase;color:var(--text-3);margin-bottom:12px;">Investment Tiers</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="border:1px solid #22D3EE;padding:13px 16px;background:rgba(34,211,238,0.04);border-radius:var(--radius);position:relative;"><div style="position:absolute;top:-1px;right:10px;background:#22D3EE;padding:2px 7px;font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:#000;text-transform:uppercase;">Active</div><div style="font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:2px;">Starter</div><div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-3);">Ξ500 min · ~8.5% APR · Low Risk</div></div>
+            <div style="border:1px solid var(--blue-border);padding:13px 16px;border-radius:var(--radius);"><div style="font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:2px;">Growth</div><div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-3);">Ξ2,500 min · ~14% APR · Medium Risk</div></div>
+            <div style="border:1px solid var(--blue-border);padding:13px 16px;border-radius:var(--radius);"><div style="font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:2px;">Premium</div><div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-3);">Ξ10,000 min · ~22% APR · High Risk</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feature-block">
+      <div>
+        <div class="feature-tag">// 03 · Portfolio Brain</div>
+        <h2 class="feature-title">Your Intelligent Control Center</h2>
+        <p class="feature-desc">The Portfolio Brain ties everything together — complete view of your total balance, auto-rebalancing allocation, and real estate investment tracking.</p>
+        <ul class="feature-list"><li>Total balance: staked + liquid + bot positions</li><li>Real-time allocation breakdown</li><li>Auto-rebalancing on volatility signals</li><li>Real estate investment section</li><li>Full transaction history</li><li>Combined APY display across all layers</li></ul>
+      </div>
+      <div class="feature-visual">
+        <div style="width:100%;">
+          <div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.13em;text-transform:uppercase;color:var(--text-3);margin-bottom:12px;">Portfolio Snapshot</div>
+          <div style="display:flex;flex-direction:column;gap:9px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--blue-border);"><span style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-2);">Validator Pool</span><div style="display:flex;align-items:center;gap:10px;"><div style="width:72px;height:3px;background:var(--bg-3);border-radius:2px;overflow:hidden;"><div style="width:45%;height:100%;background:var(--blue);"></div></div><span style="font-family:var(--font-mono);font-size:0.68rem;color:var(--blue-bright);min-width:28px;text-align:right;">45%</span></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--blue-border);"><span style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-2);">Trading Bot</span><div style="display:flex;align-items:center;gap:10px;"><div style="width:72px;height:3px;background:var(--bg-3);border-radius:2px;overflow:hidden;"><div style="width:35%;height:100%;background:var(--blue-light);"></div></div><span style="font-family:var(--font-mono);font-size:0.68rem;color:var(--blue-light);min-width:28px;text-align:right;">35%</span></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;"><span style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-2);">Idle Liquid</span><div style="display:flex;align-items:center;gap:10px;"><div style="width:72px;height:3px;background:var(--bg-3);border-radius:2px;overflow:hidden;"><div style="width:20%;height:100%;background:var(--text-3);"></div></div><span style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-3);min-width:28px;text-align:right;">20%</span></div></div>
+          </div>
+          <div style="margin-top:16px;padding:12px 14px;background:var(--blue-dim);border:1px solid var(--blue-border);border-radius:var(--radius);">
+            <div style="font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:3px;">Combined APY (est.)</div>
+            <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--blue-bright);letter-spacing:-0.02em;">~12.4%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer><div class="footer-inner"><div><div class="footer-logo"><div class="footer-logo-mark">T</div>Thanod</div><p class="footer-tagline">Automated crypto investment.</p></div><div><div class="footer-col-title">Platform</div><ul class="footer-links"><li><a onclick="navigate('how-it-works')">How It Works</a></li><li><a onclick="navigate('features')">Features</a></li><li><a href="signup.html">Create Account</a></li></ul></div><div><div class="footer-col-title">Company</div><ul class="footer-links"><li><a onclick="navigate('about')">About</a></li><li><a onclick="navigate('contact')">Contact</a></li></ul></div><div><div class="footer-col-title">Legal</div><ul class="footer-links"><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li><li><a href="#">Risk Disclosure</a></li></ul></div></div><div class="footer-bottom"><p class="footer-copy">© 2025 Thanod.</p><p class="footer-legal">Crypto investments carry risk. Thanod does not guarantee returns.</p></div></footer>
+</div>
+
+
+<!-- ═══════════ ABOUT ═══════════ -->
+<div class="page" id="page-about">
+  <div class="about-hero-section">
+    <div style="max-width:var(--max-w);margin:0 auto;">
+      <div class="section-label" style="margin-bottom:20px;">Our Story</div>
+      <h1 class="about-big-title">Built on the belief<br>that <span>idle crypto</span><br>is wasted potential.</h1>
+    </div>
+  </div>
+  <div class="section">
+    <div class="about-story-grid">
+      <div class="about-col"><h3>The Vision</h3><p>Most people who hold crypto do nothing with it. It sits in wallets, on exchanges, slowly losing ground to inflation. Thanod was built to change that.</p><p>We believe financial automation — once available only to institutions — should be accessible to anyone who holds crypto, regardless of how much or how little they know about markets.</p><p>Thanod brings staking, algorithmic trading, and intelligent rebalancing together in one non-custodial, risk-managed platform.</p></div>
+      <div class="about-col"><h3>Where We Stand</h3><p>Thanod is now live. Create your account, choose your investment tier, and start earning automated returns across staking, trading, and real estate.</p><p>We are committed to transparency above everything else. No promised returns. No hidden fees. Full verifiability of staking rewards.</p><p>Three investment tiers — Starter, Growth, and Premium — give every user a clear, structured path into automated crypto investment. Minimum entry from Ξ500.</p></div>
+    </div>
+  </div>
+  <div class="section" style="padding-top:0;">
+    <div class="section-label">Core Values</div>
+    <div class="values-grid">
+      <div class="value-card"><div class="value-icon"><svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></div><div class="value-title">Transparency</div><p class="value-desc">Real numbers. No performance theatre. Users see exactly what is happening with their assets at all times.</p></div>
+      <div class="value-card"><div class="value-icon"><svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div><div class="value-title">Non-Custody</div><p class="value-desc">Your keys, your crypto. Thanod operates via API keys and smart contracts. We are architects of automation — not custodians of your wealth.</p></div>
+      <div class="value-card"><div class="value-icon"><svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div><div class="value-title">Risk First</div><p class="value-desc">We design for protection before profit. Safety architecture built into the core — drawdown caps, stop-loss, slashing insurance.</p></div>
+    </div>
+  </div>
+  <div style="max-width:var(--max-w);margin:0 auto;padding:0 60px 100px;">
+    <div class="cta-banner"><div class="cta-banner-title">Be part of the beginning.</div><p class="cta-banner-sub">Create your account today and start earning automated returns across staking, trading, and real estate.</p><a href="signup.html" class="btn-primary" style="text-decoration:none;margin-top:8px;display:inline-block;">Create Account</a></div>
+  </div>
+  <footer><div class="footer-inner"><div><div class="footer-logo"><div class="footer-logo-mark">T</div>Thanod</div><p class="footer-tagline">Automated crypto investment.</p></div><div><div class="footer-col-title">Platform</div><ul class="footer-links"><li><a onclick="navigate('how-it-works')">How It Works</a></li><li><a onclick="navigate('features')">Features</a></li><li><a href="signup.html">Create Account</a></li></ul></div><div><div class="footer-col-title">Company</div><ul class="footer-links"><li><a onclick="navigate('about')">About</a></li><li><a onclick="navigate('contact')">Contact</a></li></ul></div><div><div class="footer-col-title">Legal</div><ul class="footer-links"><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li><li><a href="#">Risk Disclosure</a></li></ul></div></div><div class="footer-bottom"><p class="footer-copy">© 2025 Thanod.</p><p class="footer-legal">Crypto investments carry risk. Thanod does not guarantee returns.</p></div></footer>
+</div>
+
+
+<!-- ═══════════ WAITLIST ═══════════ -->
+<!-- ═══════════ REAL ESTATE ═══════════ -->
+<div class="page" id="page-real-estate">
+
+  <!-- HERO -->
+  <div class="re-hero">
+    <div class="re-tag">Tokenized Real Estate</div>
+    <h1 class="re-headline">Crypto-backed.<br><span>Real world assets.</span></h1>
+    <p class="re-sub">Thanod bridges digital assets and physical real estate. Deposit ETH — gain exposure to high-yield properties across the world's most lucrative real estate markets.</p>
+    <div class="re-gate">
+      <div class="re-gate-icon">
+        <svg width="16" height="16" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      </div>
+      <div class="re-gate-text">Real Estate access requires a minimum of <strong>10 ETH</strong> deposited on the platform</div>
+    </div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="re-stats">
+    <div class="re-stat">
+      <div class="re-stat-num" id="reStatProps">6</div>
+      <div class="re-stat-label">Active Properties</div>
+    </div>
+    <div class="re-stat">
+      <div class="re-stat-num">6</div>
+      <div class="re-stat-label">Countries</div>
+    </div>
+    <div class="re-stat">
+      <div class="re-stat-num">~14%</div>
+      <div class="re-stat-label">Avg. Total Return</div>
+    </div>
+    <div class="re-stat">
+      <div class="re-stat-num">10 ETH</div>
+      <div class="re-stat-label">Minimum Access</div>
+    </div>
+  </div>
+
+  <!-- PROPERTY GRID -->
+  <div class="re-grid-section">
+    <div class="re-grid-label" id="reGridLabel">Available Properties</div>
+    <div class="re-grid" id="reGrid">
+
+      <!-- CARD 1 — Dubai -->
+      <div class="re-card">
+        <div class="re-card-visual">
+          <div class="re-card-visual-bg" style="background:linear-gradient(135deg,#0a0a1f,#0d1535,#071428);">
+            <div class="re-card-glow" style="background:radial-gradient(circle at 50% 50%,rgba(37,99,235,0.3),transparent 70%);"></div>
+            <div class="re-card-visual-inner">
+              <span class="re-card-flag">🇦🇪</span>
+              <div class="re-card-country">United Arab Emirates</div>
+            </div>
+          </div>
+          <div class="re-card-id">#TNR-001</div>
+          <div class="re-card-badge">Residential</div>
+        </div>
+        <div class="re-card-body">
+          <div class="re-card-type">Premium Residential</div>
+          <div class="re-card-name">Marina Residences Tower</div>
+          <div class="re-card-location">
+            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+            Dubai Marina, UAE
+          </div>
+          <div class="re-card-metrics">
+            <div class="re-card-metric">
+              <div class="re-card-metric-val yield">8.2%</div>
+              <div class="re-card-metric-label">Rental Yield</div>
+            </div>
+            <div class="re-card-metric">
+              <div class="re-card-metric-val appreciation">9.5%</div>
+              <div class="re-card-metric-label">Appreciation</div>
+            </div>
+            <div class="re-card-metric">
+              <div class="re-card-metric-val total">17.7%</div>
+              <div class="re-card-metric-label">Total Return</div>
+            </div>
+          </div>
+          <div class="re-card-footer">
+            <div class="re-card-min">Min. <strong>10 ETH</strong></div>
+            <div class="re-card-lock">
+              <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              Gated Access
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2 — London -->
+      <div class="re-card">
+        <div class="re-card-visual">
+          <div class="re-card-visual-bg" style="background:linear-gradient(135deg,#0f0a1a,#1a0d2e,#0a0815);">
+            <div class="re-card-glow" style="background:radial-gradient(circle at 50% 50%,rgba(129,140,248,0.3),transparent 70%);"></div>
+            <div class="re-card-visual-inner">
+              <span class="re-card-flag">🇬🇧</span>
+              <div class="re-card-country">United Kingdom</div>
+            </div>
+          </div>
+          <div class="re-card-id">#TNR-002</div>
+          <div class="re-card-badge">Commercial</div>
+        </div>
+        <div class="re-card-body">
+          <div class="re-card-type">Commercial Office</div>
+          <div class="re-card-name">Canary Wharf Office Complex</div>
+          <div class="re-card-location">
+            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+            London, United Kingdom
+          </div>
+          <div class="re-card-metrics">
+            <div class="re-card-metric">
+              <div class="re-card-metric-val yield">6.8%</div>
+              <div class="re-card-metric-label">Rental Yield</div>
+            </div>
+            <div class="re-card-metric">
+              <div class="re-card-metric-val appreciation">7.2%</div>
+              <div class="re-card-metric-label">Appreciation</div>
+            </div>
+            <div class="re-card-metric">
+              <div class="re-card-metric-val total">14.0%</div>
+              <div class="re-card-metric-label">Total Return</div>
+            </div>
+          </div>
+          <div class="re-card-footer">
+            <div class="re-card-min">Min. <strong>10 ETH</strong></div>
+            <div class="re-card-lock">
+              <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              Gated Access
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 3 — Singapore -->
+      <div class="re-card">
+        <div class="re-card-visual">
+          <div class="re-card-visual-bg" style="background:linear-gradient(135deg,#071a0f,#0d2a1a,#051510);">
+            <div class="re-card-glow" style="background:radial-gradient(circle at 50% 50%,rgba(34,211,238,0.25),transparent 70%);"></div>
+            <div class="re-card-visual-inner">
+              <span class="re-card-flag">🇸🇬</span>
+              <div class="re-card-country">Singapore</div>
+            </div>
+          </div>
+          <div class="re-card-id">#TNR-003</div>
+          <div class="re-card-badge">Mixed Use</div>
+        </div>
+        <div class="re-card-body">
+          <div class="re-card-type">Mixed Use Development</div>
+          <div class="re-card-name">Orchard Road Plaza</div>
+          <div class="re-card-location">
+            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+            Orchard, Singapore
+          </div>
+          <div class="re-card-metrics">
+            <div class="re-card-metric">
+              <div class="re-card-metric-val yield">7.5%</div>
+              <div class="re-card-metric-label">Rental Yield</div>
+            </div>
+            <div class="re-card-metric">
+              <div class="re-card-metric-val appreciation">8.8%</div>
+              <div class="re-card-metric-label">Appreciation</div>
+            </div>
+            <div class="re-card-metric">
+              <div class="re-card-metric-val total">16.3%</div>
+              <div class="re-card-metric-label">Total Return</div>
+            </div>
+          </div>
+          <div class="re-card-footer">
+            <div class="re-card-min">Min. <strong>10 ETH</strong></div>
+            <div class="re-card-lock">
+              <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              Gated Access
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 4 — Portugal -->
+      <div class="re-card">
+        <div class="re-card-visual">
+          <div class="re-card-visual-bg" style="background:linear-gradient(135deg,#1a0a07,#2e1508,#150a05);">
+            <div class="re-card-glow" style="background:radial-gradient(circle at 50% 50%,rgba(251,146,60,0.2),transparent 70%);"></div>
+            <div class="re-card-visual-inner">
+              <span class="re-card-flag">🇵🇹</span>
+              <div class="re-card-country">Portugal</div>
+            </div>
+          </div>
+          <div class="re-card-id">#TNR-004</div>
+          <div class="re-card-badge">Residential</div>
+        </div>
+        <div class="re-card-body">
+          <div class="re-card-type">Luxury Residential</div>
+          <div class="re-card-name">Lisbon Riverside Apartments</div>
+          <div class="re-card-location">
+            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+            Lisbon, Portugal
+          </div>
+          <div class="re-card-metrics">
+            <div class="re-card-metric">
+              <div class="re-card-metric-val yield">9.1%</div>
+              <div class="re-card-metric-label">Rental Yield</div>
+            </div>
+            <div class="re-card-metric">
+              <div class="re-card-metric-val appreciation">6.4%</div>
+              <div class="re-card-metric-label">Appreciation</div>
+            </div>
+            <div class="re-card-metric">
+              <div class="re-card-metric-val total">15.5%</div>
+              <div class="re-card-metric-label">Total Return</div>
+            </div>
+          </div>
+          <div class="re-card-footer">
+            <div class="re-card-min">Min. <strong>10 ETH</strong></div>
+            <div class="re-card-lock">
+              <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              Gated Access
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 5 — USA -->
+      <div class="re-card">
+        <div class="re-card-visual">
+          <div class="re-card-visual-bg" style="background:linear-gradient(135deg,#0a1020,#0f1a35,#080e1a);">
+            <div class="re-card-glow" style="background:radial-gradient(circle at 50% 50%,rgba(96,165,250,0.25),transparent 70%);"></div>
+            <div class="re-card-visual-inner">
+              <span class="re-card-flag">🇺🇸</span>
+              <div class="re-card-country">United States</div>
+            </div>
+          </div>
+          <div class="re-card-id">#TNR-005</div>
+          <div class="re-card-badge">Commercial</div>
+        </div>
+        <div class="re-card-body">
+          <div class="re-card-type">Commercial Retail</div>
+          <div class="re-card-name">Manhattan Retail Portfolio</div>
+          <div class="re-card-location">
+            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+            New York City, USA
+          </div>
+          <div class="re-card-metrics">
+            <div class="re-card-metric">
+              <div class="re-card-metric-val yield">7.8%</div>
+              <div class="re-card-metric-label">Rental Yield</div>
+            </div>
+            <div class="re-card-metric">
+              <div class="re-card-metric-val appreciation">5.9%</div>
+              <div class="re-card-metric-label">Appreciation</div>
+            </div>
+            <div class="re-card-metric">
+              <div class="re-card-metric-val total">13.7%</div>
+              <div class="re-card-metric-label">Total Return</div>
+            </div>
+          </div>
+          <div class="re-card-footer">
+            <div class="re-card-min">Min. <strong>10 ETH</strong></div>
+            <div class="re-card-lock">
+              <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              Gated Access
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 6 — Turkey -->
+      <div class="re-card">
+        <div class="re-card-visual">
+          <div class="re-card-visual-bg" style="background:linear-gradient(135deg,#1a0707,#2d0a0a,#150505);">
+            <div class="re-card-glow" style="background:radial-gradient(circle at 50% 50%,rgba(239,68,68,0.2),transparent 70%);"></div>
+            <div class="re-card-visual-inner">
+              <span class="re-card-flag">🇹🇷</span>
+              <div class="re-card-country">Turkey</div>
+            </div>
+          </div>
+          <div class="re-card-id">#TNR-006</div>
+          <div class="re-card-badge">Residential</div>
+        </div>
+        <div class="re-card-body">
+          <div class="re-card-type">Luxury Residential</div>
+          <div class="re-card-name">Istanbul Bosphorus Heights</div>
+          <div class="re-card-location">
+            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+            Besiktas, Istanbul
+          </div>
+          <div class="re-card-metrics">
+            <div class="re-card-metric">
+              <div class="re-card-metric-val yield">10.4%</div>
+              <div class="re-card-metric-label">Rental Yield</div>
+            </div>
+            <div class="re-card-metric">
+              <div class="re-card-metric-val appreciation">9.8%</div>
+              <div class="re-card-metric-label">Appreciation</div>
+            </div>
+            <div class="re-card-metric">
+              <div class="re-card-metric-val total">20.2%</div>
+              <div class="re-card-metric-label">Total Return</div>
+            </div>
+          </div>
+          <div class="re-card-footer">
+            <div class="re-card-min">Min. <strong>10 ETH</strong></div>
+            <div class="re-card-lock">
+              <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              Gated Access
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end re-grid -->
+
+    <!-- CTA -->
+    <div class="re-cta-inner">
+      <div class="re-cta-tag">// Gated Investment Access</div>
+      <div class="re-cta-title">Ready to invest in<br>real world assets?</div>
+      <p class="re-cta-sub">Create your Thanod account and grow your portfolio to 10 ETH. Real estate allocations unlock automatically and are managed by the Thanod team.</p>
+      <div class="re-cta-gate">
+        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        Minimum 10 ETH deposit required for access
+      </div>
+      <br>
+      <a href="signup.html" class="btn-primary" style="text-decoration:none;">Create Account →</a>
+    </div>
+
+  </div><!-- end re-grid-section -->
+
+  <footer><div class="footer-inner"><div><div class="footer-logo"><div class="footer-logo-mark">T</div>Thanod</div><p class="footer-tagline">Automated crypto investment.</p></div><div><div class="footer-col-title">Platform</div><ul class="footer-links"><li><a onclick="navigate('how-it-works')">How It Works</a></li><li><a onclick="navigate('features')">Features</a></li><li><a onclick="navigate('real-estate')">Real Estate</a></li></ul></div><div><div class="footer-col-title">Company</div><ul class="footer-links"><li><a onclick="navigate('about')">About</a></li><li><a onclick="navigate('contact')">Contact</a></li></ul></div><div><div class="footer-col-title">Legal</div><ul class="footer-links"><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li><li><a href="#">Risk Disclosure</a></li></ul></div></div><div class="footer-bottom"><p class="footer-copy">© 2025 Thanod.</p><p class="footer-legal">Crypto investments carry risk. Thanod does not guarantee returns.</p></div></footer>
+</div>
+
+<div class="page" id="page-waitlist" style="background:var(--bg);">
+  <div class="waitlist-inner">
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:20px;"><span style="color:var(--blue);">//</span> Early Access</div>
+      <h1 style="font-family:var(--font-display);font-size:clamp(2.8rem,5vw,4.5rem);font-weight:700;letter-spacing:-0.03em;line-height:1.05;margin-bottom:18px;">Get in early.<br><span style="color:var(--blue-bright);">Lock your rates.</span></h1>
+      <p style="font-size:0.93rem;color:var(--text-2);line-height:1.75;max-width:400px;">Thanod is live and accepting investors. Register your interest now — early members lock in founding-rate platform fees not available after the public launch window closes.</p>
+      <div class="benefits">
+        <div class="benefit-item"><div class="benefit-icon"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><div class="benefit-text"><h4>Priority Platform Access</h4><p>Waitlist members get first access when the platform launches.</p></div></div>
+        <div class="benefit-item"><div class="benefit-icon"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="benefit-text"><h4>Founding Member Rates</h4><p>Early members lock in preferential platform fees not available after public launch.</p></div></div>
+        <div class="benefit-item"><div class="benefit-icon"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg></div><div class="benefit-text"><h4>Direct Launch Updates</h4><p>Progress updates and beta testing invitations directly from the team.</p></div></div>
+      </div>
+    </div>
+    <div class="form-card">
+      <div class="form-title">Reserve Your Spot</div>
+      <div class="form-subtitle">// Takes less than a minute</div>
+      <div id="wl-form">
+        <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input" placeholder="Your full name" id="wl-name"></div>
+        <div class="form-group"><label class="form-label">Email Address</label><input type="email" class="form-input" placeholder="you@example.com" id="wl-email"></div>
+        <div class="form-group"><label class="form-label">Crypto Experience</label>
+          <select class="form-select" id="wl-exp">
+            <option value="" disabled selected>Select your level</option>
+            <option>Beginner — just getting started</option>
+            <option>Intermediate — I hold and trade occasionally</option>
+            <option>Advanced — I actively manage crypto</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Primary Interest</label>
+          <select class="form-select" id="wl-interest">
+            <option value="" disabled selected>What interests you most?</option>
+            <option>ETH Staking / Validator Pool</option>
+            <option>AI Trading Bot</option>
+            <option>Real Estate Investment</option>
+            <option>Full Platform</option>
+          </select>
+        </div>
+        <button class="btn-primary" style="width:100%;text-align:center;padding:15px;margin-top:4px;" onclick="submitWaitlist()">Register Interest →</button>
+        <p class="form-note">No spam. No financial advice. Just platform updates. Unsubscribe any time.</p>
+      </div>
+      <div class="success-state" id="wl-success">
+        <div class="success-title">You're on the list.</div>
+        <p class="success-msg">We'll be in touch as we approach launch. Welcome to Thanod.</p>
+      </div>
+    </div>
+  </div>
+  <footer><div class="footer-inner"><div><div class="footer-logo"><div class="footer-logo-mark">T</div>Thanod</div><p class="footer-tagline">Automated crypto investment.</p></div><div><div class="footer-col-title">Platform</div><ul class="footer-links"><li><a onclick="navigate('how-it-works')">How It Works</a></li><li><a onclick="navigate('features')">Features</a></li></ul></div><div><div class="footer-col-title">Company</div><ul class="footer-links"><li><a onclick="navigate('about')">About</a></li><li><a onclick="navigate('contact')">Contact</a></li></ul></div><div><div class="footer-col-title">Legal</div><ul class="footer-links"><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li><li><a href="#">Risk Disclosure</a></li></ul></div></div><div class="footer-bottom"><p class="footer-copy">© 2025 Thanod.</p><p class="footer-legal">Crypto investments carry risk. Thanod does not guarantee returns.</p></div></footer>
+</div>
+
+
+<!-- ═══════════ CONTACT ═══════════ -->
+<div class="page" id="page-contact">
+  <div class="contact-inner">
+    <div>
+      <div class="section-label" style="margin-bottom:20px;">Get in Touch</div>
+      <h1 class="contact-title">We'd love to<br><span style="color:var(--blue-bright);">hear from you.</span></h1>
+      <p class="contact-intro">Questions about the platform, partnership opportunities, or just want to follow our progress — reach out.</p>
+      <div class="contact-details">
+        <div class="contact-detail-item"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg><div><strong>Email</strong><span>hello@thanod.io</span></div></div>
+        <div class="contact-detail-item"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg><div><strong>Status</strong><span>Live · Accepting Investors</span></div></div>
+        <div class="contact-detail-item"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><div><strong>Response Time</strong><span>Within 48 hours</span></div></div>
+      </div>
+    </div>
+    <div class="contact-form-card">
+      <div class="contact-form-title">Send a Message</div>
+      <div class="contact-form-sub">// We respond to all enquiries within 48 hours</div>
+      <div id="ct-form">
+        <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input" placeholder="Your name" id="ct-name"></div>
+        <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" placeholder="your@email.com" id="ct-email"></div>
+        <div class="form-group"><label class="form-label">Subject</label>
+          <select class="form-select" id="ct-subject">
+            <option value="" disabled selected>Select topic</option>
+            <option>General Enquiry</option>
+            <option>Platform Question</option>
+            <option>Partnership Opportunity</option>
+            <option>Press / Media</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Message</label><textarea class="form-textarea" placeholder="Your message..." id="ct-message"></textarea></div>
+        <button class="btn-primary" style="width:100%;text-align:center;padding:15px;" onclick="submitContact()">Send Message →</button>
+      </div>
+      <div style="display:none;text-align:center;padding:28px 0;" id="ct-success">
+        <div class="form-success-title">Message sent.</div>
+        <p class="form-success-msg">We'll be in touch within 48 hours. Thank you for reaching out.</p>
+      </div>
+    </div>
+  </div>
+  <footer><div class="footer-inner"><div><div class="footer-logo"><div class="footer-logo-mark">T</div>Thanod</div><p class="footer-tagline">Automated crypto investment.</p></div><div><div class="footer-col-title">Platform</div><ul class="footer-links"><li><a onclick="navigate('how-it-works')">How It Works</a></li><li><a onclick="navigate('features')">Features</a></li><li><a href="signup.html">Create Account</a></li></ul></div><div><div class="footer-col-title">Company</div><ul class="footer-links"><li><a onclick="navigate('about')">About</a></li><li><a onclick="navigate('contact')">Contact</a></li></ul></div><div><div class="footer-col-title">Legal</div><ul class="footer-links"><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li><li><a href="#">Risk Disclosure</a></li></ul></div></div><div class="footer-bottom"><p class="footer-copy">© 2025 Thanod.</p><p class="footer-legal">Crypto investments carry risk. Thanod does not guarantee returns.</p></div></footer>
+</div>
+
+
+<script>
+const API = 'https://aurethium-backend.onrender.com';
+
+// ── ROUTE PROTECTION ──
+(function checkAuth() {
+  if (localStorage.getItem('aurethium_token')) {
+    window.location.href = 'dashboard.html';
+  }
+})();
+
+// ── NAVIGATION ──
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const t = document.getElementById('page-' + page);
+  if (t) { t.classList.add('active', 'page-in'); setTimeout(() => t.classList.remove('page-in'), 400); }
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.dataset.page === page));
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  if (page === 'home') setTimeout(initCanvas, 50);
+  if (page === 'real-estate') { animateREStats(); checkREAuth(); }
+}
+
+function animateREStats() {
+  // Animate the stat numbers with a count-up effect
+  const stats = document.querySelectorAll('.re-stat-num');
+  stats.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(10px)';
+    el.style.transition = 'all 0.5s ease';
+  });
+  setTimeout(() => {
+    stats.forEach((el, i) => {
+      setTimeout(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, i * 100);
+    });
+  }, 100);
+}
+function openMobileNav() { document.getElementById('mobileNav').classList.add('open'); }
+function closeMobileNav() { document.getElementById('mobileNav').classList.remove('open'); }
+
+// ── SCROLL NAV ──
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// Auth UI hidden — waitlist only mode
+
+// ── REAL ESTATE DYNAMIC LOAD ──
+function checkREAuth() {
+  const token = localStorage.getItem('aurethium_token');
+  if (token) {
+    document.getElementById('reGridLabel').textContent = 'Your Property Allocations';
+    loadRealProperties(token);
+  }
+}
+
+async function loadRealProperties(token) {
+  const grid = document.getElementById('reGrid');
+  grid.innerHTML = '<div style="text-align:center;padding:48px;color:var(--text-3);font-size:0.88rem;grid-column:1/-1;font-family:var(--font-mono);">Loading your properties...</div>';
+  try {
+    const res = await fetch(`${API}/api/real-estate`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) { localStorage.removeItem('aurethium_token'); location.reload(); return; }
+    const data = await res.json();
+    const properties = data.properties || [];
+    if (!properties.length) {
+      grid.innerHTML = `<div style="text-align:center;padding:60px;color:var(--text-3);grid-column:1/-1;">
+        <div style="font-size:2.5rem;margin-bottom:14px;">🔒</div>
+        <div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:10px;">No Properties Assigned Yet</div>
+        <div style="font-size:0.88rem;max-width:360px;margin:0 auto;line-height:1.7;">Reach a portfolio value of 10 ETH to unlock real estate investment access.</div>
+      </div>`;
+      return;
+    }
+    const countryMap = {
+      'UAE':{'flag':'🇦🇪','glow':'rgba(37,99,235,0.3)','bg':'linear-gradient(135deg,#0a0a1f,#0d1535,#071428)'},
+      'United Kingdom':{'flag':'🇬🇧','glow':'rgba(129,140,248,0.3)','bg':'linear-gradient(135deg,#0f0a1a,#1a0d2e,#0a0815)'},
+      'Singapore':{'flag':'🇸🇬','glow':'rgba(34,211,238,0.25)','bg':'linear-gradient(135deg,#071a0f,#0d2a1a,#051510)'},
+      'Portugal':{'flag':'🇵🇹','glow':'rgba(251,146,60,0.2)','bg':'linear-gradient(135deg,#1a0a07,#2e1508,#150a05)'},
+      'USA':{'flag':'🇺🇸','glow':'rgba(96,165,250,0.25)','bg':'linear-gradient(135deg,#0a1020,#0f1a35,#080e1a)'},
+      'Turkey':{'flag':'🇹🇷','glow':'rgba(239,68,68,0.2)','bg':'linear-gradient(135deg,#1a0707,#2d0a0a,#150505)'},
+    };
+    function getCountry(loc) {
+      for (const [k,v] of Object.entries(countryMap)) { if ((loc||'').includes(k)) return v; }
+      return {flag:'🏢',glow:'rgba(37,99,235,0.2)',bg:'linear-gradient(135deg,#0a0a14,#0d0f1f)'};
+    }
+    grid.innerHTML = properties.map((p,idx) => {
+      const invested = parseFloat(p.amount_invested)||0;
+      const has = invested > 0;
+      const total = (parseFloat(p.rental_yield)+parseFloat(p.appreciation_rate)).toFixed(1);
+      const c = getCountry(p.location);
+      const num = String(idx+1).padStart(3,'0');
+      return `<div class="re-card">
+        <div class="re-card-visual">
+          <div class="re-card-visual-bg" style="background:${c.bg};">
+            <div class="re-card-glow" style="background:radial-gradient(circle at 50% 50%,${c.glow},transparent 70%);"></div>
+            <div class="re-card-visual-inner"><span class="re-card-flag">${c.flag}</span><div class="re-card-country">${p.location||'—'}</div></div>
+          </div>
+          <div class="re-card-id">#TNR-${num}</div>
+          <div class="re-card-badge" style="${has?'background:rgba(37,99,235,0.4);color:#60A5FA;':''}">${has?'● Invested':p.property_type||'Property'}</div>
+        </div>
+        <div class="re-card-body">
+          <div class="re-card-type">${p.property_type||'Real Estate'}</div>
+          <div class="re-card-name">${p.name}</div>
+          <div class="re-card-location"><svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>${p.location||'—'}</div>
+          <div class="re-card-metrics">
+            <div class="re-card-metric"><div class="re-card-metric-val yield">${parseFloat(p.rental_yield).toFixed(1)}%</div><div class="re-card-metric-label">Rental Yield</div></div>
+            <div class="re-card-metric"><div class="re-card-metric-val appreciation">${parseFloat(p.appreciation_rate).toFixed(1)}%</div><div class="re-card-metric-label">Appreciation</div></div>
+            <div class="re-card-metric"><div class="re-card-metric-val total">${total}%</div><div class="re-card-metric-label">Total Return</div></div>
+          </div>
+          ${has ? `<div style="background:var(--blue-dim);border:1px solid var(--blue-border);border-radius:4px;padding:12px 14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);">Your Investment</span>
+              <span style="font-family:var(--font-display);font-size:1.05rem;font-weight:600;color:var(--blue-bright);">Ξ${parseFloat(invested).toLocaleString()}</span>
+            </div>
+            ${parseFloat(p.ownership_pct)>0?`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;"><span style="font-family:var(--font-mono);font-size:0.58rem;text-transform:uppercase;color:var(--text-3);">Ownership</span><span style="font-size:0.82rem;color:var(--text-2);">${parseFloat(p.ownership_pct).toFixed(3)}%</span></div>`:''}
+          </div>` : `<div style="background:var(--bg-3);border:1px solid var(--blue-border);border-radius:4px;padding:10px 14px;text-align:center;"><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-3);">🔒 Not yet assigned</span></div>`}
+        </div>
+      </div>`;
+    }).join('');
+    document.getElementById('reStatProps').textContent = properties.length;
+  } catch(err) {
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);grid-column:1/-1;">Could not load properties. Please refresh.</div>';
+  }
+}
+
+// ── HERO CANVAS ──
+let canvasRafId = null;
+function initCanvas() {
+  if (canvasRafId) { cancelAnimationFrame(canvasRafId); canvasRafId = null; }
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const pts = Array.from({ length: 80 }, () => ({
+    x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+    r: Math.random() * 1.5 + 0.3,
+    dx: (Math.random() - 0.5) * 0.25, dy: (Math.random() - 0.5) * 0.25,
+    a: Math.random() * 0.5 + 0.1
+  }));
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pts.forEach(p => {
+      p.x = (p.x + p.dx + canvas.width) % canvas.width;
+      p.y = (p.y + p.dy + canvas.height) % canvas.height;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(37,99,235,${p.a})`; ctx.fill();
+    });
+    for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
+      const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y, d = Math.sqrt(dx*dx + dy*dy);
+      if (d < 120) {
+        ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y);
+        ctx.strokeStyle = `rgba(37,99,235,${0.06*(1-d/120)})`; ctx.lineWidth = 0.5; ctx.stroke();
+      }
+    }
+    canvasRafId = requestAnimationFrame(draw);
+  }
+  canvasRafId = requestAnimationFrame(draw);
+  window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+}
+initCanvas();
+
+// ── NOTIFICATION ──
+function notify(msg) {
+  const el = document.getElementById('notification');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+// ── WAITLIST ──
+async function submitWaitlist() {
+  const name = document.getElementById('wl-name').value.trim();
+  const email = document.getElementById('wl-email').value.trim();
+  const experience = document.getElementById('wl-exp').value;
+  const interest = document.getElementById('wl-interest').value;
+  if (!name) { notify('Please enter your name.'); return; }
+  if (!email || !email.includes('@')) { notify('Please enter a valid email.'); return; }
+  try {
+    const res = await fetch(`${API}/api/waitlist`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, experience, interest })
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('wl-form').style.display = 'none';
+      document.getElementById('wl-success').style.display = 'block';
+      notify("You're on the list. Welcome to Thanod.");
+    } else { notify(data.error || 'Something went wrong. Please try again.'); }
+  } catch { notify('Connection error. Please try again.'); }
+}
+
+// ── CONTACT ──
+async function submitContact() {
+  const name = document.getElementById('ct-name').value.trim();
+  const email = document.getElementById('ct-email').value.trim();
+  const subject = document.getElementById('ct-subject').value;
+  const msg = document.getElementById('ct-message').value.trim();
+  if (!name) { notify('Please enter your name.'); return; }
+  if (!email || !email.includes('@')) { notify('Please enter a valid email.'); return; }
+  if (!msg) { notify('Please enter a message.'); return; }
+  try {
+    const res = await fetch(`${API}/api/contact`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, subject, message: msg })
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('ct-form').style.display = 'none';
+      document.getElementById('ct-success').style.display = 'block';
+      notify("Message sent. We'll respond within 48 hours.");
+    } else { notify(data.error || 'Something went wrong. Please try again.'); }
+  } catch { notify('Connection error. Please try again.'); }
+}
+
+// ── CHATBOT ──
+const CHAT_SYSTEM = `You are the Thanod AI Assistant — professional and knowledgeable about Thanod, a pre-launch automated crypto investment platform.
+
+ABOUT THANOD:
+Three automated yield layers: (1) Validator Pool — ETH staking, ~4-6% base APR, no 32 ETH minimum. (2) Trading Bot — AI-assisted 24/7 trading with drawdown caps and stop-loss. (3) Portfolio Brain — auto-rebalancing control center.
+
+INVESTMENT TIERS: Starter (Ξ500 min, ~8.5% APR, low risk), Growth (Ξ2,500 min, ~14% APR, medium risk), Premium (Ξ10,000 min, ~22% APR, high risk). Tiers are assigned by the team after payment confirmation.
+
+REAL ESTATE: Users can also invest in curated real estate properties earning rental yield + appreciation. Managed by the Thanod team.
+
+PAYMENT: Via crypto transfer to a Thanod wallet. Team confirms and updates portfolio.
+
+RULES: Never promise guaranteed returns. Always say estimated/projected. Direct interested users to create an account or join the waitlist. Keep responses to 2-4 sentences.`;
+
+let chatHistory = [];
+let chatOpen = false;
+let leadShown = false;
+let msgCount = 0;
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  document.getElementById('chatWindow').classList.toggle('open', chatOpen);
+  document.getElementById('chatIconOpen').style.display = chatOpen ? 'none' : 'block';
+  document.getElementById('chatIconClose').style.display = chatOpen ? 'block' : 'none';
+  if (chatOpen) document.getElementById('chatInput').focus();
+}
+function sendQuick(text) { document.getElementById('quickBtns')?.remove(); addUserMessage(text); getAIResponse(text); }
+function sendMessage() { const i = document.getElementById('chatInput'); const t = i.value.trim(); if (!t) return; i.value = ''; addUserMessage(t); getAIResponse(t); }
+function addUserMessage(text) {
+  chatHistory.push({ role: 'user', content: text });
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div'); div.className = 'chat-msg user';
+  div.innerHTML = `<div class="chat-bubble-msg">${escapeHtml(text)}</div>`;
+  msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight; msgCount++;
+}
+function addBotMessage(text) {
+  chatHistory.push({ role: 'assistant', content: text });
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div'); div.className = 'chat-msg bot';
+  div.innerHTML = `<div class="chat-bubble-msg">${text}</div>`;
+  msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight;
+  if (!leadShown && msgCount >= 2) { leadShown = true; setTimeout(showLeadCapture, 1200); }
+}
+function showTyping() {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div'); div.className = 'chat-msg bot'; div.id = 'chatTyping';
+  div.innerHTML = `<div class="chat-typing"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight;
+}
+function removeTyping() { document.getElementById('chatTyping')?.remove(); }
+function showLeadCapture() {
+  document.getElementById('leadCapture').style.display = 'block';
+  document.getElementById('chatInputRow').style.display = 'none';
+}
+function dismissLead() {
+  document.getElementById('leadCapture').style.display = 'none';
+  document.getElementById('chatInputRow').style.display = 'flex';
+  document.getElementById('chatInput').focus();
+}
+function submitChatLead() {
+  const name = document.getElementById('leadName').value.trim();
+  const email = document.getElementById('leadEmail').value.trim();
+  if (!name) { document.getElementById('leadName').focus(); return; }
+  if (!email || !email.includes('@')) { document.getElementById('leadEmail').focus(); return; }
+  document.getElementById('leadCapture').style.display = 'none';
+  document.getElementById('chatInputRow').style.display = 'flex';
+  addBotMessage(`You're on the list, ${escapeHtml(name)}! 🎉 We'll send updates to <b>${escapeHtml(email)}</b>. Welcome to Thanod.`);
+  notify("You're on the Thanod waitlist. Welcome.");
+}
+async function getAIResponse(userText) {
+  document.getElementById('chatInput').disabled = true;
+  showTyping();
+  try {
+    const response = await fetch(`${API}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: chatHistory })
+    });
+    const data = await response.json();
+    removeTyping();
+    addBotMessage(data.reply || "I'm having a moment — please try again.");
+  } catch {
+    removeTyping();
+    addBotMessage("Connection issue. Please try again or visit our Contact page.");
+  }
+  document.getElementById('chatInput').disabled = false;
+  document.getElementById('chatInput').focus();
+}
+function escapeHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('[data-page]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      e.preventDefault();
+      navigate(a.dataset.page);
+    });
+  });
+});
+</script>
+<script src="i18n.js"></script>
+</body>
+</html>
