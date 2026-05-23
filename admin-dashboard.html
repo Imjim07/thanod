@@ -1473,13 +1473,14 @@ function renderDepositsTable(deposits) {
   el.innerHTML = `
     <table class="data-table">
       <thead><tr>
-        <th>User</th><th>Currency</th><th>Amount</th><th>TX Hash</th><th>Date</th><th>Status</th><th>Actions</th>
+        <th>User</th><th>Currency</th><th>Original Amount</th><th>ETH Equiv.</th><th>TX Hash</th><th>Date</th><th>Status</th><th>Actions</th>
       </tr></thead>
       <tbody>
         ${deposits.map(d => `<tr>
           <td><div style="font-weight:600;">${d.user_name || '—'}</div><div style="font-size:0.72rem;color:var(--text-3);">${d.user_email || '—'}</div></td>
-          <td><span style="font-family:var(--font-mono);font-weight:700;color:var(--blue-bright);">${d.currency}</span></td>
+          <td><span style="font-family:var(--font-mono);font-weight:700;color:${d.currency==='BTC'?'#F7931A':d.currency==='SOL'?'#9945FF':'var(--blue-bright)'};">${d.currency}</span></td>
           <td><span style="font-family:var(--font-display);font-size:1rem;font-weight:600;">${parseFloat(d.amount).toFixed(6)}</span></td>
+          <td><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--green);">${d.eth_equivalent ? 'Ξ'+parseFloat(d.eth_equivalent).toFixed(6) : '—'}</span></td>
           <td><span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-3);">${d.tx_hash ? d.tx_hash.slice(0,16)+'...' : '—'}</span></td>
           <td style="font-size:0.78rem;color:var(--text-3);">${new Date(d.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</td>
           <td><span class="status-badge ${d.status}">${d.status}</span></td>
@@ -1623,10 +1624,13 @@ function renderSettings() {
   const settingFields = [
     { key: 'min_deposit_eth', label: 'Minimum Deposit (ETH)', type: 'number', step: '0.01' },
     { key: 'min_deposit_btc', label: 'Minimum Deposit (BTC)', type: 'number', step: '0.001' },
+    { key: 'min_deposit_sol', label: 'Minimum Deposit (SOL)', type: 'number', step: '0.1' },
     { key: 'min_withdrawal_eth', label: 'Minimum Withdrawal (ETH)', type: 'number', step: '0.01' },
     { key: 'min_withdrawal_btc', label: 'Minimum Withdrawal (BTC)', type: 'number', step: '0.001' },
+    { key: 'min_withdrawal_sol', label: 'Minimum Withdrawal (SOL)', type: 'number', step: '0.1' },
     { key: 'deposit_wallet_eth', label: 'Platform ETH Deposit Wallet', type: 'text' },
     { key: 'deposit_wallet_btc', label: 'Platform BTC Deposit Wallet', type: 'text' },
+    { key: 'deposit_wallet_sol', label: 'Platform SOL Deposit Wallet', type: 'text' },
     { key: 'processing_time', label: 'Processing Time Message', type: 'text' },
   ];
   const grid = document.getElementById('settingsGrid');
