@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thanod — Verify Email</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#050508;--bg-2:#09090F;--bg-3:#0E0E18;
+  --blue:#2563EB;--blue-light:#3B82F6;--blue-bright:#60A5FA;
+  --blue-dim:rgba(37,99,235,0.08);--blue-border:rgba(37,99,235,0.2);
+  --text:#F0F0F8;--text-2:#8A8AA8;--text-3:#4A4A68;
+  --red:#F87171;--green:#34D399;
+  --font-display:'Space Grotesk',sans-serif;
+  --font-body:'Inter',sans-serif;--font-mono:'Space Mono',monospace;
+  --radius:6px;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;display:flex;flex-direction:column;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;border-bottom:1px solid var(--blue-border);}
+.nav-logo{font-family:var(--font-display);font-size:1.3rem;font-weight:700;letter-spacing:-0.02em;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:8px;}
+.nav-logo-mark{width:26px;height:26px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;color:white;}
+.nav-link{font-family:var(--font-display);font-size:0.8rem;font-weight:500;color:var(--text-2);text-decoration:none;transition:color 0.2s;}
+.nav-link:hover{color:var(--blue-bright);}
+
+.auth-container{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 24px;position:relative;}
+.auth-container::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(37,99,235,0.04) 0%,transparent 65%);pointer-events:none;}
+
+.auth-card{background:var(--bg-2);border:1px solid var(--blue-border);padding:48px 44px;width:100%;max-width:440px;border-radius:12px;position:relative;}
+.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue-bright),var(--blue));border-radius:12px 12px 0 0;}
+
+.card-icon{width:56px;height:56px;background:var(--blue-dim);border:1px solid var(--blue-border);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:var(--blue-bright);}
+.auth-title{font-family:var(--font-display);font-size:1.8rem;font-weight:700;letter-spacing:-0.02em;text-align:center;margin-bottom:4px;}
+.auth-subtitle{font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);text-align:center;margin-bottom:8px;}
+.otp-email-display{font-size:0.88rem;color:var(--blue-bright);text-align:center;margin-bottom:28px;word-break:break-all;}
+
+.auth-alert{padding:11px 14px;border-radius:var(--radius);font-size:0.82rem;margin-bottom:16px;display:none;}
+.auth-alert.show{display:block;}
+.auth-alert.error{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);color:var(--red);}
+.auth-alert.success{background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);color:var(--green);}
+
+.otp-container{display:flex;gap:8px;justify-content:center;margin-bottom:20px;}
+.otp-input{
+  width:48px;height:56px;
+  background:var(--bg-3);
+  border:2px solid var(--blue-border);
+  color:var(--text);
+  font-family:var(--font-mono);
+  font-size:1.5rem;font-weight:700;
+  text-align:center;outline:none;
+  border-radius:8px;
+  transition:border-color 0.2s,background 0.2s;
+}
+.otp-input:focus{border-color:var(--blue);background:#0a0a12;}
+.otp-input.filled{border-color:var(--blue);color:var(--blue-bright);}
+.otp-input.error-shake{animation:shake 0.3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+
+.btn-submit{width:100%;background:var(--blue);border:none;color:white;font-family:var(--font-display);font-size:0.82rem;font-weight:600;padding:13px;cursor:pointer;transition:all 0.25s;border-radius:var(--radius);margin-top:4px;}
+.btn-submit:hover{background:var(--blue-light);}
+.btn-submit:disabled{opacity:0.5;cursor:not-allowed;}
+
+.resend-row{font-size:0.78rem;color:var(--text-3);margin-top:14px;text-align:center;}
+.btn-resend{background:none;border:none;color:var(--blue-bright);font-size:0.78rem;cursor:pointer;font-family:var(--font-display);padding:0;transition:color 0.2s;}
+.btn-resend:hover{color:var(--blue-light);}
+.btn-resend:disabled{color:var(--text-3);cursor:not-allowed;}
+.timer{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-3);}
+
+.auth-footer{text-align:center;margin-top:20px;font-size:0.82rem;color:var(--text-3);}
+.auth-footer a{color:var(--blue-bright);text-decoration:none;}
+.auth-footer a:hover{color:var(--blue-light);}
+
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:480px){
+  nav{padding:14px 20px;}
+  .auth-card{padding:32px 20px;}
+  .otp-input{width:40px;height:50px;font-size:1.3rem;}
+  .otp-container{gap:6px;}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="index.html"><div class="nav-logo-mark">T</div>Thanod</a>
+  <a class="nav-link" href="login.html">← Back to Sign In</a>
+</nav>
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="card-icon">
+      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+    </div>
+    <div class="auth-title">Check your email</div>
+    <div class="auth-subtitle">// Enter the 6-digit code we sent to</div>
+    <div class="otp-email-display" id="otpEmailDisplay">—</div>
+    <div class="auth-alert" id="alertBox"></div>
+    <div class="otp-container">
+      <input type="text" class="otp-input" maxlength="1" id="otp0" onkeyup="handleOtpKey(event,0)" oninput="handleOtpInput(this,0)" inputmode="numeric" autocomplete="one-time-code">
+      <input type="text" class="otp-input" maxlength="1" id="otp1" onkeyup="handleOtpKey(event,1)" oninput="handleOtpInput(this,1)" inputmode="numeric">
+      <input type="text" class="otp-input" maxlength="1" id="otp2" onkeyup="handleOtpKey(event,2)" oninput="handleOtpInput(this,2)" inputmode="numeric">
+      <input type="text" class="otp-input" maxlength="1" id="otp3" onkeyup="handleOtpKey(event,3)" oninput="handleOtpInput(this,3)" inputmode="numeric">
+      <input type="text" class="otp-input" maxlength="1" id="otp4" onkeyup="handleOtpKey(event,4)" oninput="handleOtpInput(this,4)" inputmode="numeric">
+      <input type="text" class="otp-input" maxlength="1" id="otp5" onkeyup="handleOtpKey(event,5)" oninput="handleOtpInput(this,5)" inputmode="numeric">
+    </div>
+    <button class="btn-submit" id="verifyBtn" onclick="verifyOTP()">Verify & Sign In →</button>
+    <div class="resend-row">
+      Didn't receive it? <button class="btn-resend" id="resendBtn" onclick="resendOTP()">Resend code</button>
+      <span class="timer" id="timer"></span>
+    </div>
+    <div class="auth-footer"><a href="login.html">← Back to sign in</a></div>
+  </div>
+</div>
+<script>
+const API = 'https://aurethium-backend.onrender.com';
+
+if (localStorage.getItem('aurethium_token')) window.location.href = 'dashboard.html';
+
+const params = new URLSearchParams(window.location.search);
+let userEmail = params.get('email') || localStorage.getItem('thanod_verify_email') || '';
+if (!userEmail) window.location.href = 'login.html';
+
+document.getElementById('otpEmailDisplay').textContent = userEmail;
+document.getElementById('otp0').focus();
+
+let timerInterval = null;
+startTimer(60);
+
+function showAlert(msg, type='error') {
+  const b = document.getElementById('alertBox');
+  b.textContent = msg;
+  b.className = `auth-alert show ${type}`;
+}
+
+function getOTPValue() {
+  return Array.from({length:6}, (_,i) => document.getElementById(`otp${i}`).value).join('');
+}
+
+function handleOtpInput(input, index) {
+  const val = input.value.replace(/[^0-9]/g, '');
+  input.value = val;
+  input.classList.toggle('filled', !!val);
+  if (val && index < 5) document.getElementById(`otp${index + 1}`).focus();
+  if (getOTPValue().length === 6) verifyOTP();
+}
+
+function handleOtpKey(e, index) {
+  if (e.key === 'Backspace' && !e.target.value && index > 0) document.getElementById(`otp${index - 1}`).focus();
+  if (e.key === 'ArrowLeft' && index > 0) document.getElementById(`otp${index - 1}`).focus();
+  if (e.key === 'ArrowRight' && index < 5) document.getElementById(`otp${index + 1}`).focus();
+}
+
+document.addEventListener('paste', (e) => {
+  const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+  if (pasted.length >= 6) {
+    for (let i = 0; i < 6; i++) {
+      const inp = document.getElementById(`otp${i}`);
+      inp.value = pasted[i] || '';
+      inp.classList.toggle('filled', !!pasted[i]);
+    }
+    document.getElementById('otp5').focus();
+    setTimeout(verifyOTP, 300);
+  }
+});
+
+function shakeOTP() {
+  for (let i = 0; i < 6; i++) {
+    const inp = document.getElementById(`otp${i}`);
+    inp.classList.add('error-shake');
+    setTimeout(() => inp.classList.remove('error-shake'), 400);
+  }
+}
+
+function clearOTP() {
+  for (let i = 0; i < 6; i++) {
+    const inp = document.getElementById(`otp${i}`);
+    inp.value = ''; inp.classList.remove('filled', 'error-shake');
+  }
+}
+
+async function verifyOTP() {
+  const otp = getOTPValue();
+  if (otp.length < 6) return;
+  const btn = document.getElementById('verifyBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Verifying...';
+  try {
+    const res = await fetch(`${API}/api/auth/verify-otp`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: userEmail, otp })
+    });
+    const data = await res.json();
+    if (data.success && data.token) {
+      localStorage.setItem('aurethium_token', data.token);
+      localStorage.setItem('aurethium_user', JSON.stringify(data.user));
+      localStorage.removeItem('thanod_verify_email');
+      showAlert('Email verified! Loading your dashboard...', 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 1200);
+    } else {
+      shakeOTP(); clearOTP();
+      showAlert(data.error || 'Incorrect code. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Verify & Sign In →';
+      document.getElementById('otp0').focus();
+    }
+  } catch {
+    showAlert('Connection error. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Verify & Sign In →';
+  }
+}
+
+function startTimer(seconds) {
+  let s = seconds;
+  const resendBtn = document.getElementById('resendBtn');
+  const timerEl = document.getElementById('timer');
+  resendBtn.disabled = true;
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    s--;
+    timerEl.textContent = `(${s}s)`;
+    if (s <= 0) {
+      clearInterval(timerInterval);
+      resendBtn.disabled = false;
+      timerEl.textContent = '';
+    }
+  }, 1000);
+}
+
+async function resendOTP() {
+  const btn = document.getElementById('resendBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  try {
+    const res = await fetch(`${API}/api/auth/resend-otp`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: userEmail })
+    });
+    const data = await res.json();
+    clearOTP();
+    showAlert(data.success ? 'New code sent to your email.' : (data.error || 'Could not resend. Try again.'), data.success ? 'success' : 'error');
+    btn.textContent = 'Resend code';
+    startTimer(60);
+    document.getElementById('otp0').focus();
+  } catch {
+    showAlert('Connection error. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Resend code';
+  }
+}
+</script>
+<script src="i18n.js"></script>
+</body>
+</html>
