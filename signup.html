@@ -170,8 +170,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
       <button class="btn-submit" id="signupBtn" onclick="handleSignup()">Create Account</button>
       <div class="auth-divider"><span>or</span></div>
       <button class="btn-wallet" id="walletBtn" onclick="connectWallet()">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3L12 7L8 3"/><circle cx="17" cy="14" r="1" fill="currentColor"/></svg>
-        <span id="walletBtnText">Connect MetaMask Wallet</span>
+        <svg width="18" height="18" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#0052FF"/><path fill-rule="evenodd" clip-rule="evenodd" d="M16 6C10.477 6 6 10.477 6 16s4.477 10 10 10 10-4.477 10-10S21.523 6 16 6zm-3 12.5v-5h6v5h-6z" fill="white"/></svg>
+        <span id="walletBtnText">Connect Coinbase Wallet</span>
       </button>
       <!-- OTP SECTION -->
       <div class="otp-section" id="otpSection">
@@ -198,8 +198,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
     </div>
   </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@3.9.3/dist/CoinbaseWalletSDK.umd.js"></script>
 <script>
+const _cbSDK = new CoinbaseWalletSDK({ appName: 'Thanod', darkMode: true });
+const _cbProvider = _cbSDK.makeWeb3Provider();
 
 
 function togglePw(inputId, btn) {
@@ -211,7 +213,13 @@ function togglePw(inputId, btn) {
   btn.innerHTML = isHidden ? eyeOff : eyeOn;
 }
 const API = 'https://aurethium-backend.onrender.com';
-if (localStorage.getItem('aurethium_token')) window.location.href = 'dashboard.html';
+
+// ── ROUTE PROTECTION ──
+(function checkAuth() {
+  if (localStorage.getItem('aurethium_token')) {
+    window.location.href = 'dashboard.html';
+  }
+})();
 
 let userEmail = '';
 let timerInterval = null;
@@ -443,14 +451,13 @@ async function resendOTP() {
 
 // ── WALLET CONNECT ──
 async function connectWallet() {
-  if (!window.ethereum) { showAlert('MetaMask not detected. Please install MetaMask from metamask.io'); return; }
   const btn = document.getElementById('walletBtn'), text = document.getElementById('walletBtnText');
   btn.disabled = true; text.textContent = 'Connecting...';
   try {
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const accounts = await _cbProvider.request({ method: 'eth_requestAccounts' });
     const address = accounts[0], timestamp = Date.now();
     const message = `Welcome to Thanod!\n\nSign this to create or access your account.\n\nWallet: ${address}\nTimestamp: ${timestamp}\n\nThis will not trigger a blockchain transaction.`;
-    const signature = await window.ethereum.request({ method: 'personal_sign', params: [message, address] });
+    const signature = await _cbProvider.request({ method: 'personal_sign', params: [message, address] });
     const res = await fetch(`${API}/api/auth/wallet`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ address, signature, message })
@@ -464,11 +471,11 @@ async function connectWallet() {
       setTimeout(() => window.location.href = 'dashboard.html', 1200);
     } else {
       showAlert(data.error || 'Wallet connection failed.');
-      btn.disabled = false; text.textContent = 'Connect MetaMask Wallet';
+      btn.disabled = false; text.textContent = 'Connect Coinbase Wallet';
     }
   } catch (err) {
-    showAlert(err.code === 4001 ? 'Cancelled. Please approve the MetaMask request.' : 'Wallet connection failed.');
-    btn.disabled = false; text.textContent = 'Connect MetaMask Wallet';
+    showAlert(err.code === 4001 ? 'Cancelled. Please approve the request in Coinbase Wallet.' : 'Wallet connection failed.');
+    btn.disabled = false; text.textContent = 'Connect Coinbase Wallet';
   }
 }
 
@@ -479,5 +486,6 @@ document.addEventListener('keydown', e => {
   }
 });
 </script>
+<script src="i18n.js"></script>
 </body>
 </html>
