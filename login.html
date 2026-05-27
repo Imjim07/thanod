@@ -73,6 +73,27 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .forgot-sub{font-size:0.78rem;color:var(--text-3);margin-bottom:14px;line-height:1.5;}
 .forgot-success{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);color:#22C55E;padding:12px 14px;border-radius:6px;font-size:0.82rem;line-height:1.6;display:none;}
 .forgot-success.show{display:block;}
+
+/* 2FA OTP STEP */
+.twofa-section{display:none;text-align:center;padding-top:4px;}
+.twofa-section.show{display:block;}
+.twofa-title{font-family:var(--font-display);font-size:1.1rem;font-weight:600;letter-spacing:-0.01em;margin-bottom:4px;}
+.twofa-sub{font-size:0.8rem;color:var(--text-2);margin-bottom:6px;line-height:1.5;}
+.twofa-email{font-size:0.82rem;color:var(--blue-bright);margin-bottom:20px;word-break:break-all;}
+.otp-container{display:flex;gap:8px;justify-content:center;margin-bottom:18px;}
+.otp-input{width:48px;height:56px;background:var(--bg-3);border:2px solid var(--blue-border);color:var(--text);font-family:var(--font-mono);font-size:1.5rem;font-weight:700;text-align:center;outline:none;border-radius:8px;transition:border-color 0.2s,background 0.2s;}
+.otp-input:focus{border-color:var(--blue);background:#0a0a12;}
+.otp-input.filled{border-color:var(--blue);color:var(--blue-bright);}
+.otp-input.error-shake{animation:otp-shake 0.3s ease;}
+@keyframes otp-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+.resend-row{font-size:0.78rem;color:var(--text-3);margin-top:10px;}
+.btn-resend{background:none;border:none;color:var(--blue-bright);font-size:0.78rem;cursor:pointer;font-family:var(--font-display);padding:0;transition:color 0.2s;}
+.btn-resend:hover{color:var(--blue-light);}
+.btn-resend:disabled{color:var(--text-3);cursor:not-allowed;}
+.timer{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-3);}
+.btn-back-login{background:none;border:none;color:var(--text-3);font-size:0.78rem;cursor:pointer;font-family:var(--font-display);margin-top:12px;display:block;width:100%;text-align:center;transition:color 0.2s;}
+.btn-back-login:hover{color:var(--text-2);}
+@media(max-width:480px){.otp-input{width:40px;height:50px;font-size:1.3rem;}.otp-container{gap:6px;}}
 </style>
 </head>
 <body>
@@ -113,16 +134,40 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
       </div>
     </div>
 
-    <div class="auth-divider"><span>or</span></div>
+    <!-- 2FA OTP STEP (shown after password verified) -->
+    <div class="twofa-section" id="twofaSection">
+      <div class="twofa-title">One more step</div>
+      <div class="twofa-sub">We sent a 6-digit code to</div>
+      <div class="twofa-email" id="twofaEmail"></div>
+      <div class="otp-container">
+        <input type="text" class="otp-input" maxlength="1" id="lotp0" onkeyup="handleLotpKey(event,0)" oninput="handleLotpInput(this,0)" inputmode="numeric" autocomplete="one-time-code">
+        <input type="text" class="otp-input" maxlength="1" id="lotp1" onkeyup="handleLotpKey(event,1)" oninput="handleLotpInput(this,1)" inputmode="numeric">
+        <input type="text" class="otp-input" maxlength="1" id="lotp2" onkeyup="handleLotpKey(event,2)" oninput="handleLotpInput(this,2)" inputmode="numeric">
+        <input type="text" class="otp-input" maxlength="1" id="lotp3" onkeyup="handleLotpKey(event,3)" oninput="handleLotpInput(this,3)" inputmode="numeric">
+        <input type="text" class="otp-input" maxlength="1" id="lotp4" onkeyup="handleLotpKey(event,4)" oninput="handleLotpInput(this,4)" inputmode="numeric">
+        <input type="text" class="otp-input" maxlength="1" id="lotp5" onkeyup="handleLotpKey(event,5)" oninput="handleLotpInput(this,5)" inputmode="numeric">
+      </div>
+      <button class="btn-submit" id="verifyLoginBtn" onclick="verifyLoginOTP()">Verify & Sign In →</button>
+      <div class="resend-row">
+        Didn't receive it? <button class="btn-resend" id="resendLoginBtn" onclick="resendLoginOTP()">Resend code</button>
+        <span class="timer" id="loginTimer"></span>
+      </div>
+      <button class="btn-back-login" onclick="backToLoginForm()">← Back to sign in</button>
+    </div>
+
+    <div class="auth-divider" id="loginDivider"><span>or</span></div>
     <button class="btn-wallet" id="walletBtn" onclick="connectWallet()">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3L12 7L8 3"/><circle cx="17" cy="14" r="1" fill="currentColor"/></svg>
-      <span id="walletBtnText">Sign In with MetaMask</span>
+      <svg width="18" height="18" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#0052FF"/><path fill-rule="evenodd" clip-rule="evenodd" d="M16 6C10.477 6 6 10.477 6 16s4.477 10 10 10 10-4.477 10-10S21.523 6 16 6zm-3 12.5v-5h6v5h-6z" fill="white"/></svg>
+      <span id="walletBtnText">Connect Coinbase Wallet</span>
     </button>
     <div class="auth-footer">Don't have an account? <a href="signup.html">Create one free</a></div>
   </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@3.9.3/dist/CoinbaseWalletSDK.umd.js"></script>
 <script>
+// Initialise Coinbase Wallet SDK once
+const _cbSDK = new CoinbaseWalletSDK({ appName: 'Thanod', darkMode: true });
+const _cbProvider = _cbSDK.makeWeb3Provider();
 
 function togglePw(inputId, btn) {
   const input = document.getElementById(inputId);
@@ -170,9 +215,18 @@ async function handleForgotPassword() {
   }
 }
 const API = 'https://aurethium-backend.onrender.com';
-if (localStorage.getItem('aurethium_token')) window.location.href = 'dashboard.html';
+
+// ── ROUTE PROTECTION ──
+(function checkAuth() {
+  if (localStorage.getItem('aurethium_token')) {
+    window.location.href = 'dashboard.html';
+  }
+})();
 
 function showAlert(msg, type='error') { const b = document.getElementById('alertBox'); b.textContent = msg; b.className = `auth-alert show ${type}`; }
+
+let loginEmail2FA = '';
+let loginTimerInterval = null;
 
 async function handleLogin() {
   const email = document.getElementById('loginEmail').value.trim();
@@ -184,9 +238,15 @@ async function handleLogin() {
     const res = await fetch(`${API}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
     const data = await res.json();
     if (data.success && data.token) {
+      // Direct login (no 2FA configured)
       localStorage.setItem('aurethium_token', data.token); localStorage.setItem('aurethium_user', JSON.stringify(data.user));
       showAlert('Signed in! Loading dashboard...', 'success');
       setTimeout(() => window.location.href = 'dashboard.html', 1000);
+    } else if (data.requires2FA) {
+      // Show 2FA OTP step
+      loginEmail2FA = email;
+      show2FAStep(email);
+      btn.disabled = false; btn.textContent = 'Sign In';
     } else if (data.requiresVerification && data.email) {
       localStorage.setItem('thanod_verify_email', data.email);
       showAlert('Please verify your email first. Redirecting...', 'success');
@@ -195,28 +255,173 @@ async function handleLogin() {
   } catch { showAlert('Connection error. Please try again.'); btn.disabled = false; btn.textContent = 'Sign In'; }
 }
 
+// ── 2FA STEP ──
+function show2FAStep(email) {
+  document.getElementById('twofaEmail').textContent = email;
+  document.getElementById('loginEmail').closest('.form-group').style.display = 'none';
+  document.getElementById('loginPassword').closest('.form-group').style.display = 'none';
+  document.getElementById('loginBtn').style.display = 'none';
+  document.getElementById('loginDivider').style.display = 'none';
+  document.getElementById('walletBtn').style.display = 'none';
+  document.querySelector('.auth-footer').style.display = 'none';
+  document.getElementById('forgotSection').classList.remove('show');
+  document.querySelector('.auth-title').style.display = 'none';
+  document.querySelector('.auth-subtitle').style.display = 'none';
+  // Force show — don't rely on CSS class alone
+  const twofa = document.getElementById('twofaSection');
+  twofa.style.display = 'block';
+  twofa.classList.add('show');
+  document.getElementById('alertBox').className = 'auth-alert';
+  startLoginTimer(60);
+  setTimeout(() => document.getElementById('lotp0').focus(), 100);
+}
+
+function backToLoginForm() {
+  const twofa = document.getElementById('twofaSection');
+  twofa.style.display = '';
+  twofa.classList.remove('show');
+  document.getElementById('loginEmail').closest('.form-group').style.display = '';
+  document.getElementById('loginPassword').closest('.form-group').style.display = '';
+  document.getElementById('loginBtn').style.display = '';
+  document.getElementById('loginDivider').style.display = '';
+  document.getElementById('walletBtn').style.display = '';
+  document.querySelector('.auth-footer').style.display = '';
+  document.querySelector('.auth-title').style.display = '';
+  document.querySelector('.auth-subtitle').style.display = '';
+  clearLotpInputs();
+  document.getElementById('alertBox').className = 'auth-alert';
+  if (loginTimerInterval) clearInterval(loginTimerInterval);
+}
+
+function getLotpValue() {
+  return Array.from({length:6}, (_,i) => document.getElementById(`lotp${i}`).value).join('');
+}
+
+function clearLotpInputs() {
+  for (let i = 0; i < 6; i++) {
+    const inp = document.getElementById(`lotp${i}`);
+    inp.value = ''; inp.classList.remove('filled','error-shake');
+  }
+}
+
+function shakeLotpInputs() {
+  for (let i = 0; i < 6; i++) {
+    const inp = document.getElementById(`lotp${i}`);
+    inp.classList.add('error-shake');
+    setTimeout(() => inp.classList.remove('error-shake'), 400);
+  }
+}
+
+function handleLotpInput(input, index) {
+  const val = input.value.replace(/[^0-9]/g, '');
+  input.value = val;
+  input.classList.toggle('filled', !!val);
+  if (val && index < 5) document.getElementById(`lotp${index + 1}`).focus();
+  if (getLotpValue().length === 6) verifyLoginOTP();
+}
+
+function handleLotpKey(e, index) {
+  if (e.key === 'Backspace' && !e.target.value && index > 0) document.getElementById(`lotp${index - 1}`).focus();
+  if (e.key === 'ArrowLeft' && index > 0) document.getElementById(`lotp${index - 1}`).focus();
+  if (e.key === 'ArrowRight' && index < 5) document.getElementById(`lotp${index + 1}`).focus();
+}
+
+document.addEventListener('paste', (e) => {
+  const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+  if (pasted.length >= 6 && document.getElementById('twofaSection').classList.contains('show')) {
+    for (let i = 0; i < 6; i++) {
+      const inp = document.getElementById(`lotp${i}`);
+      inp.value = pasted[i] || '';
+      inp.classList.toggle('filled', !!pasted[i]);
+    }
+    document.getElementById('lotp5').focus();
+    setTimeout(verifyLoginOTP, 300);
+  }
+});
+
+async function verifyLoginOTP() {
+  const otp = getLotpValue();
+  if (otp.length < 6) return;
+  const btn = document.getElementById('verifyLoginBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Verifying...';
+  try {
+    const res = await fetch(`${API}/api/auth/verify-login-otp`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: loginEmail2FA, otp })
+    });
+    const data = await res.json();
+    if (data.success && data.token) {
+      localStorage.setItem('aurethium_token', data.token);
+      localStorage.setItem('aurethium_user', JSON.stringify(data.user));
+      showAlert('Signed in! Loading dashboard...', 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 1000);
+    } else {
+      shakeLotpInputs(); clearLotpInputs();
+      showAlert(data.error || 'Incorrect code. Please try again.');
+      btn.disabled = false; btn.textContent = 'Verify & Sign In →';
+      document.getElementById('lotp0').focus();
+    }
+  } catch {
+    showAlert('Connection error. Please try again.');
+    btn.disabled = false; btn.textContent = 'Verify & Sign In →';
+  }
+}
+
+function startLoginTimer(seconds) {
+  let s = seconds;
+  const resendBtn = document.getElementById('resendLoginBtn');
+  const timerEl = document.getElementById('loginTimer');
+  resendBtn.disabled = true;
+  if (loginTimerInterval) clearInterval(loginTimerInterval);
+  loginTimerInterval = setInterval(() => {
+    s--;
+    timerEl.textContent = `(${s}s)`;
+    if (s <= 0) { clearInterval(loginTimerInterval); resendBtn.disabled = false; timerEl.textContent = ''; }
+  }, 1000);
+}
+
+async function resendLoginOTP() {
+  const btn = document.getElementById('resendLoginBtn');
+  btn.disabled = true; btn.textContent = 'Sending...';
+  try {
+    const res = await fetch(`${API}/api/auth/resend-login-otp`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: loginEmail2FA })
+    });
+    const data = await res.json();
+    clearLotpInputs();
+    showAlert(data.success ? 'New code sent to your email.' : (data.error || 'Could not resend. Try again.'), data.success ? 'success' : 'error');
+    btn.textContent = 'Resend code';
+    startLoginTimer(60);
+    document.getElementById('lotp0').focus();
+  } catch {
+    showAlert('Connection error. Please try again.');
+    btn.disabled = false; btn.textContent = 'Resend code';
+  }
+}
+
 async function connectWallet() {
-  if (!window.ethereum) { showAlert('MetaMask not detected. Please install MetaMask from metamask.io'); return; }
   const btn = document.getElementById('walletBtn'), text = document.getElementById('walletBtnText');
   btn.disabled = true; text.textContent = 'Connecting...';
   try {
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const accounts = await _cbProvider.request({ method: 'eth_requestAccounts' });
     const address = accounts[0], timestamp = Date.now();
     const message = `Welcome to Thanod!\n\nSign this to create or access your account.\n\nWallet: ${address}\nTimestamp: ${timestamp}\n\nThis will not trigger a blockchain transaction.`;
-    const signature = await window.ethereum.request({ method: 'personal_sign', params: [message, address] });
+    const signature = await _cbProvider.request({ method: 'personal_sign', params: [message, address] });
     const res = await fetch(`${API}/api/auth/wallet`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ address, signature, message }) });
     const data = await res.json();
     if (data.success && data.token) {
       localStorage.setItem('aurethium_token', data.token); localStorage.setItem('aurethium_user', JSON.stringify(data.user));
       btn.classList.add('connected'); text.textContent = `${address.slice(0,6)}...${address.slice(-4)}`;
-      showAlert('Wallet verified! Loading dashboard...', 'success');
+      showAlert('Wallet connected! Loading dashboard...', 'success');
       setTimeout(() => window.location.href = 'dashboard.html', 1000);
-    } else { showAlert(data.error || 'Wallet sign-in failed.'); btn.disabled = false; text.textContent = 'Sign In with MetaMask'; }
+    } else { showAlert(data.error || 'Wallet connection failed.'); btn.disabled = false; text.textContent = 'Connect Coinbase Wallet'; }
   } catch (err) {
-    showAlert(err.code === 4001 ? 'Cancelled. Please approve the MetaMask request.' : 'Wallet connection failed.');
-    btn.disabled = false; text.textContent = 'Sign In with MetaMask';
+    showAlert(err.code === 4001 ? 'Cancelled. Please approve the request in Coinbase Wallet.' : 'Wallet connection failed. Please try again.');
+    btn.disabled = false; text.textContent = 'Connect Coinbase Wallet';
   }
 }
 </script>
+<script src="i18n.js"></script>
 </body>
 </html>
