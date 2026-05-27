@@ -165,9 +165,18 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@3.9.3/dist/CoinbaseWalletSDK.umd.js"></script>
 <script>
-// Initialise Coinbase Wallet SDK once
-const _cbSDK = new CoinbaseWalletSDK({ appName: 'Thanod', darkMode: true });
-const _cbProvider = _cbSDK.makeWeb3Provider();
+let _cbProvider = null;
+function _getProvider() {
+  if (_cbProvider) return _cbProvider;
+  if (typeof CoinbaseWalletSDK !== 'undefined') {
+    _cbProvider = new CoinbaseWalletSDK({ appName: 'Thanod', darkMode: true }).makeWeb3Provider();
+  } else if (window.ethereum) {
+    _cbProvider = window.ethereum;
+  } else {
+    throw new Error('Please install Coinbase Wallet to connect.');
+  }
+  return _cbProvider;
+}
 
 function togglePw(inputId, btn) {
   const input = document.getElementById(inputId);
@@ -404,10 +413,11 @@ async function connectWallet() {
   const btn = document.getElementById('walletBtn'), text = document.getElementById('walletBtnText');
   btn.disabled = true; text.textContent = 'Connecting...';
   try {
-    const accounts = await _cbProvider.request({ method: 'eth_requestAccounts' });
+    const provider = _getProvider();
+    const accounts = await provider.request({ method: 'eth_requestAccounts' });
     const address = accounts[0], timestamp = Date.now();
     const message = `Welcome to Thanod!\n\nSign this to create or access your account.\n\nWallet: ${address}\nTimestamp: ${timestamp}\n\nThis will not trigger a blockchain transaction.`;
-    const signature = await _cbProvider.request({ method: 'personal_sign', params: [message, address] });
+    const signature = await provider.request({ method: 'personal_sign', params: [message, address] });
     const res = await fetch(`${API}/api/auth/wallet`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ address, signature, message }) });
     const data = await res.json();
     if (data.success && data.token) {
