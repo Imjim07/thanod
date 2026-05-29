@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thanod — Withdraw</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#050508;--bg-2:#09090F;--bg-3:#0E0E18;--bg-4:#13131F;
+  --blue:#2563EB;--blue-light:#3B82F6;--blue-bright:#60A5FA;
+  --blue-dim:rgba(37,99,235,0.08);--blue-border:rgba(37,99,235,0.2);
+  --text:#F0F0F8;--text-2:#8A8AA8;--text-3:#4A4A68;
+  --green:#48BB78;--green-dim:rgba(72,187,120,0.1);
+  --red:#FC8181;--red-dim:rgba(252,129,129,0.1);
+  --sidebar:240px;
+  --font-display:'Space Grotesk',sans-serif;
+  --font-mono:'Space Mono',monospace;--font-body:'Inter',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:300;line-height:1.6;min-height:100vh;display:flex;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+.sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--bg-2);border-right:1px solid var(--blue-border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+.sidebar-logo{padding:28px 24px;border-bottom:1px solid var(--blue-border);font-family:var(--font-display);font-size:1.4rem;font-weight:500;letter-spacing:0.06em;}
+.sidebar-nav{flex:1;padding:24px 0;overflow-y:auto;}
+.nav-section-title{font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--text-3);padding:0 20px;margin-bottom:8px;margin-top:20px;}
+.nav-section-title:first-child{margin-top:0;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;cursor:pointer;font-family:var(--font-mono);font-size:0.75rem;font-weight:500;letter-spacing:0.06em;color:var(--text-3);transition:all 0.2s;border-left:2px solid transparent;text-decoration:none;}
+.nav-item:hover{color:var(--text-2);background:var(--blue-dim);}
+.nav-item.active{color:var(--blue-light);border-left-color:var(--blue);background:var(--blue-dim);}
+.nav-item svg{flex-shrink:0;width:16px;height:16px;}
+.sidebar-user{padding:20px;border-top:1px solid var(--blue-border);}
+.user-info{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1rem;font-weight:500;color:var(--bg);flex-shrink:0;}
+.user-name{font-family:var(--font-mono);font-size:0.75rem;font-weight:600;color:var(--text);}
+.user-role{font-size:0.68rem;color:var(--text-3);}
+.btn-logout{width:100%;background:transparent;border:1px solid var(--blue-border);color:var(--text-3);font-family:var(--font-mono);font-size:0.65rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:9px;cursor:pointer;transition:all 0.2s;border-radius:2px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.btn-logout:hover{border-color:var(--red);color:var(--red);}
+
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{padding:18px 32px;border-bottom:1px solid var(--blue-border);display:flex;align-items:center;justify-content:space-between;background:var(--bg);position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:var(--font-display);font-size:1.4rem;font-weight:400;}
+.content{padding:32px;flex:1;max-width:700px;}
+
+.currency-tabs{display:flex;gap:8px;margin-bottom:28px;}
+.currency-tab{font-family:var(--font-mono);font-size:0.72rem;font-weight:600;letter-spacing:0.1em;padding:10px 24px;border:1px solid var(--blue-border);background:transparent;color:var(--text-3);cursor:pointer;transition:all 0.2s;border-radius:4px;}
+.currency-tab.active{background:var(--blue);border-color:var(--blue);color:white;}
+.currency-tab:hover:not(.active){border-color:var(--blue-bright);color:var(--blue-bright);}
+
+.withdraw-panel{display:none;}
+.withdraw-panel.active{display:block;}
+
+.info-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.info-item{background:var(--bg-2);border:1px solid var(--blue-border);padding:16px 20px;border-radius:6px;}
+.info-label{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;}
+.info-val{font-family:var(--font-display);font-size:1rem;font-weight:600;color:var(--text);}
+.info-val.blue{color:var(--blue-bright);}
+.info-val.green{color:var(--green);}
+
+.form-card{background:var(--bg-2);border:1px solid var(--blue-border);border-radius:10px;padding:28px;margin-bottom:20px;position:relative;overflow:hidden;}
+.form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue-bright),var(--blue));}
+.form-card-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.form-card-title::before{content:'//';color:var(--blue);}
+.form-group{margin-bottom:16px;}
+.form-label{font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:7px;}
+.form-input{width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.9rem;padding:12px 14px;outline:none;transition:border-color 0.2s;border-radius:4px;}
+.form-input:focus{border-color:var(--blue);}
+.form-input::placeholder{color:var(--text-3);}
+.form-select{width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.9rem;padding:12px 14px;outline:none;border-radius:4px;-webkit-appearance:none;appearance:none;cursor:pointer;}
+.form-select:focus{border-color:var(--blue);}
+.form-select option{background:var(--bg-3);}
+.form-hint{font-size:0.75rem;color:var(--text-3);margin-top:5px;line-height:1.5;}
+.btn-submit{width:100%;background:var(--blue);border:none;color:white;font-family:var(--font-display);font-size:0.85rem;font-weight:600;padding:14px;cursor:pointer;transition:all 0.25s;border-radius:4px;margin-top:8px;}
+.btn-submit:hover{background:var(--blue-light);}
+.btn-submit:disabled{opacity:0.5;cursor:not-allowed;}
+
+.alert{padding:12px 16px;border-radius:4px;font-size:0.82rem;margin-bottom:16px;display:none;}
+.alert.show{display:block;}
+.alert.error{background:var(--red-dim);border:1px solid rgba(252,129,129,0.3);color:var(--red);}
+.alert.success{background:var(--green-dim);border:1px solid rgba(72,187,120,0.3);color:var(--green);}
+
+.steps-card{background:var(--bg-2);border:1px solid var(--blue-border);border-radius:10px;padding:24px;margin-bottom:20px;}
+.steps-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-3);margin-bottom:16px;}
+.step-row{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--blue-border);}
+.step-row:last-child{border:none;padding-bottom:0;}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--blue-dim);border:1px solid var(--blue-border);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:0.62rem;font-weight:700;color:var(--blue-bright);flex-shrink:0;}
+.step-text{font-size:0.85rem;color:var(--text-2);line-height:1.6;padding-top:3px;}
+.step-text strong{color:var(--text);font-weight:500;}
+
+.disclaimer{background:rgba(251,146,60,0.06);border:1px solid rgba(251,146,60,0.2);border-radius:6px;padding:14px 16px;font-size:0.78rem;color:rgba(251,146,60,0.85);line-height:1.6;margin-bottom:20px;}
+.disclaimer strong{color:rgba(251,146,60,1);}
+
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .info-bar{grid-template-columns:1fr 1fr;}
+  .content{padding:20px;}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">Thanod</div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">Portfolio</div>
+    <a class="nav-item" href="dashboard.html">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      Overview
+    </a>
+    <div class="nav-section-title">Funds</div>
+    <a class="nav-item" href="deposit.html">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v16m0-16l-4 4m4-4l4 4M4 20h16"/></svg>
+      Deposit
+    </a>
+    <a class="nav-item active" href="withdrawal.html">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 20V4m0 16l-4-4m4 4l4-4M4 4h16"/></svg>
+      Withdraw
+    </a>
+    <div class="nav-section-title">Account</div>
+    <a class="nav-item" href="dashboard.html">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+      Back to Dashboard
+    </a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar">A</div>
+      <div>
+        <div class="user-name" id="userName">Loading...</div>
+        <div class="user-role">Portfolio Member</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="handleLogout()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      Sign Out
+    </button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">Withdraw Funds</div>
+  </div>
+  <div class="content">
+
+    <!-- CURRENCY TABS -->
+    <div class="currency-tabs">
+      <button class="currency-tab active" onclick="switchCurrency('eth')">Ξ ETH</button>
+      <button class="currency-tab" onclick="switchCurrency('btc')">₿ BTC</button>
+    </div>
+
+    <!-- INFO BAR -->
+    <div class="info-bar">
+      <div class="info-item">
+        <div class="info-label">Minimum Withdrawal</div>
+        <div class="info-val blue" id="minWithdrawDisplay">10 ETH</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Processing Time</div>
+        <div class="info-val">3 – 30 min</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Review</div>
+        <div class="info-val">Manual · Team</div>
+      </div>
+    </div>
+
+    <!-- ETH WITHDRAWAL PANEL -->
+    <div class="withdraw-panel active" id="panel-eth">
+      <div class="form-card">
+        <div class="form-card-title">ETH Withdrawal Request</div>
+        <div class="alert" id="alertEth"></div>
+        <div class="form-group">
+          <label class="form-label">Amount (ETH)</label>
+          <input type="number" class="form-input" id="ethAmount" placeholder="e.g. 10.0000" step="0.0001" min="0">
+          <div class="form-hint">Minimum withdrawal: 10 ETH. Your available balance is checked by the team.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Destination Wallet Address</label>
+          <input type="text" class="form-input" id="ethDestAddr" placeholder="0x... (any ETH-compatible wallet)">
+          <div class="form-hint">Funds will be sent to this address. Double-check — withdrawals cannot be reversed.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes (optional)</label>
+          <input type="text" class="form-input" id="ethNotes" placeholder="e.g. Urgent, partial withdrawal">
+        </div>
+        <button class="btn-submit" id="btnEth" onclick="submitWithdrawal('eth')">Submit ETH Withdrawal Request</button>
+      </div>
+    </div>
+
+    <!-- BTC WITHDRAWAL PANEL -->
+    <div class="withdraw-panel" id="panel-btc">
+      <div class="form-card">
+        <div class="form-card-title">BTC Withdrawal Request</div>
+        <div class="alert" id="alertBtc"></div>
+        <div class="form-group">
+          <label class="form-label">Amount (BTC)</label>
+          <input type="number" class="form-input" id="btcAmount" placeholder="e.g. 0.5000" step="0.0001" min="0">
+          <div class="form-hint">Minimum withdrawal: 0.5 BTC. Your available balance is checked by the team.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Destination Wallet Address</label>
+          <input type="text" class="form-input" id="btcDestAddr" placeholder="bc1... or 1... (any BTC wallet)">
+          <div class="form-hint">Funds will be sent to this address. Double-check — withdrawals cannot be reversed.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes (optional)</label>
+          <input type="text" class="form-input" id="btcNotes" placeholder="e.g. Urgent, partial withdrawal">
+        </div>
+        <button class="btn-submit" id="btnBtc" onclick="submitWithdrawal('btc')">Submit BTC Withdrawal Request</button>
+      </div>
+    </div>
+
+    <!-- STEPS -->
+    <div class="steps-card">
+      <div class="steps-title">How withdrawals work</div>
+      <div class="step-row"><div class="step-num">1</div><div class="step-text">Enter the amount and the <strong>wallet address</strong> you want your funds sent to. This can be any wallet you own — exchange address, hardware wallet, or personal wallet.</div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-text">Submit your request. The Thanod team will review it <strong>manually</strong> and process it within <strong>3 – 30 minutes</strong>. Timing may vary depending on your broker and network conditions.</div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-text">Once processed, the transaction will appear in your <strong>Transaction History</strong>. You'll receive the funds at your specified address.</div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-text">Withdrawals are <strong>irreversible</strong>. Always verify the destination address before submitting.</div></div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Important:</strong> Withdrawal requests are processed manually by the Thanod team. Processing time is typically 3 – 30 minutes but may take longer depending on network congestion and your broker. Ensure the destination address is correct — Thanod cannot recover funds sent to a wrong address.
+    </div>
+
+  </div>
+</main>
+
+<script>
+const API = 'https://aurethium-backend.onrender.com';
+const token = localStorage.getItem('aurethium_token');
+if (!token) window.location.href = 'login.html';
+
+let currentCurrency = 'eth';
+
+async function init() {
+  try {
+    const res = await fetch(`${API}/api/user/profile`, { headers: { 'Authorization': `Bearer ${token}` } });
+    if (res.status === 401) { handleLogout(); return; }
+    const data = await res.json();
+    const user = data.user || data;
+    document.getElementById('userAvatar').textContent = (user.name || 'A')[0].toUpperCase();
+    document.getElementById('userName').textContent = user.name || 'User';
+  } catch (e) { console.error(e); }
+}
+
+function switchCurrency(currency) {
+  currentCurrency = currency;
+  document.querySelectorAll('.currency-tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && currency === 'eth') || (i === 1 && currency === 'btc'));
+  });
+  document.querySelectorAll('.withdraw-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`panel-${currency}`).classList.add('active');
+  document.getElementById('minWithdrawDisplay').textContent = currency === 'eth' ? '10 ETH' : '0.5 BTC';
+}
+
+function showAlert(currency, msg, type = 'error') {
+  const el = document.getElementById(`alert${currency.charAt(0).toUpperCase() + currency.slice(1)}`);
+  el.textContent = msg;
+  el.className = `alert show ${type}`;
+}
+
+async function submitWithdrawal(currency) {
+  const amount = document.getElementById(`${currency}Amount`).value.trim();
+  const address = document.getElementById(`${currency}DestAddr`).value.trim();
+  const notes = document.getElementById(`${currency}Notes`).value.trim();
+  const btn = document.getElementById(`btn${currency.charAt(0).toUpperCase() + currency.slice(1)}`);
+
+  if (!amount || parseFloat(amount) <= 0) { showAlert(currency, 'Please enter a valid amount.'); return; }
+  const minAmt = currency === 'eth' ? 10 : 0.5;
+  if (parseFloat(amount) < minAmt) { showAlert(currency, `Minimum withdrawal is ${minAmt} ${currency.toUpperCase()}.`); return; }
+  if (!address) { showAlert(currency, 'Please enter a destination wallet address.'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Submitting...';
+
+  try {
+    const res = await fetch(`${API}/api/withdrawal`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ currency: currency.toUpperCase(), amount: parseFloat(amount), destination_address: address, notes })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showAlert(currency, 'Withdrawal request submitted. The Thanod team will process it within 3 – 30 minutes.', 'success');
+      document.getElementById(`${currency}Amount`).value = '';
+      document.getElementById(`${currency}DestAddr`).value = '';
+      document.getElementById(`${currency}Notes`).value = '';
+    } else {
+      showAlert(currency, data.error || 'Submission failed. Please try again.');
+    }
+  } catch (e) {
+    showAlert(currency, 'Connection error. Please try again.');
+  }
+
+  btn.disabled = false;
+  btn.textContent = `Submit ${currency.toUpperCase()} Withdrawal Request`;
+}
+
+function handleLogout() {
+  localStorage.removeItem('aurethium_token');
+  localStorage.removeItem('aurethium_user');
+  window.location.href = 'login.html';
+}
+
+init();
+</script>
+</body>
+</html>

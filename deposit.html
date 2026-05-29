@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thanod — Deposit</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#050508;--bg-2:#09090F;--bg-3:#0E0E18;--bg-4:#13131F;
+  --blue:#2563EB;--blue-light:#3B82F6;--blue-bright:#60A5FA;
+  --blue-dim:rgba(37,99,235,0.08);--blue-border:rgba(37,99,235,0.2);
+  --text:#F0F0F8;--text-2:#8A8AA8;--text-3:#4A4A68;
+  --green:#48BB78;--green-dim:rgba(72,187,120,0.1);
+  --red:#FC8181;--red-dim:rgba(252,129,129,0.1);
+  --sidebar:240px;
+  --font-display:'Space Grotesk',sans-serif;
+  --font-mono:'Space Mono',monospace;--font-body:'Inter',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:300;line-height:1.6;min-height:100vh;display:flex;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--bg-2);border-right:1px solid var(--blue-border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+.sidebar-logo{padding:28px 24px;border-bottom:1px solid var(--blue-border);font-family:var(--font-display);font-size:1.4rem;font-weight:500;letter-spacing:0.06em;}
+.sidebar-nav{flex:1;padding:24px 0;overflow-y:auto;}
+.nav-section-title{font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--text-3);padding:0 20px;margin-bottom:8px;margin-top:20px;}
+.nav-section-title:first-child{margin-top:0;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;cursor:pointer;font-family:var(--font-mono);font-size:0.75rem;font-weight:500;letter-spacing:0.06em;color:var(--text-3);transition:all 0.2s;border-left:2px solid transparent;text-decoration:none;}
+.nav-item:hover{color:var(--text-2);background:var(--blue-dim);}
+.nav-item.active{color:var(--blue-light);border-left-color:var(--blue);background:var(--blue-dim);}
+.nav-item svg{flex-shrink:0;width:16px;height:16px;}
+.sidebar-user{padding:20px;border-top:1px solid var(--blue-border);}
+.user-info{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1rem;font-weight:500;color:var(--bg);flex-shrink:0;}
+.user-name{font-family:var(--font-mono);font-size:0.75rem;font-weight:600;color:var(--text);}
+.user-role{font-size:0.68rem;color:var(--text-3);}
+.btn-logout{width:100%;background:transparent;border:1px solid var(--blue-border);color:var(--text-3);font-family:var(--font-mono);font-size:0.65rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:9px;cursor:pointer;transition:all 0.2s;border-radius:2px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.btn-logout:hover{border-color:var(--red);color:var(--red);}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{padding:18px 32px;border-bottom:1px solid var(--blue-border);display:flex;align-items:center;justify-content:space-between;background:var(--bg);position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:var(--font-display);font-size:1.4rem;font-weight:400;}
+.content{padding:32px;flex:1;max-width:900px;}
+
+/* CURRENCY TABS */
+.currency-tabs{display:flex;gap:8px;margin-bottom:28px;}
+.currency-tab{font-family:var(--font-mono);font-size:0.72rem;font-weight:600;letter-spacing:0.1em;padding:10px 24px;border:1px solid var(--blue-border);background:transparent;color:var(--text-3);cursor:pointer;transition:all 0.2s;border-radius:4px;}
+.currency-tab.active{background:var(--blue);border-color:var(--blue);color:white;}
+.currency-tab:hover:not(.active){border-color:var(--blue-bright);color:var(--blue-bright);}
+
+/* PANELS */
+.deposit-panel{display:none;}
+.deposit-panel.active{display:block;}
+
+/* INFO BAR */
+.info-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.info-item{background:var(--bg-2);border:1px solid var(--blue-border);padding:16px 20px;border-radius:6px;}
+.info-label{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;}
+.info-val{font-family:var(--font-display);font-size:1rem;font-weight:600;color:var(--text);}
+.info-val.blue{color:var(--blue-bright);}
+
+/* WALLET CARD */
+.wallet-card{background:var(--bg-2);border:1px solid var(--blue-border);border-radius:10px;padding:28px;margin-bottom:20px;position:relative;overflow:hidden;}
+.wallet-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue-bright),var(--blue));}
+.wallet-card-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.wallet-card-title::before{content:'//';color:var(--blue);}
+.wallet-body{display:flex;gap:28px;align-items:flex-start;}
+.qr-wrap{background:white;padding:12px;border-radius:8px;flex-shrink:0;}
+.qr-wrap img{display:block;width:140px;height:140px;}
+.qr-placeholder{width:140px;height:140px;background:var(--bg-3);border:1px solid var(--blue-border);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:0.72rem;text-align:center;padding:12px;}
+.wallet-address-area{flex:1;}
+.wallet-address-label{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;}
+.wallet-address-box{background:var(--bg-3);border:1px solid var(--blue-border);border-radius:6px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.wallet-address-text{font-family:var(--font-mono);font-size:0.78rem;color:var(--blue-bright);word-break:break-all;flex:1;}
+.btn-copy{background:var(--blue-dim);border:1px solid var(--blue-border);color:var(--blue-bright);font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.08em;padding:6px 12px;cursor:pointer;border-radius:4px;transition:all 0.2s;white-space:nowrap;flex-shrink:0;}
+.btn-copy:hover{background:var(--blue);color:white;}
+.no-wallet-msg{font-size:0.85rem;color:var(--text-3);line-height:1.65;}
+
+/* CONNECT WALLET SECTION */
+.connect-section{background:var(--bg-2);border:1px solid var(--blue-border);border-radius:10px;padding:24px;margin-bottom:20px;}
+.connect-title{font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:6px;}
+.connect-sub{font-size:0.83rem;color:var(--text-3);margin-bottom:18px;line-height:1.6;}
+.wallet-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.wallet-btn{display:flex;align-items:center;gap:10px;padding:12px 20px;border:1px solid var(--blue-border);background:var(--bg-3);color:var(--text);font-family:var(--font-display);font-size:0.82rem;font-weight:500;cursor:pointer;border-radius:6px;transition:all 0.2s;}
+.wallet-btn:hover{border-color:var(--blue-bright);background:var(--blue-dim);}
+.wallet-btn.connected{border-color:var(--green);background:rgba(72,187,120,0.06);color:var(--green);}
+.wallet-btn-icon{width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.wallet-connected-addr{font-family:var(--font-mono);font-size:0.7rem;color:var(--green);margin-top:8px;}
+
+/* STEPS */
+.steps-card{background:var(--bg-2);border:1px solid var(--blue-border);border-radius:10px;padding:24px;margin-bottom:20px;}
+.steps-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-3);margin-bottom:16px;}
+.step-row{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--blue-border);}
+.step-row:last-child{border:none;padding-bottom:0;}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--blue-dim);border:1px solid var(--blue-border);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:0.62rem;font-weight:700;color:var(--blue-bright);flex-shrink:0;}
+.step-text{font-size:0.85rem;color:var(--text-2);line-height:1.6;padding-top:3px;}
+.step-text strong{color:var(--text);font-weight:500;}
+
+/* DISCLAIMER */
+.disclaimer{background:rgba(251,146,60,0.06);border:1px solid rgba(251,146,60,0.2);border-radius:6px;padding:14px 16px;font-size:0.78rem;color:rgba(251,146,60,0.85);line-height:1.6;margin-bottom:20px;}
+.disclaimer strong{color:rgba(251,146,60,1);}
+
+/* SPINNER */
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .info-bar{grid-template-columns:1fr 1fr;}
+  .wallet-body{flex-direction:column;}
+  .content{padding:20px;}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">Thanod</div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">Portfolio</div>
+    <a class="nav-item" href="dashboard.html">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      Overview
+    </a>
+    <div class="nav-section-title">Funds</div>
+    <a class="nav-item active" href="deposit.html">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v16m0-16l-4 4m4-4l4 4M4 20h16"/></svg>
+      Deposit
+    </a>
+    <a class="nav-item" href="withdrawal.html">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 20V4m0 16l-4-4m4 4l4-4M4 4h16"/></svg>
+      Withdraw
+    </a>
+    <div class="nav-section-title">Account</div>
+    <a class="nav-item" href="dashboard.html">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+      Back to Dashboard
+    </a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar">A</div>
+      <div>
+        <div class="user-name" id="userName">Loading...</div>
+        <div class="user-role">Portfolio Member</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="handleLogout()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      Sign Out
+    </button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">Deposit Funds</div>
+  </div>
+  <div class="content">
+
+    <!-- CURRENCY TABS -->
+    <div class="currency-tabs">
+      <button class="currency-tab active" onclick="switchCurrency('eth')">Ξ ETH</button>
+      <button class="currency-tab" onclick="switchCurrency('btc')">₿ BTC</button>
+    </div>
+
+    <!-- INFO BAR -->
+    <div class="info-bar">
+      <div class="info-item">
+        <div class="info-label">Minimum Deposit</div>
+        <div class="info-val blue" id="minDepositDisplay">10 ETH</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Processing Time</div>
+        <div class="info-val">3 – 30 min</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Confirmation</div>
+        <div class="info-val">Manual · Team Review</div>
+      </div>
+    </div>
+
+    <!-- ETH PANEL -->
+    <div class="deposit-panel active" id="panel-eth">
+
+      <!-- WALLET ADDRESS CARD -->
+      <div class="wallet-card">
+        <div class="wallet-card-title">Your ETH Deposit Address</div>
+        <div class="wallet-body" id="ethWalletBody">
+          <div class="qr-placeholder">Loading wallet address...</div>
+          <div class="wallet-address-area">
+            <div class="no-wallet-msg">Loading your assigned deposit wallet...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONNECT WALLET -->
+      <div class="connect-section">
+        <div class="connect-title">Connect a Wallet (optional)</div>
+        <div class="connect-sub">Connect MetaMask or Coinbase Wallet to autofill the deposit address. You can also send manually from any wallet or exchange.</div>
+        <div class="wallet-btns">
+          <button class="wallet-btn" id="btnMetaMask" onclick="connectMetaMask()">
+            <div class="wallet-btn-icon" style="background:#F6851B;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M21.5 2L13 9.5l1.5-4.5L21.5 2zM2.5 2l8.6 7.5L9.5 5 2.5 2zM18.5 16.5l-2.5 3.8 5.3 1.5-1-5.3h-1.8zM5.5 16.5H3.7l-1 5.3 5.3-1.5-2.5-3.8zM3.2 9L.5 13.5l6 .3-2.5-4.8H3.2zM20.8 9h-.8l-2.5 4.8 6-.3L20.8 9zM6.8 13.8l-3 .2 2 6.5 3.3-4.3-2.3-2.4zM17.2 13.8l-2.3 2.4 3.3 4.3 2-6.5-3-.2zM9.5 14l3.5.2 3.5-.2-1.1-5.5H10.6L9.5 14z"/></svg>
+            </div>
+            MetaMask
+          </button>
+          <button class="wallet-btn" id="btnCoinbase" onclick="connectCoinbase()">
+            <div class="wallet-btn-icon" style="background:#0052FF;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="10"/><rect x="8" y="9" width="8" height="6" rx="1.5" fill="#0052FF"/></svg>
+            </div>
+            Coinbase Wallet
+          </button>
+        </div>
+        <div class="wallet-connected-addr" id="connectedAddr" style="display:none;"></div>
+      </div>
+
+      <!-- STEPS -->
+      <div class="steps-card">
+        <div class="steps-title">How to deposit ETH</div>
+        <div class="step-row"><div class="step-num">1</div><div class="step-text">Copy your assigned ETH deposit address above or connect your wallet to auto-populate it.</div></div>
+        <div class="step-row"><div class="step-num">2</div><div class="step-text">Send <strong>ETH only</strong> to that address from your exchange or wallet. Minimum deposit: <strong>10 ETH</strong>.</div></div>
+        <div class="step-row"><div class="step-num">3</div><div class="step-text">The Thanod team will confirm your deposit manually. Processing time is typically <strong>3 – 30 minutes</strong> depending on network congestion and your broker.</div></div>
+        <div class="step-row"><div class="step-num">4</div><div class="step-text">Once confirmed, your portfolio balance will update and your investment tier will be assigned or adjusted by the team.</div></div>
+      </div>
+
+    </div>
+
+    <!-- BTC PANEL -->
+    <div class="deposit-panel" id="panel-btc">
+
+      <div class="wallet-card">
+        <div class="wallet-card-title">Your BTC Deposit Address</div>
+        <div class="wallet-body" id="btcWalletBody">
+          <div class="qr-placeholder">Loading wallet address...</div>
+          <div class="wallet-address-area">
+            <div class="no-wallet-msg">Loading your assigned BTC deposit wallet...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="steps-card">
+        <div class="steps-title">How to deposit BTC</div>
+        <div class="step-row"><div class="step-num">1</div><div class="step-text">Copy your assigned BTC deposit address above.</div></div>
+        <div class="step-row"><div class="step-num">2</div><div class="step-text">Send <strong>BTC only</strong> to that address. Minimum deposit applies. Do not send other assets to this address.</div></div>
+        <div class="step-row"><div class="step-num">3</div><div class="step-text">Processing time is <strong>3 – 30 minutes</strong> or more depending on BTC network confirmations (usually 3 confirmations required).</div></div>
+        <div class="step-row"><div class="step-num">4</div><div class="step-text">Once the Thanod team confirms your deposit, your portfolio balance will be updated accordingly.</div></div>
+      </div>
+
+    </div>
+
+    <!-- DISCLAIMER -->
+    <div class="disclaimer">
+      <strong>Important:</strong> Only send the selected cryptocurrency to the address shown. Sending any other asset to this address may result in permanent loss. Thanod does not guarantee specific outcomes — all investments carry risk. Processing times may vary depending on your broker and network conditions.
+    </div>
+
+  </div>
+</main>
+
+<script>
+const API = 'https://aurethium-backend.onrender.com';
+const token = localStorage.getItem('aurethium_token');
+if (!token) window.location.href = 'login.html';
+
+let userData = null;
+let currentCurrency = 'eth';
+
+async function init() {
+  try {
+    const res = await fetch(`${API}/api/user/profile`, { headers: { 'Authorization': `Bearer ${token}` } });
+    if (res.status === 401) { handleLogout(); return; }
+    const data = await res.json();
+    userData = data.user || data;
+    document.getElementById('userAvatar').textContent = (userData.name || 'A')[0].toUpperCase();
+    document.getElementById('userName').textContent = userData.name || 'User';
+    renderWallet('eth');
+    renderWallet('btc');
+  } catch (e) { console.error(e); }
+}
+
+function renderWallet(currency) {
+  const isEth = currency === 'eth';
+  const bodyEl = document.getElementById(`${currency}WalletBody`);
+  const address = isEth ? (userData?.deposit_wallet || '') : (userData?.deposit_wallet_btc || '');
+
+  if (!address) {
+    bodyEl.innerHTML = `
+      <div class="qr-placeholder">No address assigned yet</div>
+      <div class="wallet-address-area">
+        <div class="no-wallet-msg">Your ${isEth ? 'ETH' : 'BTC'} deposit address has not been assigned yet. Contact the Thanod team to get your deposit address set up.</div>
+      </div>`;
+    return;
+  }
+
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(address)}&bgcolor=ffffff&color=000000&margin=0`;
+  bodyEl.innerHTML = `
+    <div class="qr-wrap"><img src="${qrUrl}" alt="QR Code" width="140" height="140"></div>
+    <div class="wallet-address-area">
+      <div class="wallet-address-label">${isEth ? 'ETH' : 'BTC'} Deposit Address</div>
+      <div class="wallet-address-box">
+        <div class="wallet-address-text" id="addr-${currency}">${address}</div>
+        <button class="btn-copy" onclick="copyAddress('${currency}')">Copy</button>
+      </div>
+      <div style="font-size:0.78rem;color:var(--text-3);line-height:1.6;">Send only <strong style="color:var(--text-2);">${isEth ? 'ETH' : 'BTC'}</strong> to this address. Minimum: <strong style="color:var(--blue-bright);">${isEth ? '10 ETH' : '0.5 BTC'}</strong>. Processing: 3 – 30 min.</div>
+    </div>`;
+}
+
+function copyAddress(currency) {
+  const el = document.getElementById(`addr-${currency}`);
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent.trim()).then(() => {
+    const btn = el.nextElementSibling;
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.background = 'var(--green)';
+    btn.style.color = 'white';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.style.color = ''; }, 1800);
+  });
+}
+
+function switchCurrency(currency) {
+  currentCurrency = currency;
+  document.querySelectorAll('.currency-tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && currency === 'eth') || (i === 1 && currency === 'btc'));
+  });
+  document.querySelectorAll('.deposit-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`panel-${currency}`).classList.add('active');
+  document.getElementById('minDepositDisplay').textContent = currency === 'eth' ? '10 ETH' : '0.5 BTC';
+}
+
+async function connectMetaMask() {
+  if (!window.ethereum) { alert('MetaMask not detected. Please install MetaMask.'); return; }
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const addr = accounts[0];
+    document.getElementById('btnMetaMask').classList.add('connected');
+    document.getElementById('btnMetaMask').innerHTML = `<div class="wallet-btn-icon" style="background:#F6851B;"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M21.5 2L13 9.5l1.5-4.5L21.5 2zM2.5 2l8.6 7.5L9.5 5 2.5 2zM18.5 16.5l-2.5 3.8 5.3 1.5-1-5.3h-1.8zM5.5 16.5H3.7l-1 5.3 5.3-1.5-2.5-3.8zM3.2 9L.5 13.5l6 .3-2.5-4.8H3.2zM20.8 9h-.8l-2.5 4.8 6-.3L20.8 9zM6.8 13.8l-3 .2 2 6.5 3.3-4.3-2.3-2.4zM17.2 13.8l-2.3 2.4 3.3 4.3 2-6.5-3-.2zM9.5 14l3.5.2 3.5-.2-1.1-5.5H10.6L9.5 14z"/></svg></div> Connected`;
+    const addrEl = document.getElementById('connectedAddr');
+    addrEl.textContent = `Connected: ${addr.slice(0,6)}...${addr.slice(-4)}`;
+    addrEl.style.display = 'block';
+  } catch (e) { console.error('MetaMask connection failed', e); }
+}
+
+async function connectCoinbase() {
+  if (window.ethereum?.isCoinbaseWallet) {
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const addr = accounts[0];
+      document.getElementById('btnCoinbase').classList.add('connected');
+      document.getElementById('btnCoinbase').textContent = 'Coinbase Connected';
+      const addrEl = document.getElementById('connectedAddr');
+      addrEl.textContent = `Connected: ${addr.slice(0,6)}...${addr.slice(-4)}`;
+      addrEl.style.display = 'block';
+    } catch (e) { console.error('Coinbase connection failed', e); }
+  } else {
+    window.open('https://www.coinbase.com/wallet', '_blank');
+  }
+}
+
+function handleLogout() {
+  localStorage.removeItem('aurethium_token');
+  localStorage.removeItem('aurethium_user');
+  window.location.href = 'login.html';
+}
+
+init();
+</script>
+</body>
+</html>
