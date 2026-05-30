@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thanod — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#050508;--bg-2:#09090F;--bg-3:#0E0E18;
+  --blue:#2563EB;--blue-light:#3B82F6;--blue-bright:#60A5FA;
+  --blue-dim:rgba(37,99,235,0.08);--blue-border:rgba(37,99,235,0.2);
+  --text:#F0F0F8;--text-2:#8A8AA8;--text-3:#4A4A68;
+  --red:#F87171;--green:#34D399;
+  --font-display:'Space Grotesk',sans-serif;
+  --font-mono:'Space Mono',monospace;
+  --radius:6px;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-display);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+.card{background:var(--bg-2);border:1px solid var(--blue-border);padding:52px 48px;width:100%;max-width:420px;border-radius:14px;position:relative;text-align:center;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue-bright),var(--blue));border-radius:14px 14px 0 0;}
+
+.logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:32px;}
+.logo-mark{width:36px;height:36px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:white;}
+.logo-text{font-size:1.4rem;font-weight:700;letter-spacing:-0.02em;}
+
+/* STATES */
+.state{display:none;}
+.state.active{display:block;}
+
+/* LOADING */
+.spinner-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;}
+.big-spinner{width:44px;height:44px;border:3px solid var(--blue-border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:0.88rem;color:var(--text-2);}
+
+/* SUCCESS */
+.success-icon{width:56px;height:56px;background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:var(--green);}
+.state-title{font-size:1.6rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:8px;}
+.state-sub{font-size:0.88rem;color:var(--text-2);line-height:1.65;margin-bottom:24px;}
+.state-sub.green{color:var(--green);}
+
+/* ERROR */
+.error-icon{width:56px;height:56px;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:var(--red);}
+
+/* BUTTON */
+.btn{display:inline-block;background:var(--blue);color:white;font-family:var(--font-display);font-size:0.82rem;font-weight:600;padding:13px 28px;border-radius:var(--radius);text-decoration:none;transition:background 0.2s;border:none;cursor:pointer;width:100%;}
+.btn:hover{background:var(--blue-light);}
+.btn-ghost{display:inline-block;background:transparent;border:1px solid var(--blue-border);color:var(--text-2);font-family:var(--font-display);font-size:0.82rem;font-weight:500;padding:12px 28px;border-radius:var(--radius);text-decoration:none;transition:all 0.2s;margin-top:10px;width:100%;}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue-bright);}
+
+.redirect-note{font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.1em;color:var(--text-3);margin-top:14px;}
+
+@media(max-width:480px){.card{padding:36px 24px;}}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <div class="logo-mark">T</div>
+    <div class="logo-text">Thanod</div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="state active" id="stateLoading">
+    <div class="spinner-wrap">
+      <div class="big-spinner"></div>
+      <div class="loading-text">Signing you in...</div>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="state" id="stateSuccess">
+    <div class="success-icon">
+      <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    </div>
+    <div class="state-title">You're signed in.</div>
+    <p class="state-sub">Welcome back, <span id="userName" style="color:var(--blue-bright);">—</span>. Taking you to your dashboard.</p>
+    <div class="redirect-note">Redirecting to your dashboard…</div>
+  </div>
+
+  <!-- ERROR: expired / invalid -->
+  <div class="state" id="stateError">
+    <div class="error-icon">
+      <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+    </div>
+    <div class="state-title">Link expired.</div>
+    <p class="state-sub" id="errorMsg">This sign-in link has expired or already been used. Sign-in links are valid for 15 minutes and can only be used once.</p>
+    <a href="login.html" class="btn">Request a new link →</a>
+    <a href="login.html" class="btn-ghost">Back to Sign In</a>
+  </div>
+
+  <!-- ERROR: no token -->
+  <div class="state" id="stateNoToken">
+    <div class="error-icon">
+      <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+    </div>
+    <div class="state-title">Invalid link.</div>
+    <p class="state-sub">This link is missing required information. Please go back and request a new sign-in link.</p>
+    <a href="login.html" class="btn">Back to Sign In</a>
+  </div>
+</div>
+
+<script>
+const API = 'https://aurethium-backend.onrender.com';
+
+function show(id) {
+  document.querySelectorAll('.state').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+async function verifyToken() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+
+  if (!token) { show('stateNoToken'); return; }
+
+  try {
+    const res = await fetch(`${API}/api/auth/verify-magic-link`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token })
+    });
+    const data = await res.json();
+
+    if (data.success && data.token) {
+      localStorage.setItem('aurethium_token', data.token);
+      localStorage.setItem('aurethium_user', JSON.stringify(data.user));
+      document.getElementById('userName').textContent = data.user?.name || 'there';
+      show('stateSuccess');
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+    } else {
+      document.getElementById('errorMsg').textContent = data.error || 'This sign-in link has expired or already been used.';
+      show('stateError');
+    }
+  } catch {
+    document.getElementById('errorMsg').textContent = 'Connection error. Please try again.';
+    show('stateError');
+  }
+}
+
+verifyToken();
+</script>
+</body>
+</html>
