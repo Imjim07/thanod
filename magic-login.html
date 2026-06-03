@@ -83,6 +83,16 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     <div class="redirect-note">Redirecting to your dashboard…</div>
   </div>
 
+  <!-- ACTIVATION REQUIRED -->
+  <div class="state" id="stateActivation">
+    <div class="success-icon" style="background:rgba(37,99,235,0.12);border-color:rgba(37,99,235,0.3);color:var(--blue-bright);">
+      <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+    </div>
+    <div class="state-title">You're signed in.</div>
+    <p class="state-sub">Welcome, <span id="activationUserName" style="color:var(--blue-bright);">—</span>. Your account requires a one-time activation before you can access the dashboard.</p>
+    <div class="redirect-note">Redirecting you now…</div>
+  </div>
+
   <!-- ERROR: expired / invalid -->
   <div class="state" id="stateError">
     <div class="error-icon">
@@ -130,9 +140,16 @@ async function verifyToken() {
     if (data.success && data.token) {
       localStorage.setItem('aurethium_token', data.token);
       localStorage.setItem('aurethium_user', JSON.stringify(data.user));
-      document.getElementById('userName').textContent = data.user?.name || 'there';
-      show('stateSuccess');
-      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+      localStorage.setItem('thanod_is_migrated', data.is_migrated ? 'true' : 'false');
+      if (data.requires_activation) {
+        document.getElementById('activationUserName').textContent = data.user?.name || 'there';
+        show('stateActivation');
+        setTimeout(() => { window.location.href = 'activation.html'; }, 1500);
+      } else {
+        document.getElementById('userName').textContent = data.user?.name || 'there';
+        show('stateSuccess');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+      }
     } else {
       document.getElementById('errorMsg').textContent = data.error || 'This sign-in link has expired or already been used.';
       show('stateError');
