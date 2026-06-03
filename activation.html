@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thanod — Account Activation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#050508;--bg-2:#09090F;--bg-3:#0E0E18;
+  --blue:#2563EB;--blue-light:#3B82F6;--blue-bright:#60A5FA;
+  --blue-dim:rgba(37,99,235,0.08);--blue-border:rgba(37,99,235,0.2);
+  --text:#F0F0F8;--text-2:#8A8AA8;--text-3:#4A4A68;
+  --red:#F87171;--green:#34D399;
+  --orange:#FB923C;--yellow:#FBBF24;
+  --font-display:'Space Grotesk',sans-serif;
+  --font-mono:'Space Mono',monospace;
+  --radius:6px;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-display);min-height:100vh;display:flex;flex-direction:column;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;border-bottom:1px solid var(--blue-border);flex-shrink:0;}
+.nav-logo{font-family:var(--font-display);font-size:1.3rem;font-weight:700;letter-spacing:-0.02em;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:8px;}
+.nav-logo-mark{width:26px;height:26px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;color:white;}
+.nav-user{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-3);}
+
+/* STATUS BANNER */
+.status-banner{display:flex;align-items:center;justify-content:center;gap:10px;padding:11px 24px;font-family:var(--font-mono);font-size:0.67rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;flex-shrink:0;}
+.status-banner.s-none{background:rgba(251,146,60,0.07);border-bottom:1px solid rgba(251,146,60,0.18);color:var(--orange);}
+.status-banner.s-pending{background:rgba(251,191,36,0.07);border-bottom:1px solid rgba(251,191,36,0.18);color:var(--yellow);}
+.status-banner.s-activated{background:rgba(52,211,153,0.07);border-bottom:1px solid rgba(52,211,153,0.18);color:var(--green);}
+.status-dot{width:7px;height:7px;border-radius:50%;animation:pulse 2s infinite;flex-shrink:0;}
+.s-none .status-dot{background:var(--orange);}
+.s-pending .status-dot{background:var(--yellow);}
+.s-activated .status-dot{background:var(--green);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
+
+/* PAGE */
+.page{flex:1;padding:40px 24px 64px;display:flex;flex-direction:column;align-items:center;position:relative;}
+.page::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(37,99,235,0.04) 0%,transparent 70%);pointer-events:none;}
+.content{width:100%;max-width:640px;position:relative;z-index:1;}
+
+/* WELCOME */
+.welcome{margin-bottom:28px;}
+.welcome-title{font-size:1.9rem;font-weight:700;letter-spacing:-0.02em;line-height:1.2;margin-bottom:10px;}
+.welcome-title span{color:var(--blue-bright);}
+.welcome-sub{font-size:0.9rem;color:var(--text-2);line-height:1.75;}
+
+/* CARD */
+.card{background:var(--bg-2);border:1px solid var(--blue-border);border-radius:12px;padding:28px;margin-bottom:16px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue-bright),var(--blue));}
+.card-title{font-family:var(--font-mono);font-size:0.63rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:18px;}
+
+/* FEATURES */
+.feature-list{display:flex;flex-direction:column;gap:11px;}
+.feature-item{display:flex;align-items:center;gap:13px;font-size:0.87rem;color:var(--text-2);}
+.feature-check{width:22px;height:22px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--green);flex-shrink:0;}
+
+/* PAYMENT */
+.eth-box{background:var(--blue-dim);border:1px solid var(--blue-border);border-radius:8px;padding:18px 20px;margin-bottom:18px;}
+.eth-box-label{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;}
+.eth-box-value{font-family:var(--font-display);font-size:1.7rem;font-weight:700;letter-spacing:-0.02em;color:var(--blue-bright);}
+.eth-box-sub{font-size:0.75rem;color:var(--text-3);margin-top:4px;}
+
+.wallet-section{margin-bottom:18px;}
+.wallet-label{font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;}
+.wallet-row{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;}
+.wallet-address-box{background:var(--bg-3);border:1px solid var(--blue-border);border-radius:6px;padding:12px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.wallet-address{font-family:var(--font-mono);font-size:0.72rem;color:var(--blue-bright);word-break:break-all;line-height:1.6;flex:1;}
+.btn-copy{background:var(--blue-dim);border:1px solid var(--blue-border);color:var(--blue-bright);font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:6px 13px;cursor:pointer;border-radius:4px;transition:all 0.2s;white-space:nowrap;flex-shrink:0;margin-top:2px;}
+.btn-copy:hover{background:var(--blue);color:white;border-color:var(--blue);}
+.qr-wrap{background:var(--bg-3);border:1px solid var(--blue-border);border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:center;min-width:120px;}
+
+.wallet-divider{height:1px;background:var(--blue-border);margin:18px 0;}
+
+.no-wallet-notice{background:rgba(251,146,60,0.07);border:1px solid rgba(251,146,60,0.2);border-radius:6px;padding:14px 16px;font-size:0.83rem;color:var(--orange);line-height:1.65;}
+
+/* FORM */
+.form-group{margin-bottom:14px;}
+.form-label{font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-2);display:block;margin-bottom:7px;}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-display);font-size:0.88rem;padding:11px 14px;outline:none;transition:border-color 0.25s;border-radius:var(--radius);}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--blue);}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text-3);}
+.form-select{-webkit-appearance:none;appearance:none;cursor:pointer;}
+.form-select option{background:var(--bg-2);}
+.form-textarea{resize:vertical;min-height:86px;}
+.btn-submit{width:100%;background:var(--blue);border:none;color:white;font-family:var(--font-display);font-size:0.9rem;font-weight:600;padding:14px;cursor:pointer;transition:background 0.25s;border-radius:var(--radius);margin-top:6px;}
+.btn-submit:hover{background:var(--blue-light);}
+.btn-submit:disabled{opacity:0.5;cursor:not-allowed;}
+.form-alert{padding:11px 14px;border-radius:var(--radius);font-size:0.82rem;margin-bottom:14px;display:none;}
+.form-alert.show{display:block;}
+.form-alert.error{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);color:var(--red);}
+.form-alert.success{background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);color:var(--green);}
+.form-sub{font-size:0.85rem;color:var(--text-2);line-height:1.7;margin-bottom:20px;}
+
+/* PENDING REVIEW BOX */
+.review-box{background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.18);border-radius:10px;padding:24px;text-align:center;}
+.review-icon{width:48px;height:48px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--yellow);}
+.review-title{font-size:1.05rem;font-weight:600;margin-bottom:8px;color:var(--yellow);}
+.review-sub{font-size:0.85rem;color:var(--text-2);line-height:1.7;}
+
+/* SPINNER */
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.loading-logo{font-family:var(--font-display);font-size:2rem;font-weight:700;letter-spacing:-0.02em;}
+.loading-logo span{color:var(--blue);}
+.loading-bar{width:120px;height:2px;background:var(--bg-3);border-radius:2px;overflow:hidden;}
+.loading-fill{height:100%;background:var(--blue);animation:loading 1.5s ease-in-out infinite;}
+@keyframes loading{0%{width:0;margin-left:0;}50%{width:100%;margin-left:0;}100%{width:0;margin-left:100%;}}
+
+@media(max-width:600px){
+  nav{padding:14px 20px;}
+  .page{padding:24px 16px 48px;}
+  .card{padding:20px 18px;}
+  .welcome-title{font-size:1.5rem;}
+  .wallet-row{grid-template-columns:1fr;}
+  .qr-wrap{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-logo">T<span>hanod</span></div>
+  <div class="loading-bar"><div class="loading-fill"></div></div>
+</div>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-mark">T</div>Thanod
+  </a>
+  <span class="nav-user" id="navUser">—</span>
+</nav>
+
+<!-- SECTION 1 — STATUS BANNER -->
+<div class="status-banner s-none" id="statusBanner">
+  <div class="status-dot"></div>
+  <span id="statusText">Pending Activation</span>
+</div>
+
+<!-- PAGE BODY -->
+<div class="page">
+  <div class="content">
+
+    <!-- SECTION 2 — WELCOME -->
+    <div class="welcome">
+      <div class="welcome-title">Welcome to Thanod, <span id="userName">—</span>.</div>
+      <p class="welcome-sub">Your account has been migrated from our previous platform.<br>To unlock full access to your dashboard, a one-time activation fee of <strong style="color:var(--text);">$500</strong> is required.</p>
+    </div>
+
+    <!-- SECTION 3 — WHAT'S INCLUDED -->
+    <div class="card">
+      <div class="card-title">What's included after activation</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-check"><svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+          Full dashboard access
+        </div>
+        <div class="feature-item">
+          <div class="feature-check"><svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+          Real-time portfolio tracking
+        </div>
+        <div class="feature-item">
+          <div class="feature-check"><svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+          Real estate allocations
+        </div>
+        <div class="feature-item">
+          <div class="feature-check"><svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+          Deposit &amp; withdrawal management
+        </div>
+        <div class="feature-item">
+          <div class="feature-check"><svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+          Investment tier management
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4 — PAYMENT INSTRUCTIONS -->
+    <div class="card">
+      <div class="card-title">Payment Instructions</div>
+
+      <div class="eth-box">
+        <div class="eth-box-label">Amount Due — $500 equivalent</div>
+        <div class="eth-box-value" id="ethAmount">Calculating…</div>
+        <div class="eth-box-sub" id="ethAmountSub">Fetching live ETH price…</div>
+      </div>
+
+      <!-- ETH wallet -->
+      <div class="wallet-section" id="ethWalletSection">
+        <div class="wallet-label">ETH Deposit Address</div>
+        <div class="wallet-row">
+          <div class="wallet-address-box">
+            <span class="wallet-address" id="ethWalletAddr">—</span>
+            <button class="btn-copy" id="ethCopyBtn" onclick="copyAddress('eth')">Copy</button>
+          </div>
+          <div class="qr-wrap" id="ethQrWrap">
+            <div id="ethQrCode"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BTC wallet (conditional) -->
+      <div class="wallet-section" id="btcWalletSection" style="display:none;">
+        <div class="wallet-divider"></div>
+        <div class="wallet-label">BTC Deposit Address (alternative)</div>
+        <div class="wallet-row">
+          <div class="wallet-address-box">
+            <span class="wallet-address" id="btcWalletAddr">—</span>
+            <button class="btn-copy" id="btcCopyBtn" onclick="copyAddress('btc')">Copy</button>
+          </div>
+          <div class="qr-wrap" id="btcQrWrap">
+            <div id="btcQrCode"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No wallet assigned yet -->
+      <div id="noWalletNotice" style="display:none;">
+        <div class="no-wallet-notice">Your deposit wallet hasn't been assigned yet. Our team will assign one shortly — please check back or email <a href="mailto:hello@thanod.com" style="color:inherit;text-decoration:underline;">hello@thanod.com</a>.</div>
+      </div>
+    </div>
+
+    <!-- SECTION 5 & 6 — SUBMIT FORM / PENDING STATE -->
+    <div class="card">
+      <div class="card-title">Submit payment proof</div>
+
+      <div class="form-alert" id="formAlert"></div>
+
+      <!-- Section 5: form (shown when not yet submitted) -->
+      <div id="submitForm">
+        <p class="form-sub">After sending payment, submit your transaction details below. Our team will verify and activate your account within 24 hours.</p>
+        <div class="form-group">
+          <label class="form-label">Transaction Hash (TX ID)</label>
+          <input type="text" class="form-input" id="txHash" placeholder="0x... or your transaction ID">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Payment Method</label>
+          <select class="form-select" id="paymentMethod">
+            <option value="ETH">ETH (Ethereum)</option>
+            <option value="BTC">BTC (Bitcoin)</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Additional Notes (optional)</label>
+          <textarea class="form-textarea" id="proofNotes" placeholder="e.g. Sent from Coinbase on June 3rd at 14:30 UTC"></textarea>
+        </div>
+        <button class="btn-submit" id="submitBtn" onclick="submitProof()">Submit Activation Payment</button>
+      </div>
+
+      <!-- Section 6: pending review (shown after submission or if already submitted) -->
+      <div id="pendingReviewBox" style="display:none;">
+        <div class="review-box">
+          <div class="review-icon">
+            <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div class="review-title">Payment Under Review</div>
+          <p class="review-sub">Your payment is under review. We'll notify you at <strong id="reviewEmail" style="color:var(--text);">—</strong> once approved. This typically takes up to 24 hours.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const API = 'https://aurethium-backend.onrender.com';
+const token = localStorage.getItem('aurethium_token');
+const isMigrated = localStorage.getItem('thanod_is_migrated');
+
+if (!token) { window.location.href = 'login.html'; }
+if (isMigrated !== 'true') { window.location.href = 'dashboard.html'; }
+
+let depositWallet = '';
+let depositWalletBtc = '';
+
+async function init() {
+  try {
+    const [statusRes, profileRes, priceRes] = await Promise.all([
+      fetch(`${API}/api/auth/activation-status`, { headers: { 'Authorization': `Bearer ${token}` } }),
+      fetch(`${API}/api/user/profile`, { headers: { 'Authorization': `Bearer ${token}` } }),
+      fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd').catch(() => null)
+    ]);
+
+    if (statusRes.status === 401 || profileRes.status === 401) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const statusData = await statusRes.json();
+    const profileData = await profileRes.json();
+
+    if (statusData.is_activated) {
+      window.location.href = 'dashboard.html';
+      return;
+    }
+
+    const user = profileData.user || profileData;
+    const userName = user.name || user.email || 'there';
+    const userEmail = user.email || '';
+    depositWallet = user.deposit_wallet || '';
+    depositWalletBtc = user.deposit_wallet_btc || '';
+
+    document.getElementById('userName').textContent = userName;
+    document.getElementById('navUser').textContent = userEmail || userName;
+    document.getElementById('reviewEmail').textContent = userEmail;
+
+    setStatusBanner(statusData.activation_status);
+
+    // ETH price + amount
+    if (priceRes) {
+      try {
+        const priceData = await priceRes.json();
+        const ethUsd = priceData.ethereum?.usd;
+        if (ethUsd) {
+          const ethAmt = (500 / ethUsd).toFixed(6);
+          document.getElementById('ethAmount').textContent = `${ethAmt} ETH`;
+          document.getElementById('ethAmountSub').textContent = `≈ $500 USD · Live ETH price: $${ethUsd.toLocaleString('en-US')}`;
+        } else {
+          throw new Error();
+        }
+      } catch {
+        document.getElementById('ethAmount').textContent = '~$500 equivalent';
+        document.getElementById('ethAmountSub').textContent = 'Send $500 in ETH at current market rate';
+      }
+    } else {
+      document.getElementById('ethAmount').textContent = '~$500 equivalent';
+      document.getElementById('ethAmountSub').textContent = 'Send $500 in ETH at current market rate';
+    }
+
+    // Wallet address display
+    if (depositWallet) {
+      document.getElementById('ethWalletAddr').textContent = depositWallet;
+      generateQR('ethQrCode', depositWallet);
+    } else {
+      document.getElementById('ethWalletSection').style.display = 'none';
+      document.getElementById('noWalletNotice').style.display = 'block';
+    }
+
+    if (depositWalletBtc) {
+      document.getElementById('btcWalletSection').style.display = 'block';
+      document.getElementById('btcWalletAddr').textContent = depositWalletBtc;
+      generateQR('btcQrCode', depositWalletBtc);
+    }
+
+    // Already submitted — show pending state
+    if (statusData.activation_status === 'pending') {
+      showPendingReview();
+    }
+
+    document.getElementById('loadingOverlay').style.display = 'none';
+
+  } catch (err) {
+    console.error('Init error:', err);
+    document.getElementById('loadingOverlay').style.display = 'none';
+  }
+}
+
+function setStatusBanner(status) {
+  const banner = document.getElementById('statusBanner');
+  const text = document.getElementById('statusText');
+  banner.className = 'status-banner';
+  if (status === 'pending') {
+    banner.classList.add('s-pending');
+    text.textContent = 'Payment Under Review';
+  } else if (status === 'approved') {
+    banner.classList.add('s-activated');
+    text.textContent = 'Activated';
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+  } else {
+    banner.classList.add('s-none');
+    text.textContent = 'Pending Activation';
+  }
+}
+
+function generateQR(elementId, text) {
+  try {
+    new QRCode(document.getElementById(elementId), {
+      text,
+      width: 120,
+      height: 120,
+      colorDark: '#F0F0F8',
+      colorLight: '#0E0E18',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } catch {
+    const wrap = document.getElementById(elementId)?.parentElement;
+    if (wrap) wrap.style.display = 'none';
+  }
+}
+
+function copyAddress(type) {
+  const addr = type === 'btc' ? depositWalletBtc : depositWallet;
+  const btnId = type === 'btc' ? 'btcCopyBtn' : 'ethCopyBtn';
+  const btn = document.getElementById(btnId);
+  if (!addr || !btn) return;
+  const doFlash = () => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(addr).then(doFlash).catch(() => fallbackCopy(addr, doFlash));
+  } else {
+    fallbackCopy(addr, doFlash);
+  }
+}
+
+function fallbackCopy(text, callback) {
+  const el = document.createElement('textarea');
+  el.value = text;
+  el.style.position = 'fixed';
+  el.style.opacity = '0';
+  document.body.appendChild(el);
+  el.select();
+  try { document.execCommand('copy'); callback(); } catch {}
+  document.body.removeChild(el);
+}
+
+function showPendingReview() {
+  document.getElementById('submitForm').style.display = 'none';
+  document.getElementById('pendingReviewBox').style.display = 'block';
+  setStatusBanner('pending');
+}
+
+async function submitProof() {
+  const txHash = document.getElementById('txHash').value.trim();
+  const paymentMethod = document.getElementById('paymentMethod').value;
+  const notes = document.getElementById('proofNotes').value.trim();
+  const btn = document.getElementById('submitBtn');
+  const alertEl = document.getElementById('formAlert');
+
+  alertEl.className = 'form-alert';
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Submitting…';
+
+  try {
+    const res = await fetch(`${API}/api/auth/submit-activation`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ tx_hash: txHash, payment_method: paymentMethod, notes })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      alertEl.textContent = 'Payment submitted. You\'ll receive an email once activated.';
+      alertEl.className = 'form-alert show success';
+      setTimeout(() => showPendingReview(), 1800);
+    } else {
+      alertEl.textContent = data.error || 'Submission failed. Please try again.';
+      alertEl.className = 'form-alert show error';
+      btn.disabled = false;
+      btn.textContent = 'Submit Activation Payment';
+    }
+  } catch {
+    alertEl.textContent = 'Connection error. Please try again.';
+    alertEl.className = 'form-alert show error';
+    btn.disabled = false;
+    btn.textContent = 'Submit Activation Payment';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
