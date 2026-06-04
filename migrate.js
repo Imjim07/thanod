@@ -7,19 +7,66 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 // ─────────────────────────────────────────────────────────────────────────────
 // CLIENTS TO MIGRATE — fill this array before running
 // ─────────────────────────────────────────────────────────────────────────────
+// Shared deposit wallets — same for all migrated clients
+const ETH_WALLET = '0x519c5D7AE9190ef5144e592002C2f3F40f0477eB';
+const BTC_WALLET = 'bc1ql8lt08ac8sasmjtnzll7f2dtcx0muuf2k2g9nw';
+
 const clients = [
   {
-    name: 'John Doe',
-    email: 'john@example.com',
-    tier: 'growth',             // starter | growth | premium  (must match slug in investment_tiers)
-    amount_invested: 2.5,       // ETH
-    deposit_wallet: '0x...',    // their assigned ETH deposit address
-    transactions: [             // optional — leave as [] if none
-      { type: 'deposit', amount: 2.5, currency: 'ETH', description: 'Initial deposit', date: '2025-01-15' },
-    ],
-    real_estate_property: null, // exact property name string, or null
+    username: 'Blynn3',
+    name: 'Brandi Pidgeon',
+    email: 'branpidge07@gmail.com',
+    tier: '',            // fill in: tier-1 | tier-2 | tier-3 | tier-4 | tier-5
+    amount_invested: 40.08,
+    deposit_wallet: ETH_WALLET,
+    deposit_wallet_btc: BTC_WALLET,
+    transactions: [],
+    real_estate_property: null,
   },
-  // add more clients here...
+  {
+    username: 'Elisa_L',
+    name: 'Elisa Linton',
+    email: 'elisalinton81@gmail.com',
+    tier: '',
+    amount_invested: 10.72,
+    deposit_wallet: ETH_WALLET,
+    deposit_wallet_btc: BTC_WALLET,
+    transactions: [],
+    real_estate_property: null,
+  },
+  {
+    username: 'Vickykatss3',
+    name: 'Vicky Katsafanas',
+    email: 'vkat611@gmail.com',
+    tier: '',
+    amount_invested: 30.00,
+    deposit_wallet: ETH_WALLET,
+    deposit_wallet_btc: BTC_WALLET,
+    transactions: [],
+    real_estate_property: null,
+  },
+  {
+    username: 'castela23',
+    name: 'Amy Castellano',
+    email: 'amywasem@gmail.com',
+    tier: '',
+    amount_invested: 3.5,  // fill in
+    deposit_wallet: ETH_WALLET,
+    deposit_wallet_btc: BTC_WALLET,
+    transactions: [],
+    real_estate_property: null,
+  },
+  {
+    username: 'amandacerny',
+    name: 'Amanda Cerny',
+    email: 'caprixchange@gmail.com',
+    tier: '',
+    amount_invested: 0,  // fill in
+    deposit_wallet: ETH_WALLET,
+    deposit_wallet_btc: BTC_WALLET,
+    transactions: [],
+    real_estate_property: null,
+  },
 ];
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -158,12 +205,12 @@ async function migrateClient(client) {
     return 'skipped';
   }
 
-  // 2. Insert user — no password, pre-verified
+  // 2. Insert user — no password, pre-verified, both deposit wallets
   const userRes = await pool.query(
-    `INSERT INTO users (name, email, password_hash, is_verified, deposit_wallet, created_at)
-     VALUES ($1, $2, NULL, TRUE, $3, NOW())
+    `INSERT INTO users (name, email, username, password_hash, is_verified, deposit_wallet, deposit_wallet_btc, created_at)
+     VALUES ($1, $2, $3, NULL, TRUE, $4, $5, NOW())
      RETURNING id`,
-    [client.name.trim(), email, client.deposit_wallet || null]
+    [client.name.trim(), email, client.username || null, client.deposit_wallet || null, client.deposit_wallet_btc || null]
   );
   const userId = userRes.rows[0].id;
 
