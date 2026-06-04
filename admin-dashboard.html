@@ -207,6 +207,10 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       Activations
     </a>
     <div class="nav-section-title">Investment Config</div>
+    <a class="nav-item" onclick="showSection('settings')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Settings
+    </a>
     <a class="nav-item" onclick="showSection('tiers')">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
       Tier Settings
@@ -321,18 +325,21 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
           <div class="table-title">All Transactions</div>
           <div class="table-count" id="txCount">0 transactions</div>
         </div>
-        <table class="data-table">
+        <table class="data-table" style="table-layout:fixed;">
           <thead>
             <tr>
-              <th>User</th>
-              <th>Type</th>
-              <th>Amount (ETH)</th>
-              <th>Description</th>
-              <th>Date</th>
+              <th style="width:14%;">User</th>
+              <th style="width:10%;">Type</th>
+              <th style="width:8%;">Asset</th>
+              <th style="width:10%;">Amount</th>
+              <th style="width:13%;">USD Value</th>
+              <th style="width:12%;">ETH Equiv.</th>
+              <th style="width:10%;">Status</th>
+              <th style="width:10%;">Date</th>
             </tr>
           </thead>
           <tbody id="txTableBody">
-            <tr><td colspan="5" class="empty-state">Loading transactions...</td></tr>
+            <tr><td colspan="8" class="empty-state">Loading transactions...</td></tr>
           </tbody>
         </table>
       </div>
@@ -352,7 +359,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
         <button class="filter-tab active" onclick="setActivationFilter('all', this)">All</button>
         <button class="filter-tab" onclick="setActivationFilter('pending', this)">Pending</button>
         <button class="filter-tab" onclick="setActivationFilter('approved', this)">Approved</button>
-        <button class="filter-tab" onclick="setActivationFilter('rejected', this)">Rejected</button>
       </div>
       <div class="table-card">
         <div class="table-header">
@@ -362,13 +368,13 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
         <table class="data-table" style="table-layout:fixed;">
           <thead>
             <tr>
-              <th style="width:13%;">Name</th>
+              <th style="width:14%;">Name</th>
               <th style="width:18%;">Email</th>
-              <th style="width:11%;">Submitted</th>
-              <th style="width:16%;">TX Hash</th>
-              <th style="width:18%;">Notes</th>
+              <th style="width:11%;">ETH Invested</th>
+              <th style="width:14%;">TX Hash</th>
+              <th style="width:17%;">Notes</th>
               <th style="width:10%;">Status</th>
-              <th style="width:14%;">Action</th>
+              <th style="width:16%;">Action</th>
             </tr>
           </thead>
           <tbody id="activationsTableBody">
@@ -386,6 +392,44 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       </div>
       <div id="propertiesAdminGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div style="text-align:center;padding:40px;color:var(--text-3);grid-column:1/-1;">Loading properties...</div>
+      </div>
+    </div>
+
+    <!-- SETTINGS SECTION -->
+    <div id="section-settings" style="display:none;">
+      <div style="margin-bottom:20px;font-size:0.85rem;color:var(--text-2);">Configure platform-wide deposit wallets shown to users without a personal wallet assigned.</div>
+
+      <div class="table-card" style="padding:24px;">
+        <div class="table-header" style="margin:-24px -24px 20px;padding:16px 24px;">
+          <div class="table-title">Platform Deposit Wallets</div>
+        </div>
+        <div style="font-size:0.82rem;color:var(--text-3);line-height:1.6;margin-bottom:20px;">These addresses are shown as fallback to all users who don't have a personal wallet assigned. Save each individually.</div>
+
+        <div id="platformWalletAlert" style="display:none;padding:9px 13px;border-radius:2px;font-size:0.78rem;margin-bottom:14px;"></div>
+
+        <div style="margin-bottom:16px;">
+          <label class="detail-label">ETH Wallet Address</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" class="detail-input" id="platformEthWallet" placeholder="0x..." style="flex:1;">
+            <button class="btn-action" onclick="savePlatformWallet('platform_eth_wallet','platformEthWallet')" style="white-space:nowrap;">Save ETH</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label class="detail-label">BTC Wallet Address</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" class="detail-input" id="platformBtcWallet" placeholder="bc1..." style="flex:1;">
+            <button class="btn-action" onclick="savePlatformWallet('platform_btc_wallet','platformBtcWallet')" style="white-space:nowrap;">Save BTC</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="detail-label">SOL Wallet Address</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" class="detail-input" id="platformSolWallet" placeholder="Solana address..." style="flex:1;">
+            <button class="btn-action" onclick="savePlatformWallet('platform_sol_wallet','platformSolWallet')" style="white-space:nowrap;">Save SOL</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -423,6 +467,23 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     <div style="margin-bottom:12px;"><label class="detail-label">Amount Invested (ETH)</label><input type="number" class="detail-input" id="assignTierAmount" placeholder="0.00" step="0.0001" min="0"></div>
     <div style="margin-bottom:16px;"><label class="detail-label">Notes (optional)</label><input type="text" class="detail-input" id="assignTierNotes" placeholder="e.g. Confirmed via bank transfer"></div>
     <button class="btn-save" onclick="confirmAssignTier()">Assign Tier</button>
+  </div>
+</div>
+
+<!-- APPROVE ACTIVATION MODAL -->
+<div class="modal-overlay" id="approveActivationModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:400;display:none;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:var(--bg-2);border:1px solid var(--gold-border);padding:36px;width:100%;max-width:420px;position:relative;border-radius:2px;">
+    <button onclick="document.getElementById('approveActivationModal').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--text-3);cursor:pointer;font-size:1.2rem;">✕</button>
+    <div style="font-family:var(--font-display);font-size:1.3rem;font-weight:600;margin-bottom:6px;">Approve Activation</div>
+    <div style="font-size:0.84rem;color:var(--text-2);line-height:1.65;margin-bottom:18px;">
+      Approve activation for <strong id="approveModalName" style="color:var(--text);">—</strong>?<br>
+      A temporary password will be generated and sent to <strong id="approveModalEmail" style="color:var(--gold-pale);">—</strong>. They'll be prompted to change it on first sign-in.
+    </div>
+    <div id="approveModalAlert" style="display:none;margin-bottom:14px;"></div>
+    <button class="btn-save" id="approveConfirmBtn" onclick="confirmApproval()">Approve &amp; Send Password</button>
+    <div style="text-align:center;margin-top:10px;">
+      <button onclick="document.getElementById('approveActivationModal').style.display='none'" style="background:none;border:none;color:var(--text-3);font-size:0.78rem;cursor:pointer;">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -486,17 +547,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <div class="detail-row">
         <div class="detail-field">
           <label class="detail-label">Validator Balance (ETH)</label>
-          <input type="number" class="detail-input" id="editValidator" placeholder="0.00" step="0.0001" min="0">
-        </div>
-        <div class="detail-field">
-          <label class="detail-label">Bot Balance (ETH)</label>
-          <input type="number" class="detail-input" id="editBot" placeholder="0.00" step="0.0001" min="0">
-        </div>
-      </div>
-      <div class="detail-row">
-        <div class="detail-field">
-          <label class="detail-label">Idle Balance (ETH)</label>
-          <input type="number" class="detail-input" id="editIdle" placeholder="0.00" step="0.0001" min="0">
+          <input type="number" class="detail-input" id="editValidator" placeholder="0.00" step="0.0001" min="0" oninput="updateTotalDisplay()">
         </div>
         <div class="detail-field">
           <label class="detail-label">Total incl. Rewards (auto)</label>
@@ -506,26 +557,30 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <button class="btn-save" onclick="savePortfolio()">Save Portfolio</button>
     </div>
 
-    <!-- DEPOSIT WALLET -->
+    <!-- DEPOSIT WALLETS -->
     <div class="detail-section">
-      <div class="detail-section-title">Deposit Wallet</div>
-      <div style="margin-bottom:8px;font-size:0.78rem;color:var(--text-3);line-height:1.6;">Assign the ETH wallet address this user should send deposits to. This appears in their profile after tier confirmation.</div>
-      <div class="detail-field" style="margin-bottom:10px;">
-        <label class="detail-label">Deposit Wallet Address</label>
+      <div class="detail-section-title">Deposit Wallets</div>
+      <div style="margin-bottom:10px;font-size:0.78rem;color:var(--text-3);line-height:1.6;">Assign personal deposit addresses. Leave blank to fall back to platform wallets.</div>
+      <div class="detail-field" style="margin-bottom:8px;">
+        <label class="detail-label">ETH Deposit Wallet</label>
         <input type="text" class="detail-input" id="editDepositWallet" placeholder="0x...">
       </div>
+      <div class="detail-field" style="margin-bottom:8px;">
+        <label class="detail-label">BTC Deposit Wallet</label>
+        <input type="text" class="detail-input" id="editDepositWalletBtc" placeholder="bc1...">
+      </div>
+      <div class="detail-field" style="margin-bottom:10px;">
+        <label class="detail-label">SOL Deposit Wallet</label>
+        <input type="text" class="detail-input" id="editDepositWalletSol" placeholder="...">
+      </div>
       <div class="detail-alert" id="depositWalletAlert" style="display:none;padding:8px 12px;border-radius:4px;font-size:0.78rem;margin-bottom:8px;"></div>
-      <button class="btn-save" onclick="saveDepositWallet()">Assign Deposit Wallet</button>
+      <button class="btn-save" onclick="saveDepositWallets()">Save Deposit Wallets</button>
     </div>
 
     <!-- VALIDATOR -->
     <div class="detail-section">
       <div class="detail-section-title">Validator Pool</div>
       <div class="detail-row">
-        <div class="detail-field">
-          <label class="detail-label">Validator Address</label>
-          <input type="text" class="detail-input" id="editVAddress" placeholder="0x...">
-        </div>
         <div class="detail-field">
           <label class="detail-label">Status</label>
           <select class="detail-select" id="editVStatus">
@@ -534,15 +589,9 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
             <option value="inactive">Inactive</option>
           </select>
         </div>
-      </div>
-      <div class="detail-row">
-        <div class="detail-field">
-          <label class="detail-label">Estimated APR (%)</label>
-          <input type="number" class="detail-input" id="editVAPR" placeholder="5.20" step="0.01" min="0">
-        </div>
         <div class="detail-field">
           <label class="detail-label">Rewards Earned (ETH)</label>
-          <input type="number" class="detail-input" id="editVRewards" placeholder="0.00000" step="0.00001" min="0">
+          <input type="number" class="detail-input" id="editVRewards" placeholder="0.00000" step="0.00001" min="0" oninput="updateTotalDisplay()">
         </div>
       </div>
       <button class="btn-save" onclick="saveValidator()">Save Validator</button>
@@ -558,18 +607,29 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
             <option value="deposit">Deposit</option>
             <option value="withdrawal">Withdrawal</option>
             <option value="reward">Validator Reward</option>
-            <option value="trade">Bot Trade</option>
+            <option value="adjustment">Adjustment</option>
           </select>
         </div>
         <div class="detail-field">
-          <label class="detail-label">Amount (ETH)</label>
-          <input type="number" class="detail-input" id="newTxAmount" placeholder="0.00" step="0.0001" min="0">
+          <label class="detail-label">Asset</label>
+          <select class="detail-select" id="newTxAsset">
+            <option value="ETH">ETH</option>
+            <option value="BTC">BTC</option>
+            <option value="SOL">SOL</option>
+          </select>
         </div>
       </div>
-      <div class="detail-field" style="margin-bottom:8px;">
-        <label class="detail-label">Description</label>
-        <input type="text" class="detail-input" id="newTxDesc" placeholder="e.g. Monthly staking reward, Crypto transfer received">
+      <div class="detail-row">
+        <div class="detail-field">
+          <label class="detail-label">Amount</label>
+          <input type="number" class="detail-input" id="newTxAmount" placeholder="0.00" step="any" min="0">
+        </div>
+        <div class="detail-field">
+          <label class="detail-label">Description (optional)</label>
+          <input type="text" class="detail-input" id="newTxDesc" placeholder="Leave blank for auto-description">
+        </div>
       </div>
+      <div id="addTxAlert" style="display:none;padding:8px 12px;border-radius:4px;font-size:0.78rem;margin-bottom:8px;"></div>
       <button class="btn-save" onclick="addTransaction()">Add Transaction</button>
     </div>
 
@@ -619,7 +679,7 @@ updateTime();
 
 // LOAD ALL DATA
 async function loadAllData() {
-  await Promise.all([loadUsers(), loadWaitlist(), loadAllTransactions(), loadStats(), loadTiersAdmin(), loadPropertiesAdmin()]);
+  await Promise.all([loadUsers(), loadWaitlist(), loadAllTransactions(), loadStats(), loadTiersAdmin(), loadPropertiesAdmin(), loadSettings()]);
   renderActivations('all');
   document.getElementById('loadingOverlay').style.display = 'none';
 }
@@ -722,19 +782,28 @@ async function loadAllTransactions() {
     document.getElementById('txCount').textContent = `${txs.length} transactions`;
     const tbody = document.getElementById('txTableBody');
     if (txs.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No transactions yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No transactions yet.</td></tr>';
       return;
     }
-    const typeColors = { deposit: 'deposit', withdrawal: 'withdrawal', reward: 'reward', trade: 'trade' };
+    const typeClass = { deposit: 'active', withdrawal: 'inactive', reward: 'pending', adjustment: 'pending' };
     tbody.innerHTML = txs.map(t => {
-      const isPositive = ['deposit', 'reward'].includes(t.type);
       const date = new Date(t.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      const asset = (t.asset || 'ETH').toUpperCase();
+      const amt = parseFloat(t.amount) || 0;
+      const usd = parseFloat(t.usd_value) || 0;
+      const ethEq = parseFloat(t.eth_equivalent) || 0;
+      const usdFmt = usd > 0 ? `$${usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—';
+      const ethFmt = ethEq > 0 ? `${ethEq.toFixed(5)} ETH` : '—';
+      const statusClass = { pending: 'pending', completed: 'active', failed: 'inactive' }[t.status] || 'pending';
       return `<tr>
-        <td class="user-name-cell">${t.user_name || '—'}</td>
-        <td><span class="status-badge ${typeColors[t.type] || 'pending'}">${t.type}</span></td>
-        <td class="${isPositive ? 'tx-item-amount positive' : 'tx-item-amount negative'}">${isPositive ? '+' : '-'}${parseFloat(t.amount).toFixed(5)}</td>
-        <td>${t.description || '—'}</td>
-        <td>${date}</td>
+        <td class="user-name-cell" style="font-size:0.78rem;">${t.user_name || '—'}</td>
+        <td><span class="status-badge ${typeClass[t.type] || 'pending'}">${t.type}</span></td>
+        <td style="font-family:var(--font-ui);font-size:0.7rem;font-weight:600;color:var(--blue-bright);">${asset}</td>
+        <td style="font-family:'Courier New',monospace;font-size:0.78rem;">${amt % 1 === 0 ? amt : amt.toFixed(asset === 'ETH' ? 5 : 8)}</td>
+        <td style="color:var(--green);font-size:0.78rem;">${usdFmt}</td>
+        <td style="color:var(--blue);font-size:0.78rem;">${ethFmt}</td>
+        <td><span class="status-badge ${statusClass}">${t.status || 'completed'}</span></td>
+        <td style="font-size:0.78rem;">${date}</td>
       </tr>`;
     }).join('');
   } catch (err) { console.error('Transactions error:', err); }
@@ -751,17 +820,15 @@ async function openUserDetail(userId) {
   // Activation toggle
   renderActivationToggle(user.is_activated);
   document.getElementById('editValidator').value = parseFloat(user.validator_balance) || '';
-  document.getElementById('editBot').value = parseFloat(user.bot_balance) || '';
-  document.getElementById('editIdle').value = parseFloat(user.idle_balance) || '';
   updateTotalDisplay();
   const joinDate = user.created_at ? new Date(user.created_at).toISOString().slice(0, 10) : '';
   document.getElementById('editJoinDate').value = joinDate;
   document.getElementById('joinDateAlert').style.display = 'none';
   document.getElementById('editDepositWallet').value = user.deposit_wallet || '';
+  document.getElementById('editDepositWalletBtc').value = user.deposit_wallet_btc || '';
+  document.getElementById('editDepositWalletSol').value = user.deposit_wallet_sol || '';
   document.getElementById('depositWalletAlert').style.display = 'none';
-  document.getElementById('editVAddress').value = user.validator_address || '';
   document.getElementById('editVStatus').value = user.validator_status || 'pending';
-  document.getElementById('editVAPR').value = parseFloat(user.estimated_apr) || '';
   document.getElementById('editVRewards').value = parseFloat(user.rewards_earned) || '';
   document.getElementById('detailAlert').className = 'detail-alert';
   document.getElementById('newTxAmount').value = '';
@@ -774,19 +841,11 @@ async function openUserDetail(userId) {
 
 function updateTotalDisplay() {
   const v = parseFloat(document.getElementById('editValidator').value) || 0;
-  const b = parseFloat(document.getElementById('editBot').value) || 0;
-  const i = parseFloat(document.getElementById('editIdle').value) || 0;
   const r = parseFloat(document.getElementById('editVRewards').value) || 0;
-  document.getElementById('editTotal').value = (v + b + i + r).toFixed(4) + ' ETH';
+  document.getElementById('editTotal').value = (v + r).toFixed(4) + ' ETH';
 }
-['editValidator', 'editBot', 'editIdle'].forEach(id => {
-  document.addEventListener('DOMContentLoaded', () => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('input', updateTotalDisplay);
-  });
-});
 document.addEventListener('input', e => {
-  if (['editValidator', 'editBot', 'editIdle', 'editVRewards'].includes(e.target.id)) updateTotalDisplay();
+  if (['editValidator', 'editVRewards'].includes(e.target.id)) updateTotalDisplay();
 });
 
 function renderActivationToggle(isActivated) {
@@ -887,13 +946,11 @@ function showDetailAlert(msg, type = 'success') {
 async function savePortfolio() {
   if (!selectedUserId) return;
   const validator_balance = parseFloat(document.getElementById('editValidator').value) || 0;
-  const bot_balance = parseFloat(document.getElementById('editBot').value) || 0;
-  const idle_balance = parseFloat(document.getElementById('editIdle').value) || 0;
   try {
     const res = await fetch(`${API}/api/admin/user/${selectedUserId}/portfolio`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ validator_balance, bot_balance, idle_balance })
+      body: JSON.stringify({ validator_balance })
     });
     const data = await res.json();
     if (data.success) {
@@ -907,33 +964,29 @@ async function savePortfolio() {
   }
 }
 
-// SAVE VALIDATOR
-async function saveDepositWallet() {
+async function saveDepositWallets() {
   if (!selectedUserId) return;
-  const deposit_wallet = document.getElementById('editDepositWallet').value.trim();
+  const eth_wallet = document.getElementById('editDepositWallet').value.trim();
+  const btc_wallet = document.getElementById('editDepositWalletBtc').value.trim();
+  const sol_wallet = document.getElementById('editDepositWalletSol').value.trim();
   const alertEl = document.getElementById('depositWalletAlert');
-  if (!deposit_wallet) {
-    alertEl.textContent = 'Please enter a wallet address.';
-    alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
-    return;
-  }
   try {
-    const res = await fetch(`${API}/api/admin/user/${selectedUserId}/deposit-wallet`, {
+    const res = await fetch(`${API}/api/admin/user/${selectedUserId}/deposit-wallets`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ deposit_wallet })
+      body: JSON.stringify({ eth_wallet, btc_wallet, sol_wallet })
     });
     const data = await res.json();
     if (data.success) {
-      alertEl.textContent = 'Deposit wallet assigned successfully.';
+      alertEl.textContent = 'Deposit wallets saved.';
       alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--green-dim);color:var(--green);border:1px solid rgba(72,187,120,0.3);';
       await loadUsers();
       setTimeout(() => { alertEl.style.display = 'none'; }, 3000);
     } else {
-      alertEl.textContent = data.error || 'Failed to assign wallet.';
+      alertEl.textContent = data.error || 'Save failed.';
       alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
     }
-  } catch (err) {
+  } catch {
     alertEl.textContent = 'Connection error.';
     alertEl.style.display = 'block';
   }
@@ -972,15 +1025,13 @@ async function saveJoinDate() {
 
 async function saveValidator() {
   if (!selectedUserId) return;
-  const address = document.getElementById('editVAddress').value.trim();
   const status = document.getElementById('editVStatus').value;
-  const estimated_apr = parseFloat(document.getElementById('editVAPR').value) || 0;
   const rewards_earned = parseFloat(document.getElementById('editVRewards').value) || 0;
   try {
     const res = await fetch(`${API}/api/admin/user/${selectedUserId}/validator`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ address, status, estimated_apr, rewards_earned })
+      body: JSON.stringify({ status, rewards_earned })
     });
     const data = await res.json();
     if (data.success) {
@@ -998,28 +1049,35 @@ async function saveValidator() {
 async function addTransaction() {
   if (!selectedUserId) return;
   const type = document.getElementById('newTxType').value;
+  const asset = document.getElementById('newTxAsset').value;
   const amount = parseFloat(document.getElementById('newTxAmount').value);
   const description = document.getElementById('newTxDesc').value.trim();
+  const alertEl = document.getElementById('addTxAlert');
+  alertEl.style.display = 'none';
   if (!amount || amount <= 0) {
-    showDetailAlert('Please enter a valid amount.', 'error');
+    alertEl.textContent = 'Please enter a valid amount.';
+    alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
     return;
   }
   try {
     const res = await fetch(`${API}/api/admin/user/${selectedUserId}/transaction`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ type, amount, description })
+      body: JSON.stringify({ type, asset, amount, description })
     });
     const data = await res.json();
     if (data.success) {
-      showDetailAlert('Transaction added.');
+      alertEl.textContent = `Transaction added. ${data.eth_equivalent ? `ETH equivalent: ${parseFloat(data.eth_equivalent).toFixed(5)} ETH` : ''}`;
+      alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--green-dim);color:var(--green);border:1px solid rgba(72,187,120,0.3);';
       document.getElementById('newTxAmount').value = '';
       document.getElementById('newTxDesc').value = '';
       await loadUserTransactions(selectedUserId);
       await loadAllTransactions();
       await loadStats();
+      await loadUsers();
     } else {
-      showDetailAlert(data.error || 'Failed.', 'error');
+      alertEl.textContent = data.error || 'Failed.';
+      alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
     }
   } catch (err) {
     showDetailAlert('Connection error.', 'error');
@@ -1028,7 +1086,7 @@ async function addTransaction() {
 
 // SECTION NAV
 function showSection(name) {
-  ['users', 'waitlist', 'transactions', 'activations', 'tiers', 'properties'].forEach(s => {
+  ['users', 'waitlist', 'transactions', 'activations', 'tiers', 'properties', 'settings'].forEach(s => {
     document.getElementById(`section-${s}`).style.display = s === name ? 'block' : 'none';
   });
   document.querySelectorAll('.nav-item').forEach(el => {
@@ -1037,10 +1095,50 @@ function showSection(name) {
   const titles = {
     users: 'All Users', waitlist: 'Waitlist Signups',
     transactions: 'All Transactions', activations: 'Activation Management',
-    tiers: 'Tier Settings', properties: 'Real Estate Properties'
+    tiers: 'Tier Settings', properties: 'Real Estate Properties',
+    settings: 'Platform Settings'
   };
   document.getElementById('sectionTitle').textContent = titles[name] || name;
   closeDetailPanel();
+}
+
+// ── SETTINGS ──
+async function loadSettings() {
+  try {
+    const res = await fetch(`${API}/api/settings`);
+    const data = await res.json();
+    const s = data.settings || {};
+    const eth = document.getElementById('platformEthWallet');
+    const btc = document.getElementById('platformBtcWallet');
+    const sol = document.getElementById('platformSolWallet');
+    if (eth) eth.value = s['platform_eth_wallet'] || '';
+    if (btc) btc.value = s['platform_btc_wallet'] || '';
+    if (sol) sol.value = s['platform_sol_wallet'] || '';
+  } catch (err) { console.error('Settings load error:', err); }
+}
+
+async function savePlatformWallet(key, inputId) {
+  const value = document.getElementById(inputId)?.value.trim() ?? '';
+  const alertEl = document.getElementById('platformWalletAlert');
+  try {
+    const res = await fetch(`${API}/api/admin/settings`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ key, value })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alertEl.textContent = `${key.replace('platform_', '').toUpperCase().replace('_WALLET', '')} wallet saved.`;
+      alertEl.style.cssText = 'display:block;padding:9px 13px;border-radius:2px;font-size:0.78rem;background:var(--green-dim);color:var(--green);border:1px solid rgba(72,187,120,0.3);';
+      setTimeout(() => { alertEl.style.display = 'none'; }, 3000);
+    } else {
+      alertEl.textContent = data.error || 'Save failed.';
+      alertEl.style.cssText = 'display:block;padding:9px 13px;border-radius:2px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
+    }
+  } catch {
+    alertEl.textContent = 'Connection error.';
+    alertEl.style.cssText = 'display:block;padding:9px 13px;border-radius:2px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
+  }
 }
 
 // ── ACTIVATIONS ──
@@ -1055,11 +1153,10 @@ function setActivationFilter(filter, btn) {
 
 function renderActivations(filter) {
   let users = allUsers.filter(u => u.is_migrated);
-  if (filter === 'pending') users = users.filter(u => u.activation_status === 'pending' && !u.is_activated);
+  if (filter === 'pending')  users = users.filter(u => u.activation_status === 'pending' && !u.is_activated);
   else if (filter === 'approved') users = users.filter(u => u.is_activated || u.activation_status === 'approved');
-  else if (filter === 'rejected') users = users.filter(u => u.activation_status === 'rejected' && !u.is_activated);
 
-  document.getElementById('activationsCount').textContent = `${users.length} request${users.length !== 1 ? 's' : ''}`;
+  document.getElementById('activationsCount').textContent = `${users.length} user${users.length !== 1 ? 's' : ''}`;
   const tbody = document.getElementById('activationsTableBody');
 
   if (users.length === 0) {
@@ -1068,34 +1165,40 @@ function renderActivations(filter) {
   }
 
   tbody.innerHTML = users.map(u => {
-    const submitted = u.activation_submitted_at
-      ? new Date(u.activation_submitted_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
-      : (u.activation_status ? 'Submitted' : '—');
+    // ETH invested from user_tiers (returned in allUsers query)
+    const ethInvested = parseFloat(u.amount_invested) || 0;
+    const ethCell = ethInvested > 0
+      ? `<span style="font-family:var(--font-display);color:var(--gold-pale);">Ξ${ethInvested.toFixed(4)}</span>`
+      : '<span style="color:var(--text-3);">—</span>';
 
     const txHash = u.activation_tx_hash || '';
     const txCell = txHash
-      ? `<span class="tx-hash-cell" onclick="copyTxHash('${txHash}')" title="Click to copy full hash">${txHash.slice(0, 12)}…</span>`
+      ? `<span class="tx-hash-cell" onclick="copyTxHash('${txHash}')" title="Click to copy: ${txHash}">${txHash.slice(0, 12)}…</span>`
       : '<span style="color:var(--text-3);">—</span>';
 
     const notesRaw = u.activation_notes || '';
     const notesCell = notesRaw
-      ? `<span title="${notesRaw.replace(/"/g, '&quot;')}">${notesRaw.slice(0, 32)}${notesRaw.length > 32 ? '…' : ''}</span>`
+      ? `<span title="${notesRaw.replace(/"/g, '&quot;')}">${notesRaw.slice(0, 28)}${notesRaw.length > 28 ? '…' : ''}</span>`
       : '<span style="color:var(--text-3);">—</span>';
 
     let badge;
-    if (u.is_activated) badge = '<span class="status-badge active">Approved</span>';
+    if (u.is_activated)                         badge = '<span class="status-badge active">Approved</span>';
     else if (u.activation_status === 'pending') badge = '<span class="status-badge pending">Pending</span>';
-    else if (u.activation_status === 'rejected') badge = '<span class="status-badge inactive">Rejected</span>';
-    else badge = '<span class="status-badge" style="color:var(--text-3);">No Sub.</span>';
+    else                                         badge = '<span class="status-badge" style="background:rgba(251,146,60,0.08);color:#FB923C;border:1px solid rgba(251,146,60,0.2);">Unpaid</span>';
 
-    const actionBtn = u.is_activated
-      ? `<button onclick="toggleActivationRow(${u.id}, true)" style="font-family:var(--font-ui);font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:var(--red-dim);border:1px solid rgba(252,129,129,0.3);color:var(--red);padding:6px 12px;cursor:pointer;border-radius:2px;white-space:nowrap;">Deactivate</button>`
-      : `<button onclick="toggleActivationRow(${u.id}, false)" style="font-family:var(--font-ui);font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:var(--green-dim);border:1px solid rgba(72,187,120,0.3);color:var(--green);padding:6px 12px;cursor:pointer;border-radius:2px;white-space:nowrap;">Activate</button>`;
+    let actionBtn;
+    if (u.is_activated) {
+      actionBtn = `<span style="font-family:var(--font-ui);font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--green);">Activated ✓</span>`;
+    } else if (u.activation_status === 'pending') {
+      actionBtn = `<button onclick="openApproveModal(${u.id})" style="font-family:var(--font-ui);font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:var(--blue-dim);border:1px solid rgba(37,99,235,0.4);color:var(--blue-bright);padding:6px 12px;cursor:pointer;border-radius:2px;white-space:nowrap;">Review &amp; Approve</button>`;
+    } else {
+      actionBtn = `<span style="font-family:var(--font-ui);font-size:0.6rem;color:var(--text-3);">Awaiting Payment</span>`;
+    }
 
     return `<tr id="activation-row-${u.id}">
       <td class="user-name-cell">${u.name || '—'}</td>
       <td style="font-size:0.78rem;word-break:break-all;">${u.email || '—'}</td>
-      <td>${submitted}</td>
+      <td>${ethCell}</td>
       <td>${txCell}</td>
       <td style="font-size:0.78rem;color:var(--text-2);">${notesCell}</td>
       <td>${badge}</td>
@@ -1122,32 +1225,49 @@ function fallbackCopyAdmin(text) {
   document.body.removeChild(el);
 }
 
-async function toggleActivationRow(userId, currentlyActivated) {
-  const newState = !currentlyActivated;
-  const row = document.getElementById(`activation-row-${userId}`);
-  const btn = row?.querySelector('button');
-  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+let approveTargetId = null;
+
+function openApproveModal(userId) {
+  approveTargetId = userId;
+  const user = allUsers.find(u => u.id === userId);
+  document.getElementById('approveModalName').textContent = user?.name || 'this user';
+  document.getElementById('approveModalEmail').textContent = user?.email || '';
+  document.getElementById('approveModalAlert').style.display = 'none';
+  const btn = document.getElementById('approveConfirmBtn');
+  btn.disabled = false;
+  btn.textContent = 'Approve & Send Password';
+  document.getElementById('approveActivationModal').style.display = 'flex';
+}
+
+async function confirmApproval() {
+  if (!approveTargetId) return;
+  const btn = document.getElementById('approveConfirmBtn');
+  const alertEl = document.getElementById('approveModalAlert');
+  btn.disabled = true;
+  btn.textContent = 'Approving…';
   try {
-    const res = await fetch(`${API}/api/admin/user/${userId}/activate`, {
+    const res = await fetch(`${API}/api/admin/user/${approveTargetId}/approve-activation`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ is_activated: newState })
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
     });
     const data = await res.json();
     if (data.success) {
-      const user = allUsers.find(u => u.id === userId);
-      if (user) {
-        user.is_activated = newState;
-        user.activation_status = newState ? 'approved' : 'rejected';
-      }
+      const user = allUsers.find(u => u.id === approveTargetId);
+      if (user) { user.is_activated = true; user.activation_status = 'approved'; }
+      document.getElementById('approveActivationModal').style.display = 'none';
       renderActivations(currentActivationFilter);
       renderUsers(allUsers);
     } else {
-      showDetailAlert(data.error || 'Update failed.', 'error');
-      if (btn) btn.disabled = false;
+      alertEl.textContent = data.error || 'Approval failed.';
+      alertEl.style.cssText = 'display:block;padding:9px 12px;border-radius:4px;font-size:0.8rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
+      btn.disabled = false;
+      btn.textContent = 'Approve & Send Password';
     }
   } catch {
-    if (btn) btn.disabled = false;
+    alertEl.textContent = 'Connection error.';
+    alertEl.style.cssText = 'display:block;padding:9px 12px;border-radius:4px;font-size:0.8rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
+    btn.disabled = false;
+    btn.textContent = 'Approve & Send Password';
   }
 }
 
