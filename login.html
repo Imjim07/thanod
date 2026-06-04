@@ -213,7 +213,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
     <button class="btn-submit purple-btn" id="magicSendBtn" onclick="sendMagicLink()">Send Sign-In Link</button>
 
     <div class="magic-success" id="magicSuccess">
-      ✓ Check your inbox. A sign-in link has been sent to <strong id="magicSuccessEmail">—</strong>.
+      <div style="font-weight:600;margin-bottom:6px;">✉ Check your inbox</div>
+      We've sent sign-in and activation instructions to <strong id="magicSuccessEmail">—</strong>. Follow the steps in the email to complete your account setup.<br><br>
+      <span style="font-family:var(--font-mono);font-size:0.68rem;color:var(--purple-bright);opacity:0.8;">The link expires in 15 minutes.</span>
     </div>
   </div>
 
@@ -342,8 +344,13 @@ async function handleLogin() {
     const data = await res.json();
     if (data.success && data.token) {
       localStorage.setItem('aurethium_token', data.token); localStorage.setItem('aurethium_user', JSON.stringify(data.user));
-      showAlert('Signed in! Loading dashboard...', 'success');
-      setTimeout(() => window.location.href = 'dashboard.html', 1000);
+      if (data.mustChangePassword) {
+        showAlert('Signed in! Please set a new password.', 'success');
+        setTimeout(() => window.location.href = 'change-password.html', 1000);
+      } else {
+        showAlert('Signed in! Loading dashboard...', 'success');
+        setTimeout(() => window.location.href = 'dashboard.html', 1000);
+      }
     } else if (data.requiresVerification && data.email) {
       localStorage.setItem('thanod_verify_email', data.email);
       showAlert('Please verify your email. Redirecting...', 'success');
