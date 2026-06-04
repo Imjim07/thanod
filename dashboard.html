@@ -389,6 +389,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -396,50 +397,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 <div class="loading-overlay" id="loadingOverlay">
   <div class="loading-logo">Thanod</div>
   <div class="loading-bar"><div class="loading-fill"></div></div>
-</div>
-
-<!-- ACTIVATION PENDING OVERLAY -->
-<div class="activation-overlay" id="activationOverlay">
-  <div class="activation-card">
-    <div class="activation-lock">
-      <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-    </div>
-    <div class="activation-title">Account Activation Required</div>
-
-    <!-- Sub-state 1: proof not yet submitted -->
-    <div id="activationFormState">
-      <p class="activation-sub">Your account has been migrated. To unlock your portfolio and begin investing, a one-time $500 activation fee is required. Send the ETH equivalent to your deposit wallet, then submit your transaction hash below.</p>
-
-      <div class="activation-fee-box">
-        <div class="activation-fee-label">One-Time Activation Fee</div>
-        <div class="activation-fee-amount">$500</div>
-        <div class="activation-fee-note">Send the ETH equivalent to your assigned deposit wallet. Your wallet address is shown on the <a href="deposit.html" style="color:var(--blue-bright);">Deposit page</a>.</div>
-      </div>
-
-      <div style="text-align:left;margin-bottom:20px;">
-        <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;">Transaction Hash (optional)</div>
-        <input type="text" id="activationTxHash" placeholder="0x..." style="width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.85rem;padding:10px 14px;outline:none;border-radius:6px;margin-bottom:10px;box-sizing:border-box;">
-        <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;">Notes (optional)</div>
-        <input type="text" id="activationNotes" placeholder="e.g. Sent via Coinbase on June 3rd" style="width:100%;background:var(--bg-3);border:1px solid var(--blue-border);color:var(--text);font-family:var(--font-body);font-size:0.85rem;padding:10px 14px;outline:none;border-radius:6px;margin-bottom:10px;box-sizing:border-box;">
-        <div id="activationFormAlert" style="display:none;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);color:var(--red);padding:10px 14px;border-radius:6px;font-size:0.82rem;margin-bottom:10px;"></div>
-        <button id="activationSubmitBtn" onclick="submitActivationProof()" style="width:100%;background:var(--blue);border:none;color:white;font-family:var(--font-display);font-size:0.85rem;font-weight:600;padding:13px;cursor:pointer;border-radius:6px;transition:background 0.2s;">Submit Payment Proof</button>
-      </div>
-
-      <p class="activation-info">Questions? Email <a href="mailto:hello@thanod.com">hello@thanod.com</a></p>
-    </div>
-
-    <!-- Sub-state 2: proof submitted, awaiting admin approval -->
-    <div id="activationPendingState" style="display:none;">
-      <p class="activation-sub">Your payment proof has been received. Our team is reviewing it — your portfolio will unlock automatically once approved.</p>
-
-      <div class="activation-status">
-        <span class="activation-status-dot"></span>
-        Pending Admin Approval
-      </div>
-
-      <p class="activation-info">Once we confirm your activation payment, your portfolio will be unlocked automatically — no action needed on your end. Questions? Email <a href="mailto:hello@thanod.com">hello@thanod.com</a></p>
-    </div>
-  </div>
 </div>
 
 <!-- SIDEBAR -->
@@ -468,7 +425,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       Transactions
     </a>
     <div class="nav-section-title">Funds</div>
-    <a class="nav-item" href="deposit.html">
+    <a class="nav-item" onclick="showSection('deposit')">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v16m0-16l-4 4m4-4l4 4M4 20h16"/></svg>
       Deposit
     </a>
@@ -524,23 +481,17 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     <!-- ── OVERVIEW ── -->
     <div id="section-overview">
       <div class="stats-row">
-        <div class="stat-card gold">
-          <div class="stat-label">Total Portfolio</div>
-          <div class="stat-value gold" id="statTotal">Ξ0.00</div>
-          <div class="stat-sub" id="statTotalEth">USD</div>
+        <div class="stat-card gold" style="grid-column:span 2;">
+          <div class="stat-label">Total Portfolio Value</div>
+          <div class="stat-value gold" id="statTotal" style="font-size:2.4rem;">$0.00</div>
+          <div class="stat-sub" id="statTotalEth">Live price · updates every 60s</div>
           <svg class="stat-icon" width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         </div>
         <div class="stat-card green">
           <div class="stat-label">Validator Balance</div>
-          <div class="stat-value green" id="statValidator">0.00</div>
+          <div class="stat-value green" id="statValidator">0.0000</div>
           <div class="stat-sub">ETH Staked</div>
           <svg class="stat-icon" width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-        </div>
-        <div class="stat-card blue">
-          <div class="stat-label">Bot Balance</div>
-          <div class="stat-value blue" id="statBot">0.00</div>
-          <div class="stat-sub">ETH Active</div>
-          <svg class="stat-icon" width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
         </div>
       </div>
 
@@ -554,16 +505,9 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
           <div class="allocation-bar">
             <div class="allocation-label">
               <span class="allocation-name">Validator Pool</span>
-              <span class="allocation-pct" id="pctValidator">0%</span>
+              <span class="allocation-pct" id="pctValidator">100%</span>
             </div>
-            <div class="bar-track"><div class="bar-fill validator" id="barValidator" style="width:0%"></div></div>
-          </div>
-          <div class="allocation-bar">
-            <div class="allocation-label">
-              <span class="allocation-name">Trading Bot</span>
-              <span class="allocation-pct" id="pctBot">0%</span>
-            </div>
-            <div class="bar-track"><div class="bar-fill bot" id="barBot" style="width:0%"></div></div>
+            <div class="bar-track"><div class="bar-fill validator" id="barValidator" style="width:100%"></div></div>
           </div>
 
           <div class="allocation-total">
@@ -579,10 +523,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
             <span class="card-badge pending" id="validatorBadge">Pending</span>
           </div>
           <div class="validator-info">
-            <div class="validator-row">
-              <span class="validator-key">Address</span>
-              <span class="validator-val" id="validatorAddress">Not set</span>
-            </div>
             <div class="validator-row">
               <span class="validator-key">Status</span>
               <span class="validator-val" id="validatorStatus">Pending</span>
@@ -605,14 +545,17 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
         <table class="tx-table">
           <thead>
             <tr>
+              <th>Asset</th>
+              <th>Amount</th>
+              <th>USD Value</th>
+              <th>ETH Rate</th>
+              <th>ETH Equiv.</th>
               <th>Type</th>
               <th>Description</th>
-              <th>Amount</th>
-              <th>Date</th>
             </tr>
           </thead>
           <tbody id="recentTxBody">
-            <tr><td colspan="4" class="tx-empty">No transactions yet.</td></tr>
+            <tr><td colspan="7" class="tx-empty">No transactions yet.</td></tr>
           </tbody>
         </table>
       </div>
@@ -626,10 +569,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
           <span class="card-badge pending" id="validatorBadge2">Pending</span>
         </div>
         <div class="validator-info">
-          <div class="validator-row">
-            <span class="validator-key">Validator Address</span>
-            <span class="validator-val" id="validatorAddress2">Not configured</span>
-          </div>
           <div class="validator-row">
             <span class="validator-key">Status</span>
             <span class="validator-val" id="validatorStatus2">Pending</span>
@@ -656,18 +595,112 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
         <table class="tx-table">
           <thead>
             <tr>
+              <th>Asset</th>
+              <th>Amount</th>
+              <th>USD Value</th>
+              <th>ETH Rate</th>
+              <th>ETH Equiv.</th>
               <th>Type</th>
               <th>Description</th>
-              <th>Amount (ETH)</th>
-              <th>Status</th>
-              <th>Date</th>
             </tr>
           </thead>
           <tbody id="allTxBody">
-            <tr><td colspan="5" class="tx-empty">No transactions yet.</td></tr>
+            <tr><td colspan="7" class="tx-empty">No transactions yet.</td></tr>
           </tbody>
         </table>
       </div>
+    </div>
+
+    <!-- ── DEPOSIT SECTION ── -->
+    <div id="section-deposit" style="display:none;">
+      <div style="margin-bottom:20px;">
+        <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:600;margin-bottom:4px;">Deposit Funds</div>
+        <div style="font-size:0.85rem;color:var(--text-2);">Send crypto to your assigned deposit address. Your balance updates after admin confirmation.</div>
+      </div>
+
+      <!-- Asset tabs -->
+      <div style="display:flex;gap:4px;margin-bottom:20px;">
+        <button class="dep-tab active" id="dep-tab-eth" onclick="switchDepositTab('eth')" style="font-family:var(--font-mono);font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:var(--blue-dim);border:1px solid var(--blue-border);color:var(--blue-bright);padding:9px 20px;cursor:pointer;border-radius:4px;transition:all 0.2s;">ETH</button>
+        <button class="dep-tab" id="dep-tab-btc" onclick="switchDepositTab('btc')" style="font-family:var(--font-mono);font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:transparent;border:1px solid var(--blue-border);color:var(--text-3);padding:9px 20px;cursor:pointer;border-radius:4px;transition:all 0.2s;">BTC</button>
+        <button class="dep-tab" id="dep-tab-sol" onclick="switchDepositTab('sol')" style="font-family:var(--font-mono);font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:transparent;border:1px solid var(--blue-border);color:var(--text-3);padding:9px 20px;cursor:pointer;border-radius:4px;transition:all 0.2s;">SOL</button>
+      </div>
+
+      <!-- ETH -->
+      <div id="dep-section-eth">
+        <div class="dashboard-card">
+          <div style="font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:14px;">Ethereum (ETH) Deposit Address</div>
+          <div style="font-size:0.82rem;color:var(--text-3);margin-bottom:16px;" id="dep-rate-eth">Fetching live price…</div>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;">
+            <div>
+              <div class="dep-wallet-box" style="background:var(--bg-3);border:1px solid var(--blue-border);border-radius:6px;padding:12px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+                <span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--blue-bright);word-break:break-all;line-height:1.6;flex:1;" id="dep-addr-eth">—</span>
+                <button id="dep-copy-eth" onclick="copyDepAddr('eth')" style="font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;background:var(--blue-dim);border:1px solid var(--blue-border);color:var(--blue-bright);padding:6px 12px;cursor:pointer;border-radius:4px;white-space:nowrap;flex-shrink:0;margin-top:2px;">Copy</button>
+              </div>
+            </div>
+            <div style="background:var(--bg-3);border:1px solid var(--blue-border);border-radius:6px;padding:10px;" id="dep-qr-eth"></div>
+          </div>
+          <div id="dep-nowallet-eth" style="display:none;margin-top:12px;background:rgba(251,146,60,0.07);border:1px solid rgba(251,146,60,0.2);border-radius:6px;padding:12px 14px;font-size:0.82rem;color:#FB923C;">Contact support to receive your ETH deposit address — <a href="mailto:hello@thanod.com" style="color:inherit;">hello@thanod.com</a></div>
+        </div>
+      </div>
+
+      <!-- BTC -->
+      <div id="dep-section-btc" style="display:none;">
+        <div class="dashboard-card">
+          <div style="font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:14px;">Bitcoin (BTC) Deposit Address</div>
+          <div style="font-size:0.82rem;color:var(--text-3);margin-bottom:16px;" id="dep-rate-btc">Fetching live price…</div>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;">
+            <div>
+              <div class="dep-wallet-box" style="background:var(--bg-3);border:1px solid var(--blue-border);border-radius:6px;padding:12px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+                <span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--blue-bright);word-break:break-all;line-height:1.6;flex:1;" id="dep-addr-btc">—</span>
+                <button id="dep-copy-btc" onclick="copyDepAddr('btc')" style="font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;background:var(--blue-dim);border:1px solid var(--blue-border);color:var(--blue-bright);padding:6px 12px;cursor:pointer;border-radius:4px;white-space:nowrap;flex-shrink:0;margin-top:2px;">Copy</button>
+              </div>
+            </div>
+            <div style="background:var(--bg-3);border:1px solid var(--blue-border);border-radius:6px;padding:10px;" id="dep-qr-btc"></div>
+          </div>
+          <div id="dep-nowallet-btc" style="display:none;margin-top:12px;background:rgba(251,146,60,0.07);border:1px solid rgba(251,146,60,0.2);border-radius:6px;padding:12px 14px;font-size:0.82rem;color:#FB923C;">Contact support to receive your BTC deposit address — <a href="mailto:hello@thanod.com" style="color:inherit;">hello@thanod.com</a></div>
+        </div>
+      </div>
+
+      <!-- SOL -->
+      <div id="dep-section-sol" style="display:none;">
+        <div class="dashboard-card">
+          <div style="font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:14px;">Solana (SOL) Deposit Address</div>
+          <div style="font-size:0.82rem;color:var(--text-3);margin-bottom:16px;" id="dep-rate-sol">Fetching live price…</div>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;">
+            <div>
+              <div class="dep-wallet-box" style="background:var(--bg-3);border:1px solid var(--blue-border);border-radius:6px;padding:12px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+                <span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--blue-bright);word-break:break-all;line-height:1.6;flex:1;" id="dep-addr-sol">—</span>
+                <button id="dep-copy-sol" onclick="copyDepAddr('sol')" style="font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;background:var(--blue-dim);border:1px solid var(--blue-border);color:var(--blue-bright);padding:6px 12px;cursor:pointer;border-radius:4px;white-space:nowrap;flex-shrink:0;margin-top:2px;">Copy</button>
+              </div>
+            </div>
+            <div style="background:var(--bg-3);border:1px solid var(--blue-border);border-radius:6px;padding:10px;" id="dep-qr-sol"></div>
+          </div>
+          <div id="dep-nowallet-sol" style="display:none;margin-top:12px;background:rgba(251,146,60,0.07);border:1px solid rgba(251,146,60,0.2);border-radius:6px;padding:12px 14px;font-size:0.82rem;color:#FB923C;">Contact support to receive your SOL deposit address — <a href="mailto:hello@thanod.com" style="color:inherit;">hello@thanod.com</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deposit request form (shared across tabs) -->
+    <div class="dashboard-card" style="margin-top:16px;">
+      <div style="font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:16px;">Submit Deposit</div>
+      <p style="font-size:0.84rem;color:var(--text-2);line-height:1.65;margin-bottom:20px;">After sending payment, submit your deposit details below. Our team will confirm and credit your portfolio within 24 hours.</p>
+
+      <div class="modal-alert show" id="depositFormAlert" style="display:none;padding:10px 14px;border-radius:var(--radius);font-size:0.82rem;margin-bottom:14px;"></div>
+
+      <div class="form-group">
+        <label class="form-label">Amount</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="number" class="form-input" id="depAmount" placeholder="0.00" step="any" min="0" style="flex:1;">
+          <span style="font-family:var(--font-mono);font-size:0.75rem;font-weight:700;color:var(--blue-bright);min-width:36px;text-align:center;" id="depAssetLabel">ETH</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reference / Your Name</label>
+        <input type="text" class="form-input" id="depReference" placeholder="e.g. Amanda — ETH transfer June 4th">
+      </div>
+
+      <button class="btn-primary" id="depSubmitBtn" onclick="submitDepositRequest()" style="margin-top:4px;">Submit Deposit</button>
+    </div>
     </div>
 
     <!-- ── TIERS SECTION ── -->
@@ -865,21 +898,13 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 <div class="modal-overlay" id="allocationModal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('allocationModal')">✕</button>
-    <div class="modal-title">Update Allocation</div>
+    <div class="modal-title">Update Validator Balance</div>
     <div class="modal-alert" id="allocAlert"></div>
     <div class="form-group">
       <label class="form-label">Validator Balance (ETH)</label>
       <input type="number" class="form-input" id="allocValidator" placeholder="0.00" step="0.001" min="0">
     </div>
-    <div class="form-group">
-      <label class="form-label">Bot Balance (ETH)</label>
-      <input type="number" class="form-input" id="allocBot" placeholder="0.00" step="0.001" min="0">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Idle Balance (ETH)</label>
-      <input type="number" class="form-input" id="allocIdle" placeholder="0.00" step="0.001" min="0">
-    </div>
-    <button class="btn-primary" onclick="saveAllocation()">Save Allocation</button>
+    <button class="btn-primary" onclick="saveAllocation()">Save</button>
   </div>
 </div>
 
@@ -890,20 +915,12 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     <div class="modal-title">Update Validator</div>
     <div class="modal-alert" id="validatorAlert"></div>
     <div class="form-group">
-      <label class="form-label">Validator Address</label>
-      <input type="text" class="form-input" id="vAddress" placeholder="0x...">
-    </div>
-    <div class="form-group">
       <label class="form-label">Status</label>
       <select class="form-select" id="vStatus">
         <option value="pending">Pending</option>
         <option value="active">Active</option>
         <option value="inactive">Inactive</option>
       </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Estimated APR (%)</label>
-      <input type="number" class="form-input" id="vAPR" placeholder="5.20" step="0.01" min="0">
     </div>
     <div class="form-group">
       <label class="form-label">Rewards Earned (ETH)</label>
@@ -943,42 +960,20 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 <script>
 const API = 'https://aurethium-backend.onrender.com';
 
-// Check activation status for migrated users
-async function checkActivationGate() {
-  const token = localStorage.getItem('aurethium_token');
-  if (!token) { window.location.href = 'login.html'; return; }
-
-  const isMigrated = localStorage.getItem('thanod_is_migrated') === 'true';
-  if (!isMigrated) return; // Original users pass through
-
-  try {
-    const res = await fetch(`${API}/api/auth/activation-status`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (data.requires_activation) {
-      window.location.href = 'activation.html';
-      return;
-    }
-  } catch (err) {
-    console.error('Activation check error:', err);
-  }
-}
-checkActivationGate();
-
 let portfolioData = {};
 let transactionsData = [];
 let currentSection = 'overview';
-let ethUsdPrice = 0;
+let prices = { eth: 0, btc: 0, sol: 0 };
+let depositWallets = { eth: '', btc: '', sol: '' };
 
-async function fetchEthPrice() {
+async function fetchPrices() {
   try {
-    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,bitcoin,solana&vs_currencies=usd');
     const data = await res.json();
-    ethUsdPrice = data.ethereum?.usd || 0;
-  } catch (e) {
-    ethUsdPrice = 0;
-  }
+    prices.eth = data.ethereum?.usd || 0;
+    prices.btc = data.bitcoin?.usd  || 0;
+    prices.sol = data.solana?.usd   || 0;
+  } catch { /* prices stay 0 */ }
 }
 
 // ── AUTH CHECK ──
@@ -1005,61 +1000,18 @@ async function init() {
     // Hide loading
     document.getElementById('loadingOverlay').style.display = 'none';
 
-    // Check activation — send unactivated migrated users to the dedicated activation page
-    if (!user.is_activated) {
-      window.location.href = 'activation.html';
+    // First-login forced password change
+    if (user.must_change_password) {
+      window.location.href = 'change-password.html';
       return;
     }
 
-    // Activated — load full dashboard
-    await Promise.all([fetchEthPrice(), loadPortfolio(), loadTransactions()]);
+    // Load full dashboard
+    await Promise.all([fetchPrices(), loadPortfolio(), loadTransactions(), loadDepositWallets()]);
+    setInterval(fetchPrices, 60000);
   } catch (err) {
     console.error('Init error:', err);
     document.getElementById('loadingOverlay').style.display = 'none';
-  }
-}
-
-// ── ACTIVATION ──
-function showActivationOverlay(user) {
-  document.getElementById('activationOverlay').classList.add('show');
-  if (user.activation_status === 'pending') {
-    document.getElementById('activationFormState').style.display = 'none';
-    document.getElementById('activationPendingState').style.display = 'block';
-  } else {
-    document.getElementById('activationFormState').style.display = 'block';
-    document.getElementById('activationPendingState').style.display = 'none';
-  }
-}
-
-async function submitActivationProof() {
-  const txHash = document.getElementById('activationTxHash').value.trim();
-  const notes = document.getElementById('activationNotes').value.trim();
-  const btn = document.getElementById('activationSubmitBtn');
-  const alertEl = document.getElementById('activationFormAlert');
-  btn.disabled = true;
-  btn.textContent = 'Submitting…';
-  alertEl.style.display = 'none';
-  try {
-    const res = await fetch(`${API}/api/auth/submit-activation`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ tx_hash: txHash, notes })
-    });
-    const data = await res.json();
-    if (data.success) {
-      document.getElementById('activationFormState').style.display = 'none';
-      document.getElementById('activationPendingState').style.display = 'block';
-    } else {
-      alertEl.textContent = data.error || 'Submission failed. Please try again.';
-      alertEl.style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = 'Submit Payment Proof';
-    }
-  } catch {
-    alertEl.textContent = 'Connection error. Please try again.';
-    alertEl.style.display = 'block';
-    btn.disabled = false;
-    btn.textContent = 'Submit Payment Proof';
   }
 }
 
@@ -1089,55 +1041,58 @@ async function loadPortfolio() {
 // ── RENDER PORTFOLIO ──
 function renderPortfolio() {
   const p = portfolioData;
-  const total = parseFloat(p.total_balance) || 0;
-  const validator = parseFloat(p.validator_balance) || 0;
-  const bot = parseFloat(p.bot_balance) || 0;
-  const idle = parseFloat(p.idle_balance) || 0;
+  const validator  = parseFloat(p.validator_balance)    || 0;
+  const rewards    = parseFloat(p.rewards_earned)       || 0;
+  const tierEth    = parseFloat(p.tier_amount_invested)  || 0;
+  const reUsd      = parseFloat(p.re_usd_invested)       || 0;
 
-  // Stats
-  const totalUsd = ethUsdPrice > 0 ? total * ethUsdPrice : null;
-  document.getElementById('statTotal').textContent = totalUsd !== null
-    ? `Ξ${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-    : `${total.toFixed(4)} ETH`;
-  document.getElementById('statTotalEth').textContent = ethUsdPrice > 0 ? 'USD' : 'ETH';
-  document.getElementById('statValidator').textContent = validator.toFixed(4);
-  document.getElementById('statBot').textContent = bot.toFixed(4);
-  document.getElementById('totalValueDisplay').textContent = totalUsd !== null
-    ? `Ξ${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-    : `${total.toFixed(4)} ETH`;
+  // Full USD total: (validator + rewards + tierEth) × eth_price + real estate USD
+  const ethComponents = validator + rewards + tierEth;
+  const totalUsd = prices.eth > 0
+    ? (ethComponents * prices.eth) + reUsd
+    : null;
+  const totalEth = totalUsd !== null && prices.eth > 0 ? totalUsd / prices.eth : ethComponents;
 
-  // Allocation bars
-  const vPct = total > 0 ? Math.round((validator / total) * 100) : 0;
-  const bPct = total > 0 ? Math.round((bot / total) * 100) : 0;
-  document.getElementById('barValidator').style.width = `${vPct}%`;
-  document.getElementById('barBot').style.width = `${bPct}%`;
-  document.getElementById('pctValidator').textContent = `${vPct}%`;
-  document.getElementById('pctBot').textContent = `${bPct}%`;
+  // USD total stat card
+  const usdEl = document.getElementById('statTotal');
+  const subEl = document.getElementById('statTotalEth');
+  if (usdEl) usdEl.textContent = totalUsd !== null
+    ? `$${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : `${ethComponents.toFixed(4)} ETH`;
+  if (subEl) subEl.textContent = totalUsd !== null
+    ? `≈ ${totalEth.toFixed(4)} ETH at current rate`
+    : 'Live price · updates every 60s';
 
-  // Validator info
-  const vAddress = p.validator_address || 'Not configured';
+  // Validator balance stat
+  const valEl = document.getElementById('statValidator');
+  if (valEl) valEl.textContent = validator.toFixed(4);
+
+  // Allocation bar — validator only
+  const barV = document.getElementById('barValidator');
+  const pctV = document.getElementById('pctValidator');
+  if (barV) barV.style.width = '100%';
+  if (pctV) pctV.textContent = '100%';
+
+  // Total value display
+  const tvEl = document.getElementById('totalValueDisplay');
+  if (tvEl) tvEl.textContent = totalUsd !== null
+    ? `$${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : `${totalEth.toFixed(4)} ETH`;
+
+  // Validator status & rewards (no address, no APR)
   const vStatus = p.validator_status || 'pending';
-  const vAPR = parseFloat(p.estimated_apr) || 0;
   const vRewards = parseFloat(p.rewards_earned) || 0;
 
   ['', '2'].forEach(suffix => {
-    const addrEl = document.getElementById(`validatorAddress${suffix}`);
     const statusEl = document.getElementById(`validatorStatus${suffix}`);
-    const aprEl = document.getElementById(`validatorAPR${suffix}`);
     const rewardsEl = document.getElementById(`validatorRewards${suffix}`);
     const badgeEl = document.getElementById(`validatorBadge${suffix}`);
-
-    if (addrEl) addrEl.textContent = vAddress.length > 20 ? `${vAddress.slice(0,10)}...${vAddress.slice(-8)}` : vAddress;
     if (statusEl) {
       statusEl.textContent = vStatus.charAt(0).toUpperCase() + vStatus.slice(1);
       statusEl.className = `validator-val ${vStatus === 'active' ? 'green' : vStatus === 'inactive' ? '' : 'pending'}`;
     }
-    if (aprEl) aprEl.textContent = `${vAPR.toFixed(2)}%`;
     if (rewardsEl) rewardsEl.textContent = `${vRewards.toFixed(5)} ETH`;
-    if (badgeEl) {
-      badgeEl.textContent = vStatus.charAt(0).toUpperCase() + vStatus.slice(1);
-      badgeEl.className = `card-badge ${vStatus}`;
-    }
+    if (badgeEl) { badgeEl.textContent = vStatus.charAt(0).toUpperCase() + vStatus.slice(1); badgeEl.className = `card-badge ${vStatus}`; }
   });
 
   const balEl = document.getElementById('validatorBalance2');
@@ -1163,40 +1118,194 @@ function renderTransactions() {
   const txs = transactionsData;
   const recentBody = document.getElementById('recentTxBody');
   const allBody = document.getElementById('allTxBody');
+  const COLS = 7;
 
   if (txs.length === 0) {
-    const empty = `<tr><td colspan="5" class="tx-empty">No transactions yet.</td></tr>`;
-    recentBody.innerHTML = `<tr><td colspan="4" class="tx-empty">No transactions yet.</td></tr>`;
-    allBody.innerHTML = empty;
+    const empty = `<tr><td colspan="${COLS}" class="tx-empty">No transactions yet.</td></tr>`;
+    if (recentBody) recentBody.innerHTML = empty;
+    if (allBody) allBody.innerHTML = empty;
     return;
   }
 
-  const typeClass = { deposit: 'deposit', withdrawal: 'withdrawal', reward: 'reward', trade: 'trade' };
+  const typeClass = { deposit: 'deposit', withdrawal: 'withdrawal', reward: 'reward', adjustment: 'reward' };
 
-  const makeRow = (tx, cols) => {
+  const makeRow = tx => {
     const date = new Date(tx.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-    const isPositive = ['deposit', 'reward'].includes(tx.type);
-    const amountClass = isPositive ? 'positive' : 'negative';
-    const amountPrefix = isPositive ? '+' : '-';
-    if (cols === 4) {
-      return `<tr>
-        <td><span class="tx-type ${typeClass[tx.type] || ''}">${tx.type}</span></td>
-        <td>${tx.description || '—'}</td>
-        <td class="tx-amount ${amountClass}">${amountPrefix}${parseFloat(tx.amount).toFixed(5)} ETH</td>
-        <td>${date}</td>
-      </tr>`;
-    }
+    const asset = (tx.asset || 'ETH').toUpperCase();
+    const amount = parseFloat(tx.amount) || 0;
+    const usdVal = parseFloat(tx.usd_value) || 0;
+    const ethRate = parseFloat(tx.eth_rate) || 0;
+    const ethEq = parseFloat(tx.eth_equivalent) || amount;
+    const usdFmt = usdVal > 0 ? `$${usdVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—';
+    const rateFmt = ethRate > 0 ? `$${ethRate.toLocaleString('en-US', { maximumFractionDigits: 0 })}/ETH` : '—';
     return `<tr>
+      <td><span class="tx-type ${typeClass[tx.type] || ''}">${asset}</span></td>
+      <td>${amount.toFixed(asset === 'ETH' ? 5 : 8)}</td>
+      <td style="color:var(--green);">${usdFmt}</td>
+      <td style="font-size:0.78rem;color:var(--text-3);">${rateFmt}</td>
+      <td style="color:var(--blue-bright);">${ethEq.toFixed(5)} ETH</td>
       <td><span class="tx-type ${typeClass[tx.type] || ''}">${tx.type}</span></td>
-      <td>${tx.description || '—'}</td>
-      <td class="tx-amount ${amountClass}">${amountPrefix}${parseFloat(tx.amount).toFixed(5)} ETH</td>
-      <td><span style="font-size:0.75rem;color:var(--green);">✓ ${tx.status || 'completed'}</span></td>
-      <td>${date}</td>
+      <td style="font-size:0.78rem;">${tx.description || '—'}</td>
     </tr>`;
   };
 
-  recentBody.innerHTML = txs.slice(0, 5).map(tx => makeRow(tx, 4)).join('');
-  allBody.innerHTML = txs.map(tx => makeRow(tx, 5)).join('');
+  if (recentBody) recentBody.innerHTML = txs.slice(0, 5).map(makeRow).join('');
+  if (allBody) allBody.innerHTML = txs.map(makeRow).join('');
+}
+
+// ── DEPOSIT WALLETS ──
+async function loadDepositWallets() {
+  try {
+    const res = await fetch(`${API}/api/user/profile`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const data = await res.json();
+    const user = data.user || data;
+    depositWallets.eth = user.deposit_wallet || '';
+    depositWallets.btc = user.deposit_wallet_btc || '';
+    depositWallets.sol = user.deposit_wallet_sol || '';
+
+    // Fall back to platform wallets for any missing slots
+    const settRes = await fetch(`${API}/api/settings/platform-wallets`).catch(() => null);
+    if (settRes && settRes.ok) {
+      const sett = await settRes.json();
+      if (!depositWallets.eth) depositWallets.eth = sett.eth_wallet || '';
+      if (!depositWallets.btc) depositWallets.btc = sett.btc_wallet || '';
+      if (!depositWallets.sol) depositWallets.sol = sett.sol_wallet || '';
+    }
+
+    renderDepositSection();
+  } catch (err) { console.error('Deposit wallets error:', err); }
+}
+
+function renderDepositSection() {
+  renderDepositTab('eth');
+}
+
+function renderDepositTab(asset) {
+  const wallet = depositWallets[asset] || '';
+  const price = prices[asset] || 0;
+  const addrEl = document.getElementById(`dep-addr-${asset}`);
+  const qrEl = document.getElementById(`dep-qr-${asset}`);
+  const rateEl = document.getElementById(`dep-rate-${asset}`);
+  const noWalletEl = document.getElementById(`dep-nowallet-${asset}`);
+
+  // Set price info
+  if (rateEl && price > 0) {
+    const symbol = asset.toUpperCase();
+    rateEl.textContent = `1 ${symbol} = $${price.toLocaleString('en-US', { maximumFractionDigits: 2 })} USD`;
+    if (asset !== 'eth' && prices.eth > 0) {
+      rateEl.textContent += ` · ≈ ${(price / prices.eth).toFixed(5)} ETH`;
+    }
+  }
+
+  if (!wallet) {
+    if (addrEl) addrEl.closest('.dep-wallet-box')?.style && (addrEl.closest('.dep-wallet-box').style.display = 'none');
+    if (noWalletEl) noWalletEl.style.display = 'block';
+    if (qrEl) qrEl.style.display = 'none';
+    return;
+  }
+
+  if (addrEl) {
+    addrEl.closest('.dep-wallet-box') && (addrEl.closest('.dep-wallet-box').style.display = 'flex');
+    addrEl.textContent = wallet;
+  }
+  if (noWalletEl) noWalletEl.style.display = 'none';
+
+  // QR code
+  if (qrEl && !qrEl.dataset.generated) {
+    qrEl.dataset.generated = '1';
+    try {
+      new QRCode(qrEl, { text: wallet, width: 130, height: 130, colorDark: '#F0F0F8', colorLight: '#0E0E18', correctLevel: QRCode.CorrectLevel.M });
+    } catch { qrEl.style.display = 'none'; }
+  }
+}
+
+let currentDepositAsset = 'eth';
+
+function switchDepositTab(asset) {
+  currentDepositAsset = asset;
+  document.querySelectorAll('.dep-tab').forEach(t => {
+    t.style.background = 'transparent';
+    t.style.color = 'var(--text-3)';
+    t.style.borderColor = 'var(--blue-border)';
+  });
+  const activeTab = document.getElementById(`dep-tab-${asset}`);
+  if (activeTab) {
+    activeTab.style.background = 'var(--blue-dim)';
+    activeTab.style.color = 'var(--blue-bright)';
+    activeTab.style.borderColor = 'var(--blue-border)';
+  }
+  ['eth', 'btc', 'sol'].forEach(a => {
+    const s = document.getElementById(`dep-section-${a}`);
+    if (s) s.style.display = a === asset ? 'block' : 'none';
+  });
+  const label = document.getElementById('depAssetLabel');
+  if (label) label.textContent = asset.toUpperCase();
+  renderDepositTab(asset);
+}
+
+async function submitDepositRequest() {
+  const amount = parseFloat(document.getElementById('depAmount').value);
+  const reference = document.getElementById('depReference').value.trim();
+  const alertEl = document.getElementById('depositFormAlert');
+  const btn = document.getElementById('depSubmitBtn');
+
+  alertEl.style.display = 'none';
+
+  if (!amount || amount <= 0) {
+    alertEl.textContent = 'Please enter a valid amount.';
+    alertEl.className = 'modal-alert show error';
+    alertEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  try {
+    const res = await fetch(`${API}/api/deposits/request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ currency: currentDepositAsset.toUpperCase(), amount, reference })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alertEl.textContent = 'Deposit submitted. Our team will confirm within 24 hours.';
+      alertEl.className = 'modal-alert show success';
+      alertEl.style.display = 'block';
+      document.getElementById('depAmount').value = '';
+      document.getElementById('depReference').value = '';
+    } else {
+      alertEl.textContent = data.error || 'Submission failed. Please try again.';
+      alertEl.className = 'modal-alert show error';
+      alertEl.style.display = 'block';
+    }
+  } catch {
+    alertEl.textContent = 'Connection error. Please try again.';
+    alertEl.className = 'modal-alert show error';
+    alertEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Submit Deposit';
+  }
+}
+
+function copyDepAddr(asset) {
+  const wallet = depositWallets[asset];
+  if (!wallet) return;
+  const btn = document.getElementById(`dep-copy-${asset}`);
+  const copy = text => {
+    if (btn) { const orig = btn.textContent; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = orig, 2000); }
+  };
+  navigator.clipboard ? navigator.clipboard.writeText(wallet).then(copy).catch(() => { fallbackCopy(wallet); copy(); })
+    : (fallbackCopy(wallet), copy());
+}
+
+function fallbackCopy(text) {
+  const el = document.createElement('textarea');
+  el.value = text; el.style.cssText = 'position:fixed;opacity:0;';
+  document.body.appendChild(el); el.select();
+  try { document.execCommand('copy'); } catch {}
+  document.body.removeChild(el);
 }
 
 // ── LOAD TIERS ──
@@ -1436,9 +1545,11 @@ function renderRealEstate(properties) {
 
 // ── SECTION NAVIGATION ──
 function showSection(name) {
-  ['overview', 'validator', 'transactions', 'tiers', 'real-estate', 'profile'].forEach(s => {
-    document.getElementById(`section-${s}`).style.display = s === name ? 'block' : 'none';
+  ['overview', 'validator', 'transactions', 'tiers', 'real-estate', 'profile', 'deposit'].forEach(s => {
+    const el = document.getElementById(`section-${s}`);
+    if (el) el.style.display = s === name ? 'block' : 'none';
   });
+  if (name === 'deposit') { renderDepositSection(); }
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.toggle('active', item.getAttribute('onclick')?.includes(name));
   });
@@ -1448,7 +1559,8 @@ function showSection(name) {
     transactions: 'Transaction History',
     tiers: 'Investment Tiers',
     'real-estate': 'Real Estate Portfolio',
-    profile: 'My Profile'
+    profile: 'My Profile',
+    deposit: 'Deposit Funds'
   };
   document.getElementById('sectionTitle').textContent = titles[name] || 'Dashboard';
   currentSection = name;
@@ -1462,16 +1574,12 @@ function showSection(name) {
 function openAllocationModal() {
   const p = portfolioData;
   document.getElementById('allocValidator').value = p.validator_balance || '';
-  document.getElementById('allocBot').value = p.bot_balance || '';
-  document.getElementById('allocIdle').value = p.idle_balance || '';
   document.getElementById('allocAlert').className = 'modal-alert';
   document.getElementById('allocationModal').classList.add('open');
 }
 function openValidatorModal() {
   const p = portfolioData;
-  document.getElementById('vAddress').value = p.validator_address || '';
   document.getElementById('vStatus').value = p.validator_status || 'pending';
-  document.getElementById('vAPR').value = p.estimated_apr || '';
   document.getElementById('vRewards').value = p.rewards_earned || '';
   document.getElementById('validatorAlert').className = 'modal-alert';
   document.getElementById('validatorModal').classList.add('open');
@@ -1493,14 +1601,12 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
 // ── SAVE ALLOCATION ──
 async function saveAllocation() {
   const validator_balance = parseFloat(document.getElementById('allocValidator').value) || 0;
-  const bot_balance = parseFloat(document.getElementById('allocBot').value) || 0;
-  const idle_balance = parseFloat(document.getElementById('allocIdle').value) || 0;
   const alertEl = document.getElementById('allocAlert');
   try {
     const res = await fetch(`${API}/api/portfolio/update`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ validator_balance, bot_balance, idle_balance })
+      body: JSON.stringify({ validator_balance })
     });
     const data = await res.json();
     if (data.success) {
@@ -1520,16 +1626,14 @@ async function saveAllocation() {
 
 // ── SAVE VALIDATOR ──
 async function saveValidator() {
-  const address = document.getElementById('vAddress').value.trim();
   const status = document.getElementById('vStatus').value;
-  const estimated_apr = parseFloat(document.getElementById('vAPR').value) || 0;
   const rewards_earned = parseFloat(document.getElementById('vRewards').value) || 0;
   const alertEl = document.getElementById('validatorAlert');
   try {
     const res = await fetch(`${API}/api/validator/update`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ address, status, estimated_apr, rewards_earned })
+      body: JSON.stringify({ status, rewards_earned })
     });
     const data = await res.json();
     if (data.success) {
