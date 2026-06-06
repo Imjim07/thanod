@@ -193,9 +193,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
         <div class="eth-box-sub" id="ethAmountSub">Fetching live ETH price…</div>
       </div>
 
-      <!-- ETH wallet -->
+      <!-- BTC wallet (primary, hardcoded platform address) -->
       <div class="wallet-section" id="ethWalletSection">
-        <div class="wallet-label">ETH Deposit Address</div>
+        <div class="wallet-label">BTC Deposit Address</div>
         <div class="wallet-row">
           <div class="wallet-address-box">
             <span class="wallet-address" id="ethWalletAddr">—</span>
@@ -207,10 +207,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
         </div>
       </div>
 
-      <!-- BTC wallet (conditional) -->
+      <!-- ETH wallet (alternative, shown only if admin assigned one) -->
       <div class="wallet-section" id="btcWalletSection" style="display:none;">
         <div class="wallet-divider"></div>
-        <div class="wallet-label">BTC Deposit Address (alternative)</div>
+        <div class="wallet-label">ETH Deposit Address (alternative)</div>
         <div class="wallet-row">
           <div class="wallet-address-box">
             <span class="wallet-address" id="btcWalletAddr">—</span>
@@ -244,8 +244,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
         <div class="form-group">
           <label class="form-label">Payment Method</label>
           <select class="form-select" id="paymentMethod">
-            <option value="ETH">ETH (Ethereum)</option>
             <option value="BTC">BTC (Bitcoin)</option>
+            <option value="ETH">ETH (Ethereum)</option>
             <option value="Other">Other</option>
           </select>
         </div>
@@ -274,6 +274,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const API = 'https://aurethium-backend.onrender.com';
+const PLATFORM_BTC = 'bc1ql8lt08ac8sasmjtnzll7f2dtcx0muuf2k2g9nw';
 const token = localStorage.getItem('aurethium_token');
 const isMigrated = localStorage.getItem('thanod_is_migrated');
 
@@ -288,7 +289,7 @@ async function init() {
     const [statusRes, profileRes, priceRes] = await Promise.all([
       fetch(`${API}/api/auth/activation-status`, { headers: { 'Authorization': `Bearer ${token}` } }),
       fetch(`${API}/api/user/profile`, { headers: { 'Authorization': `Bearer ${token}` } }),
-      fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd').catch(() => null)
+      fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,bitcoin&vs_currencies=usd').catch(() => null)
     ]);
 
     if (statusRes.status === 401 || profileRes.status === 401) {
@@ -307,8 +308,8 @@ async function init() {
     const user = profileData.user || profileData;
     const userName = user.name || user.email || 'there';
     const userEmail = user.email || '';
-    depositWallet = user.deposit_wallet || '';
-    depositWalletBtc = user.deposit_wallet_btc || '';
+    depositWallet = PLATFORM_BTC;
+    depositWalletBtc = user.deposit_wallet || '';
 
     document.getElementById('userName').textContent = userName;
     document.getElementById('navUser').textContent = userEmail || userName;
@@ -320,32 +321,28 @@ async function init() {
     if (priceRes) {
       try {
         const priceData = await priceRes.json();
-        const ethUsd = priceData.ethereum?.usd;
-        if (ethUsd) {
-          const ethAmt = (500 / ethUsd).toFixed(6);
-          document.getElementById('ethAmount').textContent = `${ethAmt} ETH`;
-          document.getElementById('ethAmountSub').textContent = `≈ $500 USD · Live ETH price: $${ethUsd.toLocaleString('en-US')}`;
+        const btcUsd = priceData.bitcoin?.usd;
+        if (btcUsd) {
+          const btcAmt = (500 / btcUsd).toFixed(8);
+          document.getElementById('ethAmount').textContent = `${btcAmt} BTC`;
+          document.getElementById('ethAmountSub').textContent = `≈ $500 USD · Live BTC price: $${btcUsd.toLocaleString('en-US')}`;
         } else {
           throw new Error();
         }
       } catch {
         document.getElementById('ethAmount').textContent = '~$500 equivalent';
-        document.getElementById('ethAmountSub').textContent = 'Send $500 in ETH at current market rate';
+        document.getElementById('ethAmountSub').textContent = 'Send $500 in BTC at current market rate';
       }
     } else {
       document.getElementById('ethAmount').textContent = '~$500 equivalent';
-      document.getElementById('ethAmountSub').textContent = 'Send $500 in ETH at current market rate';
+      document.getElementById('ethAmountSub').textContent = 'Send $500 in BTC at current market rate';
     }
 
-    // Wallet address display
-    if (depositWallet) {
-      document.getElementById('ethWalletAddr').textContent = depositWallet;
-      generateQR('ethQrCode', depositWallet);
-    } else {
-      document.getElementById('ethWalletSection').style.display = 'none';
-      document.getElementById('noWalletNotice').style.display = 'block';
-    }
+    // Primary BTC wallet (hardcoded platform address — always shown)
+    document.getElementById('ethWalletAddr').textContent = depositWallet;
+    generateQR('ethQrCode', depositWallet);
 
+    // ETH wallet from admin assignment (alternative, if set)
     if (depositWalletBtc) {
       document.getElementById('btcWalletSection').style.display = 'block';
       document.getElementById('btcWalletAddr').textContent = depositWalletBtc;
