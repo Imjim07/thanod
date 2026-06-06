@@ -483,8 +483,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <div class="stats-row">
         <div class="stat-card gold" style="grid-column:span 2;">
           <div class="stat-label">Total Portfolio Value</div>
-          <div class="stat-value gold" id="statTotal" style="font-size:2.4rem;">$0.00</div>
-          <div class="stat-sub" id="statTotalEth">Live price · updates every 60s</div>
+          <div class="stat-value gold" id="statTotal" style="font-size:2.4rem;">—</div>
+          <div class="stat-sub" id="statTotalEth">Fetching live price…</div>
           <svg class="stat-icon" width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         </div>
         <div class="stat-card green">
@@ -512,7 +512,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
           <div class="allocation-total">
             <span class="allocation-total-label">Total Portfolio Value</span>
-            <span class="allocation-total-value" id="totalValueDisplay">Ξ0.00</span>
+            <span class="allocation-total-value" id="totalValueDisplay">—</span>
           </div>
         </div>
 
@@ -678,29 +678,29 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
           <div id="dep-nowallet-sol" style="display:none;margin-top:12px;background:rgba(251,146,60,0.07);border:1px solid rgba(251,146,60,0.2);border-radius:6px;padding:12px 14px;font-size:0.82rem;color:#FB923C;">Contact support to receive your SOL deposit address — <a href="mailto:hello@thanod.com" style="color:inherit;">hello@thanod.com</a></div>
         </div>
       </div>
-    </div>
 
-    <!-- Deposit request form (shared across tabs) -->
-    <div class="dashboard-card" style="margin-top:16px;">
-      <div style="font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:16px;">Submit Deposit</div>
-      <p style="font-size:0.84rem;color:var(--text-2);line-height:1.65;margin-bottom:20px;">After sending payment, submit your deposit details below. Our team will confirm and credit your portfolio within 24 hours.</p>
+      <!-- BUG FIX: 7 — deposit form moved inside section-deposit so it only shows in Deposit section -->
+      <!-- BUG FIX: 5 — removed hardcoded "Amanda" placeholder -->
+      <div class="dashboard-card" style="margin-top:16px;">
+        <div style="font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue-bright);margin-bottom:16px;">Submit Deposit</div>
+        <p style="font-size:0.84rem;color:var(--text-2);line-height:1.65;margin-bottom:20px;">After sending payment, submit your deposit details below. Our team will confirm and credit your portfolio within 24 hours.</p>
 
-      <div class="modal-alert show" id="depositFormAlert" style="display:none;padding:10px 14px;border-radius:var(--radius);font-size:0.82rem;margin-bottom:14px;"></div>
+        <div id="depositFormAlert" style="display:none;padding:10px 14px;border-radius:var(--radius);font-size:0.82rem;margin-bottom:14px;"></div>
 
-      <div class="form-group">
-        <label class="form-label">Amount</label>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <input type="number" class="form-input" id="depAmount" placeholder="0.00" step="any" min="0" style="flex:1;">
-          <span style="font-family:var(--font-mono);font-size:0.75rem;font-weight:700;color:var(--blue-bright);min-width:36px;text-align:center;" id="depAssetLabel">ETH</span>
+        <div class="form-group">
+          <label class="form-label">Amount</label>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="number" class="form-input" id="depAmount" placeholder="0.00" step="any" min="0" style="flex:1;">
+            <span style="font-family:var(--font-mono);font-size:0.75rem;font-weight:700;color:var(--blue-bright);min-width:36px;text-align:center;" id="depAssetLabel">ETH</span>
+          </div>
         </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Reference / Your Name</label>
-        <input type="text" class="form-input" id="depReference" placeholder="e.g. Amanda — ETH transfer June 4th">
-      </div>
+        <div class="form-group">
+          <label class="form-label">Reference / Your Name</label>
+          <input type="text" class="form-input" id="depReference" placeholder="Your name here">
+        </div>
 
-      <button class="btn-primary" id="depSubmitBtn" onclick="submitDepositRequest()" style="margin-top:4px;">Submit Deposit</button>
-    </div>
+        <button class="btn-primary" id="depSubmitBtn" onclick="submitDepositRequest()" style="margin-top:4px;">Submit Deposit</button>
+      </div>
     </div>
 
     <!-- ── TIERS SECTION ── -->
@@ -865,6 +865,27 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
           </div>
         </div>
 
+        <!-- USERNAME CARD -->
+        <div class="profile-card">
+          <div class="profile-card-header">
+            <div class="profile-card-title">Username</div>
+            <div class="profile-card-tag">// Identity</div>
+          </div>
+          <div class="profile-field-list" style="margin-bottom:16px;">
+            <div class="profile-field">
+              <div class="profile-field-label">Current</div>
+              <div class="profile-field-val profile-mono" id="usernameDisplay" style="color:var(--blue-bright);">Not set</div>
+            </div>
+          </div>
+          <div class="profile-alert" id="usernameAlert" style="display:none;margin-bottom:12px;"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <span style="color:var(--text-3);font-family:var(--font-mono);font-size:0.88rem;flex-shrink:0;">@</span>
+            <input type="text" class="profile-input" id="usernameInput" placeholder="choose_a_username" style="flex:1;font-family:var(--font-mono);font-size:0.8rem;" maxlength="20">
+          </div>
+          <button class="profile-action-btn" onclick="saveUsername()">Save Username</button>
+          <div style="font-size:0.72rem;color:var(--text-3);margin-top:10px;line-height:1.6;">Letters, numbers, _ only · 3–20 characters</div>
+        </div>
+
       </div>
 
       <!-- CHANGE PASSWORD PANEL -->
@@ -973,7 +994,9 @@ async function fetchPrices() {
     prices.eth = data.ethereum?.usd || 0;
     prices.btc = data.bitcoin?.usd  || 0;
     prices.sol = data.solana?.usd   || 0;
-  } catch { /* prices stay 0 */ }
+    // Re-render portfolio now that we have a live price
+    if (Object.keys(portfolioData).length) renderPortfolio();
+  } catch { /* prices stay as-is */ }
 }
 
 // ── AUTH CHECK ──
@@ -1053,15 +1076,15 @@ function renderPortfolio() {
     : null;
   const totalEth = totalUsd !== null && prices.eth > 0 ? totalUsd / prices.eth : ethComponents;
 
-  // USD total stat card
+  // BUG FIX: 2 — always show USD as primary; never flip to ETH; show loading state if price not ready
   const usdEl = document.getElementById('statTotal');
   const subEl = document.getElementById('statTotalEth');
   if (usdEl) usdEl.textContent = totalUsd !== null
     ? `$${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-    : `${ethComponents.toFixed(4)} ETH`;
+    : '—';
   if (subEl) subEl.textContent = totalUsd !== null
-    ? `≈ ${totalEth.toFixed(4)} ETH at current rate`
-    : 'Live price · updates every 60s';
+    ? `≈ ${totalEth.toFixed(4)} ETH at current rate · Live price`
+    : 'Fetching live price…';
 
   // Validator balance stat
   const valEl = document.getElementById('statValidator');
@@ -1073,11 +1096,11 @@ function renderPortfolio() {
   if (barV) barV.style.width = '100%';
   if (pctV) pctV.textContent = '100%';
 
-  // Total value display
+  // Total value display — always USD, never raw ETH
   const tvEl = document.getElementById('totalValueDisplay');
   if (tvEl) tvEl.textContent = totalUsd !== null
     ? `$${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-    : `${totalEth.toFixed(4)} ETH`;
+    : '—';
 
   // Validator status & rewards (no address, no APR)
   const vStatus = p.validator_status || 'pending';
@@ -1544,14 +1567,16 @@ function renderRealEstate(properties) {
 
 
 // ── SECTION NAVIGATION ──
+// BUG FIX: 1 & 7 — hide ALL section-* divs first, then show only the requested one
 function showSection(name) {
-  ['overview', 'validator', 'transactions', 'tiers', 'real-estate', 'profile', 'deposit'].forEach(s => {
-    const el = document.getElementById(`section-${s}`);
-    if (el) el.style.display = s === name ? 'block' : 'none';
+  document.querySelectorAll('[id^="section-"]').forEach(el => {
+    el.style.display = 'none';
   });
-  if (name === 'deposit') { renderDepositSection(); }
+  const target = document.getElementById(`section-${name}`);
+  if (target) target.style.display = 'block';
+  if (name === 'deposit') renderDepositSection();
   document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.toggle('active', item.getAttribute('onclick')?.includes(name));
+    item.classList.toggle('active', item.getAttribute('onclick')?.includes(`'${name}'`));
   });
   const titles = {
     overview: 'Portfolio Overview',
@@ -1564,6 +1589,7 @@ function showSection(name) {
   };
   document.getElementById('sectionTitle').textContent = titles[name] || 'Dashboard';
   currentSection = name;
+  if (name === 'overview') renderPortfolio();
   if (name === 'tiers') loadTiers();
   if (name === 'real-estate') loadRealEstate();
   if (name === 'profile') { loadProfile(); checkExistingWalletConnection(); }
@@ -1815,6 +1841,10 @@ async function loadProfile() {
     document.getElementById('pdName').textContent = user.name || '—';
     document.getElementById('pdEmail').textContent = user.email || '—';
     document.getElementById('pdId').textContent = `#THN-${String(user.id).padStart(6, '0')}`;
+    const usernameInput = document.getElementById('usernameInput');
+    const usernameDisplay = document.getElementById('usernameDisplay');
+    if (usernameInput) usernameInput.value = user.username || '';
+    if (usernameDisplay) usernameDisplay.textContent = user.username ? `@${user.username}` : 'Not set';
 
     // Joined date
     if (user.created_at) {
@@ -1890,6 +1920,44 @@ function handleAvatarUpload(input) {
 function showChangePassword() {
   const panel = document.getElementById('changePasswordPanel');
   panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+async function saveUsername() {
+  const input = document.getElementById('usernameInput');
+  const alertEl = document.getElementById('usernameAlert');
+  alertEl.style.display = 'none';
+  alertEl.className = 'profile-alert';
+  const val = input.value.trim().toLowerCase();
+  if (!val) {
+    alertEl.textContent = 'Please enter a username.';
+    alertEl.className = 'profile-alert error';
+    alertEl.style.display = 'block';
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/api/auth/update-username`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ username: val })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alertEl.textContent = 'Username updated.';
+      alertEl.className = 'profile-alert success';
+      alertEl.style.display = 'block';
+      input.value = data.username;
+      const display = document.getElementById('usernameDisplay');
+      if (display) display.textContent = `@${data.username}`;
+    } else {
+      alertEl.textContent = data.error || 'Could not update username.';
+      alertEl.className = 'profile-alert error';
+      alertEl.style.display = 'block';
+    }
+  } catch {
+    alertEl.textContent = 'Connection error. Please try again.';
+    alertEl.className = 'profile-alert error';
+    alertEl.style.display = 'block';
+  }
 }
 
 async function changePassword() {
