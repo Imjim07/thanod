@@ -206,14 +206,22 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
       Activations
     </a>
+    <a class="nav-item" onclick="showSection('deposits')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v16m0-16l-4 4m4-4l4 4M4 20h16"/></svg>
+      Deposits
+    </a>
+    <a class="nav-item" onclick="showSection('withdrawals')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 20V4m0 16l-4-4m4 4l4-4M4 4h16"/></svg>
+      Withdrawals
+    </a>
+    <a class="nav-item" onclick="showSection('email')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      Email Center
+    </a>
     <div class="nav-section-title">Investment Config</div>
     <a class="nav-item" onclick="showSection('settings')">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
       Settings
-    </a>
-    <a class="nav-item" onclick="showSection('tiers')">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-      Tier Settings
     </a>
     <a class="nav-item" onclick="showSection('properties')">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
@@ -259,9 +267,9 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
         <div class="stat-sub">Currently staking</div>
       </div>
       <div class="stat-card red">
-        <div class="stat-label">Total Transactions</div>
-        <div class="stat-value" id="statTx">0</div>
-        <div class="stat-sub">All time</div>
+        <div class="stat-label">Pending Activations</div>
+        <div class="stat-value" id="statPendingActivations">0</div>
+        <div class="stat-sub">Migrated, not yet active</div>
       </div>
     </div>
 
@@ -345,14 +353,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       </div>
     </div>
 
-    <!-- TIERS SECTION -->
-    <div id="section-tiers" style="display:none;">
-      <div style="margin-bottom:16px;font-size:0.85rem;color:var(--text-2);">Edit the three investment tier definitions. Changes are visible to all users immediately.</div>
-      <div id="tiersAdminGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
-        <div style="text-align:center;padding:40px;color:var(--text-3);grid-column:1/-1;">Loading tiers...</div>
-      </div>
-    </div>
-
     <!-- ACTIVATIONS SECTION -->
     <div id="section-activations" style="display:none;">
       <div class="filter-tabs" id="activationFilterTabs">
@@ -368,13 +368,12 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
         <table class="data-table" style="table-layout:fixed;">
           <thead>
             <tr>
-              <th style="width:14%;">Name</th>
-              <th style="width:18%;">Email</th>
-              <th style="width:11%;">ETH Invested</th>
-              <th style="width:14%;">TX Hash</th>
-              <th style="width:17%;">Notes</th>
-              <th style="width:10%;">Status</th>
-              <th style="width:16%;">Action</th>
+              <th style="width:16%;">Name</th>
+              <th style="width:22%;">Email</th>
+              <th style="width:13%;">ETH Invested</th>
+              <th style="width:18%;">Notes</th>
+              <th style="width:12%;">Status</th>
+              <th style="width:19%;">Action</th>
             </tr>
           </thead>
           <tbody id="activationsTableBody">
@@ -429,6 +428,199 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
             <input type="text" class="detail-input" id="platformSolWallet" placeholder="Solana address..." style="flex:1;">
             <button class="btn-action" onclick="savePlatformWallet('platform_sol_wallet','platformSolWallet')" style="white-space:nowrap;">Save SOL</button>
           </div>
+        </div>
+      </div>
+
+      <!-- BUG FIX: 9D — Minimum Deposits -->
+      <div class="table-card" style="padding:24px;margin-top:16px;">
+        <div class="table-header" style="margin:-24px -24px 20px;padding:16px 24px;">
+          <div class="table-title">Minimum Deposits</div>
+        </div>
+        <div id="minDepositAlert" style="display:none;padding:9px 13px;border-radius:2px;font-size:0.78rem;margin-bottom:14px;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div>
+            <label class="detail-label">Min ETH Deposit</label>
+            <input type="number" class="detail-input" id="minDepositEth" placeholder="0.01" step="0.001" min="0">
+          </div>
+          <div>
+            <label class="detail-label">Min BTC Deposit</label>
+            <input type="number" class="detail-input" id="minDepositBtc" placeholder="0.001" step="0.0001" min="0">
+          </div>
+          <div>
+            <label class="detail-label">Min SOL Deposit</label>
+            <input type="number" class="detail-input" id="minDepositSol" placeholder="1.0" step="0.1" min="0">
+          </div>
+        </div>
+        <button class="btn-action" onclick="saveMinDeposits()">Save Min Deposits</button>
+      </div>
+
+      <!-- BUG FIX: 9D — Processing Time -->
+      <div class="table-card" style="padding:24px;margin-top:16px;">
+        <div class="table-header" style="margin:-24px -24px 20px;padding:16px 24px;">
+          <div class="table-title">Processing Time</div>
+        </div>
+        <div id="processingTimeAlert" style="display:none;padding:9px 13px;border-radius:2px;font-size:0.78rem;margin-bottom:14px;"></div>
+        <div style="margin-bottom:12px;">
+          <label class="detail-label">Processing Time (shown to users)</label>
+          <input type="text" class="detail-input" id="processingTime" placeholder="e.g. 1-3 business days">
+        </div>
+        <button class="btn-action" onclick="saveProcessingTime()">Save Processing Time</button>
+      </div>
+    </div>
+
+    <!-- BUG FIX: 9B — DEPOSITS SECTION -->
+    <div id="section-deposits" style="display:none;">
+      <div class="filter-tabs" id="depositFilterTabs">
+        <button class="filter-tab active" onclick="setDepositFilter('all', this)">All</button>
+        <button class="filter-tab" onclick="setDepositFilter('pending', this)">Pending</button>
+        <button class="filter-tab" onclick="setDepositFilter('confirmed', this)">Confirmed</button>
+        <button class="filter-tab" onclick="setDepositFilter('rejected', this)">Rejected</button>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Deposit Requests</div>
+          <div class="table-count" id="depositsCount">0 deposits</div>
+        </div>
+        <table class="data-table" style="table-layout:fixed;">
+          <thead>
+            <tr>
+              <th style="width:13%;">User</th>
+              <th style="width:18%;">Email</th>
+              <th style="width:8%;">Asset</th>
+              <th style="width:10%;">Amount</th>
+              <th style="width:12%;">USD Value</th>
+              <th style="width:12%;">ETH Equiv.</th>
+              <th style="width:10%;">Date</th>
+              <th style="width:9%;">Status</th>
+              <th style="width:8%;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="depositsTableBody">
+            <tr><td colspan="9" class="empty-state">Loading deposits...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BUG FIX: 9C — WITHDRAWALS SECTION -->
+    <div id="section-withdrawals" style="display:none;">
+      <div class="filter-tabs" id="withdrawalFilterTabs">
+        <button class="filter-tab active" onclick="setWithdrawalFilter('all', this)">All</button>
+        <button class="filter-tab" onclick="setWithdrawalFilter('pending', this)">Pending</button>
+        <button class="filter-tab" onclick="setWithdrawalFilter('approved', this)">Approved</button>
+        <button class="filter-tab" onclick="setWithdrawalFilter('rejected', this)">Rejected</button>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Withdrawal Requests</div>
+          <div class="table-count" id="withdrawalsCount">0 withdrawals</div>
+        </div>
+        <table class="data-table" style="table-layout:fixed;">
+          <thead>
+            <tr>
+              <th style="width:13%;">User</th>
+              <th style="width:18%;">Email</th>
+              <th style="width:8%;">Asset</th>
+              <th style="width:10%;">Amount</th>
+              <th style="width:18%;">Wallet</th>
+              <th style="width:10%;">Date</th>
+              <th style="width:9%;">Status</th>
+              <th style="width:14%;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="withdrawalsTableBody">
+            <tr><td colspan="8" class="empty-state">Loading withdrawals...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BUG FIX: 9F — EMAIL CENTER SECTION -->
+    <div id="section-email" style="display:none;">
+      <div class="filter-tabs" id="emailTabBtns">
+        <button class="filter-tab active" onclick="setEmailTab('compose', this)">Compose</button>
+        <button class="filter-tab" onclick="setEmailTab('broadcast', this)">Broadcast</button>
+        <button class="filter-tab" onclick="setEmailTab('history', this)">History</button>
+      </div>
+
+      <!-- COMPOSE -->
+      <div id="emailTabCompose">
+        <div class="table-card" style="padding:24px;">
+          <div class="table-header" style="margin:-24px -24px 20px;padding:16px 24px;">
+            <div class="table-title">Compose Email</div>
+          </div>
+          <div id="composeAlert" style="display:none;padding:9px 13px;border-radius:2px;font-size:0.78rem;margin-bottom:14px;"></div>
+          <div style="margin-bottom:12px;">
+            <label class="detail-label">Recipient</label>
+            <select class="detail-select" id="composeRecipient">
+              <option value="">Select a user...</option>
+            </select>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label class="detail-label">Subject</label>
+            <input type="text" class="detail-input" id="composeSubject" placeholder="Email subject">
+          </div>
+          <div style="margin-bottom:16px;">
+            <label class="detail-label">Message</label>
+            <textarea class="detail-input" id="composeBody" placeholder="Write your message here..." style="resize:vertical;min-height:120px;"></textarea>
+          </div>
+          <button class="btn-action" onclick="sendCompose()">Send Email</button>
+        </div>
+      </div>
+
+      <!-- BROADCAST -->
+      <div id="emailTabBroadcast" style="display:none;">
+        <div class="table-card" style="padding:24px;">
+          <div class="table-header" style="margin:-24px -24px 20px;padding:16px 24px;">
+            <div class="table-title">Broadcast Email</div>
+          </div>
+          <div id="broadcastAlert" style="display:none;padding:9px 13px;border-radius:2px;font-size:0.78rem;margin-bottom:14px;"></div>
+          <div style="margin-bottom:12px;">
+            <label class="detail-label">Send To</label>
+            <select class="detail-select" id="broadcastTarget">
+              <option value="all">All Users</option>
+              <option value="tier">By Investment Tier</option>
+              <option value="activated">Activated Users Only</option>
+              <option value="migrated">Migrated Users Only</option>
+            </select>
+          </div>
+          <div id="broadcastTierRow" style="display:none;margin-bottom:12px;">
+            <label class="detail-label">Select Tier</label>
+            <select class="detail-select" id="broadcastTierSelect"></select>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label class="detail-label">Subject</label>
+            <input type="text" class="detail-input" id="broadcastSubject" placeholder="Email subject">
+          </div>
+          <div style="margin-bottom:16px;">
+            <label class="detail-label">Message</label>
+            <textarea class="detail-input" id="broadcastBody" placeholder="Write your broadcast message here..." style="resize:vertical;min-height:120px;"></textarea>
+          </div>
+          <button class="btn-action" onclick="sendBroadcast()">Send Broadcast</button>
+        </div>
+      </div>
+
+      <!-- HISTORY -->
+      <div id="emailTabHistory" style="display:none;">
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">Email History</div>
+            <div class="table-count" id="emailHistoryCount">0 emails</div>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Recipient</th>
+                <th>Subject</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="emailHistoryBody">
+              <tr><td colspan="5" class="empty-state">Loading email history...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -516,6 +708,31 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
   <div class="detail-body">
     <div class="detail-alert" id="detailAlert"></div>
+
+    <!-- PERSONAL INFO (read-only) -->
+    <div class="detail-section">
+      <div class="detail-section-title">Personal Info</div>
+      <div class="detail-row">
+        <div class="detail-field">
+          <label class="detail-label">Full Name</label>
+          <div id="detailInfoName" style="font-size:0.88rem;color:var(--text);padding:9px 12px;background:var(--bg-3);border:1px solid var(--gold-border);border-radius:2px;">—</div>
+        </div>
+        <div class="detail-field">
+          <label class="detail-label">Account ID</label>
+          <div id="detailInfoId" style="font-size:0.78rem;color:var(--text-3);font-family:'Courier New',monospace;padding:9px 12px;background:var(--bg-3);border:1px solid var(--gold-border);border-radius:2px;">—</div>
+        </div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-field">
+          <label class="detail-label">Email</label>
+          <div id="detailInfoEmail" style="font-size:0.83rem;color:var(--text-2);padding:9px 12px;background:var(--bg-3);border:1px solid var(--gold-border);border-radius:2px;">—</div>
+        </div>
+        <div class="detail-field">
+          <label class="detail-label">Member Since</label>
+          <div id="detailInfoJoined" style="font-size:0.83rem;color:var(--text-2);padding:9px 12px;background:var(--bg-3);border:1px solid var(--gold-border);border-radius:2px;">—</div>
+        </div>
+      </div>
+    </div>
 
     <!-- ACTIVATION TOGGLE -->
     <div class="detail-section">
@@ -695,7 +912,7 @@ async function loadStats() {
     document.getElementById('statUsers').textContent = data.users || 0;
     document.getElementById('statWaitlist').textContent = data.waitlist || 0;
     document.getElementById('statValidators').textContent = data.validators || 0;
-    document.getElementById('statTx').textContent = data.transactions || 0;
+    document.getElementById('statPendingActivations').textContent = data.pending_activations ?? 0;
   } catch (err) { console.error('Stats error:', err); }
 }
 
@@ -817,6 +1034,13 @@ async function openUserDetail(userId) {
   document.getElementById('detailAvatar').textContent = (user.name || 'U').charAt(0).toUpperCase();
   document.getElementById('detailName').textContent = user.name || 'No name';
   document.getElementById('detailEmail').textContent = user.email || user.wallet_address || '—';
+  // Personal info read-only fields
+  document.getElementById('detailInfoName').textContent = user.name || '—';
+  document.getElementById('detailInfoEmail').textContent = user.email || '—';
+  document.getElementById('detailInfoId').textContent = `#THN-${String(user.id).padStart(6, '0')}`;
+  document.getElementById('detailInfoJoined').textContent = user.created_at
+    ? new Date(user.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+    : '—';
   // Activation toggle
   renderActivationToggle(user.is_activated);
   document.getElementById('editValidator').value = parseFloat(user.validator_balance) || '';
@@ -1084,10 +1308,11 @@ async function addTransaction() {
   }
 }
 
-// SECTION NAV
+// SECTION NAV — BUG FIX: 9B/9C/9F — added deposits, withdrawals, email sections
 function showSection(name) {
-  ['users', 'waitlist', 'transactions', 'activations', 'tiers', 'properties', 'settings'].forEach(s => {
-    document.getElementById(`section-${s}`).style.display = s === name ? 'block' : 'none';
+  ['users','waitlist','transactions','activations','properties','settings','deposits','withdrawals','email'].forEach(s => {
+    const el = document.getElementById(`section-${s}`);
+    if (el) el.style.display = s === name ? 'block' : 'none';
   });
   document.querySelectorAll('.nav-item').forEach(el => {
     el.classList.toggle('active', el.getAttribute('onclick')?.includes(`'${name}'`));
@@ -1095,11 +1320,15 @@ function showSection(name) {
   const titles = {
     users: 'All Users', waitlist: 'Waitlist Signups',
     transactions: 'All Transactions', activations: 'Activation Management',
-    tiers: 'Tier Settings', properties: 'Real Estate Properties',
-    settings: 'Platform Settings'
+    properties: 'Real Estate Properties', settings: 'Platform Settings',
+    deposits: 'Deposit Requests', withdrawals: 'Withdrawal Requests',
+    email: 'Email Center'
   };
   document.getElementById('sectionTitle').textContent = titles[name] || name;
   closeDetailPanel();
+  if (name === 'deposits') loadDeposits();
+  if (name === 'withdrawals') loadWithdrawals();
+  if (name === 'email') { loadEmailHistory(); loadEmailRecipients(); populateBroadcastTiers(); }
 }
 
 // ── SETTINGS ──
@@ -1114,6 +1343,14 @@ async function loadSettings() {
     if (eth) eth.value = s['platform_eth_wallet'] || '';
     if (btc) btc.value = s['platform_btc_wallet'] || '';
     if (sol) sol.value = s['platform_sol_wallet'] || '';
+    const minEth = document.getElementById('minDepositEth');
+    const minBtc = document.getElementById('minDepositBtc');
+    const minSol = document.getElementById('minDepositSol');
+    const procTime = document.getElementById('processingTime');
+    if (minEth) minEth.value = s['min_deposit_eth'] || '';
+    if (minBtc) minBtc.value = s['min_deposit_btc'] || '';
+    if (minSol) minSol.value = s['min_deposit_sol'] || '';
+    if (procTime) procTime.value = s['processing_time'] || '';
   } catch (err) { console.error('Settings load error:', err); }
 }
 
@@ -1160,7 +1397,7 @@ function renderActivations(filter) {
   const tbody = document.getElementById('activationsTableBody');
 
   if (users.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No activation requests found.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No activation requests found.</td></tr>';
     return;
   }
 
@@ -1169,11 +1406,6 @@ function renderActivations(filter) {
     const ethInvested = parseFloat(u.amount_invested) || 0;
     const ethCell = ethInvested > 0
       ? `<span style="font-family:var(--font-display);color:var(--gold-pale);">Ξ${ethInvested.toFixed(4)}</span>`
-      : '<span style="color:var(--text-3);">—</span>';
-
-    const txHash = u.activation_tx_hash || '';
-    const txCell = txHash
-      ? `<span class="tx-hash-cell" onclick="copyTxHash('${txHash}')" title="Click to copy: ${txHash}">${txHash.slice(0, 12)}…</span>`
       : '<span style="color:var(--text-3);">—</span>';
 
     const notesRaw = u.activation_notes || '';
@@ -1199,7 +1431,6 @@ function renderActivations(filter) {
       <td class="user-name-cell">${u.name || '—'}</td>
       <td style="font-size:0.78rem;word-break:break-all;">${u.email || '—'}</td>
       <td>${ethCell}</td>
-      <td>${txCell}</td>
       <td style="font-size:0.78rem;color:var(--text-2);">${notesCell}</td>
       <td>${badge}</td>
       <td>${actionBtn}</td>
@@ -1271,61 +1502,14 @@ async function confirmApproval() {
   }
 }
 
-// ── TIERS ADMIN ──
+// ── TIERS ADMIN (fetch only — used to populate tier assignment select in user detail panel) ──
 async function loadTiersAdmin() {
   try {
     const res = await fetch(`${API}/api/admin/tiers`, { headers: { 'Authorization': `Bearer ${token}` } });
     const data = await res.json();
     allTiers = data.tiers || [];
-    renderTiersAdmin(allTiers);
     populateTierSelect();
   } catch (err) { console.error('Tiers admin error:', err); }
-}
-
-function renderTiersAdmin(tiers) {
-  const grid = document.getElementById('tiersAdminGrid');
-  if (!tiers.length) { grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);grid-column:1/-1;">No tiers found.</div>'; return; }
-  const tierColors = ['var(--green)','var(--blue)','var(--gold-light)','#A855F7','#FB923C'];
-  const tierRanges = ['0.5 – 32 ETH','32.05 – 64 ETH','64.05 – 96 ETH','96.05 – 128 ETH','128.05+ ETH'];
-  grid.innerHTML = tiers.map((t, idx) => {
-    const tc = tierColors[idx] || 'var(--gold-light)';
-    const range = tierRanges[idx] || '—';
-    return `<div style="background:var(--bg-2);border:1px solid var(--gold-border);padding:24px;position:relative;">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${tc};"></div>
-      <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:400;color:${tc};margin-bottom:4px;">${t.name}</div>
-      <div style="font-family:var(--font-ui);font-size:0.65rem;letter-spacing:0.1em;color:var(--text-3);margin-bottom:16px;">${range}</div>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
-        <div><label class="detail-label">Min. Investment (ETH)</label><input type="number" class="detail-input" id="tier_min_${t.id}" value="${t.minimum_usd}" step="0.01" min="0"></div>
-        <div><label class="detail-label">Risk Level</label>
-          <select class="detail-select" id="tier_risk_${t.id}">
-            <option ${t.risk_level==='Low'?'selected':''}>Low</option>
-            <option ${t.risk_level==='Medium'?'selected':''}>Medium</option>
-            <option ${t.risk_level==='High'?'selected':''}>High</option>
-          </select>
-        </div>
-        <div><label class="detail-label">Strategies (comma-separated)</label><input type="text" class="detail-input" id="tier_strategies_${t.id}" value="${t.strategies}"></div>
-        <div><label class="detail-label">Description</label><textarea class="detail-input" id="tier_desc_${t.id}" style="resize:vertical;min-height:60px;">${t.description||''}</textarea></div>
-      </div>
-      <button class="btn-save" onclick="saveTier(${t.id})">Save ${t.name}</button>
-    </div>`;
-  }).join('');
-}
-
-async function saveTier(tierId) {
-  const minimum_usd = document.getElementById(`tier_min_${tierId}`).value;
-  const risk_level = document.getElementById(`tier_risk_${tierId}`).value;
-  const strategies = document.getElementById(`tier_strategies_${tierId}`).value;
-  const description = document.getElementById(`tier_desc_${tierId}`).value;
-  try {
-    const res = await fetch(`${API}/api/admin/tiers/${tierId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ minimum_usd, risk_level, strategies, description })
-    });
-    const data = await res.json();
-    if (data.success) { alert('Tier saved.'); await loadTiersAdmin(); }
-    else alert(data.error || 'Save failed.');
-  } catch (err) { alert('Connection error.'); }
 }
 
 function populateTierSelect() {
@@ -1565,6 +1749,267 @@ async function loadUserRealEstate(userId) {
         </div>
       </div>`).join('');
   } catch (err) { console.error('User RE error:', err); }
+}
+
+// ── BUG FIX: 9D — MIN DEPOSITS + PROCESSING TIME ──
+async function saveMinDeposits() {
+  const eth = document.getElementById('minDepositEth').value;
+  const btc = document.getElementById('minDepositBtc').value;
+  const sol = document.getElementById('minDepositSol').value;
+  const alertEl = document.getElementById('minDepositAlert');
+  try {
+    await Promise.all([
+      fetch(`${API}/api/admin/settings`, { method:'PUT', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({ key:'min_deposit_eth', value: eth }) }),
+      fetch(`${API}/api/admin/settings`, { method:'PUT', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({ key:'min_deposit_btc', value: btc }) }),
+      fetch(`${API}/api/admin/settings`, { method:'PUT', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({ key:'min_deposit_sol', value: sol }) }),
+    ]);
+    alertEl.textContent = 'Minimum deposits saved.';
+    alertEl.style.cssText = 'display:block;padding:9px 13px;border-radius:2px;font-size:0.78rem;background:var(--green-dim);color:var(--green);border:1px solid rgba(72,187,120,0.3);';
+    setTimeout(() => { alertEl.style.display = 'none'; }, 3000);
+  } catch { alertEl.textContent = 'Connection error.'; alertEl.style.cssText = 'display:block;padding:9px 13px;border-radius:2px;font-size:0.78rem;background:var(--red-dim);color:var(--red);'; }
+}
+
+async function saveProcessingTime() {
+  const value = document.getElementById('processingTime').value.trim();
+  const alertEl = document.getElementById('processingTimeAlert');
+  try {
+    const res = await fetch(`${API}/api/admin/settings`, { method:'PUT', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({ key:'processing_time', value }) });
+    const data = await res.json();
+    alertEl.textContent = data.success ? 'Processing time saved.' : (data.error || 'Save failed.');
+    alertEl.style.cssText = `display:block;padding:9px 13px;border-radius:2px;font-size:0.78rem;background:${data.success?'var(--green-dim)':'var(--red-dim)'};color:${data.success?'var(--green)':'var(--red)'};border:1px solid ${data.success?'rgba(72,187,120,0.3)':'rgba(252,129,129,0.3)'};`;
+    if (data.success) setTimeout(() => { alertEl.style.display = 'none'; }, 3000);
+  } catch { alertEl.textContent = 'Connection error.'; alertEl.style.display = 'block'; }
+}
+
+// ── BUG FIX: 9B — DEPOSITS ──
+let allDeposits = [];
+let depositFilter = 'all';
+
+async function loadDeposits() {
+  try {
+    const res = await fetch(`${API}/api/admin/deposits`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const data = await res.json();
+    allDeposits = data.deposits || [];
+    renderDeposits(depositFilter);
+  } catch (err) { console.error('Deposits error:', err); }
+}
+
+function setDepositFilter(filter, btn) {
+  depositFilter = filter;
+  document.querySelectorAll('#depositFilterTabs .filter-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDeposits(filter);
+}
+
+function renderDeposits(filter) {
+  let deps = allDeposits;
+  if (filter !== 'all') deps = deps.filter(d => d.status === filter);
+  document.getElementById('depositsCount').textContent = `${deps.length} deposit${deps.length !== 1 ? 's' : ''}`;
+  const tbody = document.getElementById('depositsTableBody');
+  if (!deps.length) { tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No deposits found.</td></tr>'; return; }
+  const statusClass = { pending:'pending', confirmed:'active', rejected:'inactive' };
+  tbody.innerHTML = deps.map(d => {
+    const date = new Date(d.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    const usd = parseFloat(d.usd_value)||0;
+    const ethEq = parseFloat(d.eth_equivalent)||0;
+    const actions = d.status === 'pending'
+      ? `<button onclick="confirmDeposit(${d.id})" style="background:var(--green-dim);border:1px solid rgba(72,187,120,0.3);color:var(--green);font-family:var(--font-ui);font-size:0.58rem;font-weight:700;padding:5px 10px;cursor:pointer;border-radius:2px;margin-right:4px;">✓</button>
+         <button onclick="rejectDeposit(${d.id})" style="background:var(--red-dim);border:1px solid rgba(252,129,129,0.3);color:var(--red);font-family:var(--font-ui);font-size:0.58rem;font-weight:700;padding:5px 10px;cursor:pointer;border-radius:2px;">✕</button>`
+      : `<span style="font-size:0.7rem;color:var(--text-3);">${d.status}</span>`;
+    return `<tr>
+      <td class="user-name-cell" style="font-size:0.78rem;">${d.user_name||'—'}</td>
+      <td style="font-size:0.75rem;">${d.user_email||'—'}</td>
+      <td style="font-family:var(--font-ui);font-size:0.7rem;font-weight:600;color:var(--blue);">${(d.currency||'ETH').toUpperCase()}</td>
+      <td style="font-family:'Courier New',monospace;font-size:0.78rem;">${parseFloat(d.amount||0).toFixed(5)}</td>
+      <td style="color:var(--green);font-size:0.78rem;">${usd>0?'$'+usd.toLocaleString('en-US',{minimumFractionDigits:2}):'—'}</td>
+      <td style="color:var(--blue);font-size:0.78rem;">${ethEq>0?ethEq.toFixed(5)+' ETH':'—'}</td>
+      <td style="font-size:0.78rem;">${date}</td>
+      <td><span class="status-badge ${statusClass[d.status]||'pending'}">${d.status||'pending'}</span></td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function confirmDeposit(id) {
+  if (!confirm('Confirm this deposit?')) return;
+  try {
+    const res = await fetch(`${API}/api/admin/deposits/${id}/confirm`, { method:'PUT', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({}) });
+    const data = await res.json();
+    if (data.success) { await loadDeposits(); } else { alert(data.error || 'Failed.'); }
+  } catch { alert('Connection error.'); }
+}
+
+async function rejectDeposit(id) {
+  const reason = prompt('Reason for rejection (optional):') || '';
+  try {
+    const res = await fetch(`${API}/api/admin/deposits/${id}/reject`, { method:'PUT', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({ admin_notes: reason }) });
+    const data = await res.json();
+    if (data.success) { await loadDeposits(); } else { alert(data.error || 'Failed.'); }
+  } catch { alert('Connection error.'); }
+}
+
+// ── BUG FIX: 9C — WITHDRAWALS ──
+let allWithdrawals = [];
+let withdrawalFilter = 'all';
+
+async function loadWithdrawals() {
+  try {
+    const res = await fetch(`${API}/api/admin/withdrawals`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const data = await res.json();
+    allWithdrawals = data.withdrawals || [];
+    renderWithdrawals(withdrawalFilter);
+  } catch (err) { console.error('Withdrawals error:', err); }
+}
+
+function setWithdrawalFilter(filter, btn) {
+  withdrawalFilter = filter;
+  document.querySelectorAll('#withdrawalFilterTabs .filter-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderWithdrawals(filter);
+}
+
+function renderWithdrawals(filter) {
+  let wds = allWithdrawals;
+  if (filter !== 'all') wds = wds.filter(w => w.status === filter);
+  document.getElementById('withdrawalsCount').textContent = `${wds.length} withdrawal${wds.length !== 1 ? 's' : ''}`;
+  const tbody = document.getElementById('withdrawalsTableBody');
+  if (!wds.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No withdrawals found.</td></tr>'; return; }
+  const statusClass = { pending:'pending', approved:'active', rejected:'inactive' };
+  tbody.innerHTML = wds.map(w => {
+    const date = new Date(w.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    const wallet = (w.destination_address||w.wallet_address||'—');
+    const walletShort = wallet.length > 16 ? wallet.slice(0,10)+'…'+wallet.slice(-6) : wallet;
+    const actions = w.status === 'pending'
+      ? `<button onclick="approveWithdrawal(${w.id})" style="background:var(--green-dim);border:1px solid rgba(72,187,120,0.3);color:var(--green);font-family:var(--font-ui);font-size:0.58rem;font-weight:700;padding:5px 10px;cursor:pointer;border-radius:2px;margin-right:4px;">Approve</button>
+         <button onclick="rejectWithdrawal(${w.id})" style="background:var(--red-dim);border:1px solid rgba(252,129,129,0.3);color:var(--red);font-family:var(--font-ui);font-size:0.58rem;font-weight:700;padding:5px 10px;cursor:pointer;border-radius:2px;">Reject</button>`
+      : `<span style="font-size:0.7rem;color:var(--text-3);">${w.status}</span>`;
+    return `<tr>
+      <td class="user-name-cell" style="font-size:0.78rem;">${w.user_name||'—'}</td>
+      <td style="font-size:0.75rem;">${w.user_email||'—'}</td>
+      <td style="font-family:var(--font-ui);font-size:0.7rem;font-weight:600;color:var(--blue);">${(w.currency||w.asset||'ETH').toUpperCase()}</td>
+      <td style="font-family:'Courier New',monospace;font-size:0.78rem;">${parseFloat(w.amount||0).toFixed(5)}</td>
+      <td style="font-size:0.72rem;font-family:'Courier New',monospace;color:var(--text-3);" title="${wallet}">${walletShort}</td>
+      <td style="font-size:0.78rem;">${date}</td>
+      <td><span class="status-badge ${statusClass[w.status]||'pending'}">${w.status||'pending'}</span></td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function approveWithdrawal(id) {
+  if (!confirm('Approve this withdrawal?')) return;
+  try {
+    const res = await fetch(`${API}/api/admin/withdrawals/${id}/approve`, { method:'PUT', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({}) });
+    const data = await res.json();
+    if (data.success) { await loadWithdrawals(); } else { alert(data.error || 'Failed.'); }
+  } catch { alert('Connection error.'); }
+}
+
+async function rejectWithdrawal(id) {
+  const reason = prompt('Reason for rejection (optional):') || '';
+  try {
+    const res = await fetch(`${API}/api/admin/withdrawals/${id}/reject`, { method:'PUT', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({ admin_notes: reason }) });
+    const data = await res.json();
+    if (data.success) { await loadWithdrawals(); } else { alert(data.error || 'Failed.'); }
+  } catch { alert('Connection error.'); }
+}
+
+// ── BUG FIX: 9F — EMAIL CENTER ──
+function setEmailTab(tab, btn) {
+  ['compose','broadcast','history'].forEach(t => {
+    document.getElementById(`emailTab${t.charAt(0).toUpperCase()+t.slice(1)}`).style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('#emailTabBtns .filter-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (tab === 'history') loadEmailHistory();
+}
+
+async function loadEmailRecipients() {
+  try {
+    const res = await fetch(`${API}/api/admin/email/users`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const data = await res.json();
+    const sel = document.getElementById('composeRecipient');
+    const users = data.users || [];
+    sel.innerHTML = '<option value="">Select a user...</option>' + users.map(u => `<option value="${u.id}">${u.name||u.email} — ${u.email}</option>`).join('');
+  } catch (err) { console.error('Email users error:', err); }
+}
+
+function populateBroadcastTiers() {
+  const sel = document.getElementById('broadcastTierSelect');
+  if (!sel) return;
+  sel.innerHTML = allTiers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+  document.getElementById('broadcastTarget').addEventListener('change', function() {
+    document.getElementById('broadcastTierRow').style.display = this.value === 'tier' ? 'block' : 'none';
+  });
+}
+
+async function sendCompose() {
+  const user_id = document.getElementById('composeRecipient').value;
+  const subject = document.getElementById('composeSubject').value.trim();
+  const body = document.getElementById('composeBody').value.trim();
+  const alertEl = document.getElementById('composeAlert');
+  if (!user_id || !subject || !body) {
+    alertEl.textContent = 'Please fill in all fields.';
+    alertEl.style.cssText = 'display:block;padding:9px 13px;border-radius:2px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/api/admin/email/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ recipient_type: 'user', user_id, subject, body })
+    });
+    const data = await res.json();
+    alertEl.textContent = data.success ? 'Email sent successfully.' : (data.error || 'Send failed.');
+    alertEl.style.cssText = `display:block;padding:9px 13px;border-radius:2px;font-size:0.78rem;background:${data.success?'var(--green-dim)':'var(--red-dim)'};color:${data.success?'var(--green)':'var(--red)'};border:1px solid ${data.success?'rgba(72,187,120,0.3)':'rgba(252,129,129,0.3)'};`;
+    if (data.success) { document.getElementById('composeSubject').value=''; document.getElementById('composeBody').value=''; document.getElementById('composeRecipient').value=''; }
+  } catch { alertEl.textContent = 'Connection error.'; alertEl.style.display = 'block'; }
+}
+
+async function sendBroadcast() {
+  const target = document.getElementById('broadcastTarget').value;
+  const subject = document.getElementById('broadcastSubject').value.trim();
+  const body = document.getElementById('broadcastBody').value.trim();
+  const tierFilter = target === 'tier' ? document.getElementById('broadcastTierSelect').value : null;
+  const alertEl = document.getElementById('broadcastAlert');
+  if (!subject || !body) {
+    alertEl.textContent = 'Subject and message are required.';
+    alertEl.style.cssText = 'display:block;padding:9px 13px;border-radius:2px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
+    return;
+  }
+  if (!confirm(`Send broadcast to "${target}" users?`)) return;
+  try {
+    const res = await fetch(`${API}/api/admin/email/broadcast`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ subject, body, tierFilter, template: target })
+    });
+    const data = await res.json();
+    alertEl.textContent = data.success ? `Broadcast sent to ${data.count||'all'} users.` : (data.error || 'Send failed.');
+    alertEl.style.cssText = `display:block;padding:9px 13px;border-radius:2px;font-size:0.78rem;background:${data.success?'var(--green-dim)':'var(--red-dim)'};color:${data.success?'var(--green)':'var(--red)'};border:1px solid ${data.success?'rgba(72,187,120,0.3)':'rgba(252,129,129,0.3)'};`;
+    if (data.success) { document.getElementById('broadcastSubject').value=''; document.getElementById('broadcastBody').value=''; }
+  } catch { alertEl.textContent = 'Connection error.'; alertEl.style.display = 'block'; }
+}
+
+async function loadEmailHistory() {
+  try {
+    const res = await fetch(`${API}/api/admin/email/logs`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const data = await res.json();
+    const logs = data.logs || [];
+    document.getElementById('emailHistoryCount').textContent = `${logs.length} email${logs.length!==1?'s':''}`;
+    const tbody = document.getElementById('emailHistoryBody');
+    if (!logs.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No emails sent yet.</td></tr>'; return; }
+    tbody.innerHTML = logs.map(l => {
+      const date = new Date(l.created_at||l.sent_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+      return `<tr>
+        <td style="font-size:0.8rem;">${l.recipient_email||l.to_email||'—'}</td>
+        <td style="font-size:0.8rem;">${l.subject||'—'}</td>
+        <td><span class="status-badge pending" style="font-size:0.58rem;">${l.type||'individual'}</span></td>
+        <td style="font-size:0.78rem;">${date}</td>
+        <td><span class="status-badge ${l.status==='sent'?'active':'pending'}">${l.status||'sent'}</span></td>
+      </tr>`;
+    }).join('');
+  } catch (err) { console.error('Email history error:', err); }
 }
 
 function handleLogout() {
