@@ -1066,11 +1066,11 @@ function renderPortfolio() {
   const p = portfolioData;
   const validator  = parseFloat(p.validator_balance)    || 0;
   const rewards    = parseFloat(p.rewards_earned)       || 0;
-  const tierEth    = parseFloat(p.tier_amount_invested)  || 0;
   const reUsd      = parseFloat(p.re_usd_invested)       || 0;
 
-  // Full USD total: (validator + rewards + tierEth) × eth_price + real estate USD
-  const ethComponents = validator + rewards + tierEth;
+  // Full USD total: (validator + rewards) × eth_price + real estate USD
+  // tier_amount_invested is the same ETH as validator_balance for migrated users — not added to avoid double count
+  const ethComponents = validator + rewards;
   const totalUsd = prices.eth > 0
     ? (ethComponents * prices.eth) + reUsd
     : null;
