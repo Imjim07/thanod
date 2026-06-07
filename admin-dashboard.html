@@ -747,6 +747,18 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <div style="font-size:0.76rem;color:var(--text-3);line-height:1.6;">Activating unlocks the user's full portfolio dashboard. Deactivating re-locks it until the activation fee is confirmed.</div>
     </div>
 
+    <!-- SET MANUAL PASSWORD -->
+    <div class="detail-section">
+      <div class="detail-section-title">Set Login Password</div>
+      <div style="font-size:0.76rem;color:var(--text-3);line-height:1.6;margin-bottom:10px;">Set a specific password for this user. They will use this to sign in directly — no temp password email needed.</div>
+      <div class="detail-field" style="margin-bottom:8px;">
+        <label class="detail-label">New Password</label>
+        <input type="text" class="detail-input" id="manualPassword" placeholder="Min. 8 characters" autocomplete="off">
+      </div>
+      <div class="detail-alert" id="manualPasswordAlert" style="display:none;padding:8px 12px;border-radius:4px;font-size:0.78rem;margin-bottom:8px;"></div>
+      <button class="btn-save" onclick="setManualPassword()">Set Password</button>
+    </div>
+
     <!-- JOIN DATE -->
     <div class="detail-section">
       <div class="detail-section-title">Account Info</div>
@@ -1749,6 +1761,34 @@ async function loadUserRealEstate(userId) {
         </div>
       </div>`).join('');
   } catch (err) { console.error('User RE error:', err); }
+}
+
+// ── SET MANUAL PASSWORD ──
+async function setManualPassword() {
+  const password = document.getElementById('manualPassword').value.trim();
+  const alertEl = document.getElementById('manualPasswordAlert');
+  alertEl.style.display = 'none';
+  if (!password || password.length < 8) {
+    alertEl.textContent = 'Password must be at least 8 characters.';
+    alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/api/admin/user/${selectedUserId}/set-password`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ password })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alertEl.textContent = 'Password set. User can now log in with this password.';
+      alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--green-dim);color:var(--green);border:1px solid rgba(72,187,120,0.3);';
+      document.getElementById('manualPassword').value = '';
+    } else {
+      alertEl.textContent = data.error || 'Failed to set password.';
+      alertEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:0.78rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3);';
+    }
+  } catch { alertEl.textContent = 'Connection error.'; alertEl.style.display = 'block'; }
 }
 
 // ── BUG FIX: 9D — MIN DEPOSITS + PROCESSING TIME ──
