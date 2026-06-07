@@ -1982,7 +1982,7 @@ async function changePassword() {
     const res = await fetch(`${API}/api/auth/change-password`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ password: newPassword })
+      body: JSON.stringify({ new_password: newPassword })
     });
     const data = await res.json();
     if (data.success) {
